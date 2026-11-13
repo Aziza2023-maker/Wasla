@@ -56,7 +56,12 @@ export const ClientDashboard = () => {
       {/* 1. Header (Matching Mockup) */}
       <header className="bg-white border-b border-slate-200 sticky top-8 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <WaslaLogo variant="dark" size="md" onClick={() => navigateTo('landing')} />
+          <WaslaLogo
+            variant="dark"
+            size="md"
+            subTitle="WASLA.YE"
+            onClick={() => navigateTo('landing')}
+          />
 
           <nav className="hidden lg:flex items-center gap-6 text-xs text-slate-600 font-medium">
             <span className="font-bold text-teal-800 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">

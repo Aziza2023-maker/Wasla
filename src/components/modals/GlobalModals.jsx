@@ -14,7 +14,12 @@ import {
   Lock,
   Plus,
   Send,
-  Eye
+  Eye,
+  GraduationCap,
+  Calendar,
+  Check,
+  Award,
+  ChevronLeft
 } from 'lucide-react';
 
 export const GlobalModals = () => {
@@ -27,9 +32,11 @@ export const GlobalModals = () => {
     updateEmergencyBuffer,
     uploadRemittanceProof,
     addPortfolioProject,
+    submitAcademicVerification,
     freelancerUser,
     clientContracts,
-    serviceCategories
+    universitiesList,
+    navigateTo
   } = useWasla();
 
   // Create Project Form State
@@ -42,6 +49,15 @@ export const GlobalModals = () => {
     bufferDays: '4',
     description: '',
     skills: 'React, Tailwind CSS, API',
+  });
+
+  // Academic Verification Form State
+  const [verificationForm, setVerificationForm] = useState({
+    university: 'جامعة صنعاء',
+    faculty: 'كلية الحاسوب وتكنولوجيا المعلومات',
+    level: 'المستوى الرابع (دفعة 2025)',
+    academicId: '2021-CS-1105',
+    fileName: 'بطاقة_جامعية_محدثة.pdf',
   });
 
   // Withdrawal Modal State
@@ -80,7 +96,243 @@ export const GlobalModals = () => {
       className="fixed inset-0 z-[9990] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs font-sans text-right animate-in fade-in duration-200"
       dir="rtl"
     >
-      {/* 1. Create Project Modal */}
+      {/* 1. Academic Verification Modal (Student ID & University Badge) */}
+      {activeModal === 'academic-verify' && (
+        <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+          <button
+            onClick={closeModal}
+            className="absolute top-5 left-5 text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700">
+              <GraduationCap className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-[#0B192C]">
+                طلب التوثيق الأكاديمي المعتمد
+              </h3>
+              <span className="text-[11px] text-teal-800 font-bold">
+                شارة "طالب موثق" وأولوية العروض 35%+
+              </span>
+            </div>
+          </div>
+
+          <p className="text-xs text-slate-500 font-normal mb-6 leading-relaxed">
+            ارفع بطاقتك الجامعية أو إفادة القيد المعتمدة لمطابقتها مع سجلات الكلية. تمنحك الشارة ثقة فورية لدى أصحاب المشاريع والشركات.
+          </p>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitAcademicVerification(verificationForm);
+            }}
+            className="space-y-4 text-xs"
+          >
+            <div>
+              <label className="font-bold text-slate-800 block mb-1">الجامعة اليمنية</label>
+              <select
+                value={verificationForm.university}
+                onChange={(e) => setVerificationForm({ ...verificationForm, university: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-teal-500 font-bold"
+              >
+                {universitiesList.map((univ) => (
+                  <option key={univ.id} value={univ.name}>
+                    {univ.logo} {univ.name} ({univ.city})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="font-bold text-slate-800 block mb-1">الكلية والتخصص</label>
+                <input
+                  type="text"
+                  value={verificationForm.faculty}
+                  onChange={(e) => setVerificationForm({ ...verificationForm, faculty: e.target.value })}
+                  placeholder="كلية الحاسوب - هندسة برمجيات"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-teal-500 font-medium"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-800 block mb-1">الرقم الأكاديمي (القيد)</label>
+                <input
+                  type="text"
+                  value={verificationForm.academicId}
+                  onChange={(e) => setVerificationForm({ ...verificationForm, academicId: e.target.value })}
+                  placeholder="2021-CS-1105"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-teal-500 font-mono font-bold"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="font-bold text-slate-800 block mb-1">صورة البطاقة الجامعية / إفادة القيد</label>
+              <div className="border border-dashed border-slate-300 rounded-2xl p-5 bg-slate-50/70 text-center">
+                <Upload className="w-8 h-8 text-teal-600 mx-auto mb-2" />
+                <span className="font-bold text-slate-700 block text-xs">
+                  اسحب صورة البطاقة أو اضغط للاختيار
+                </span>
+                <span className="text-[10px] text-slate-400 block mt-1">
+                  يدعم صور JPG أو مستندات PDF (واضحة البيانات)
+                </span>
+                {verificationForm.fileName && (
+                  <span className="inline-block mt-2 text-[11px] font-bold text-teal-700 bg-teal-50 border border-teal-200 px-3 py-1 rounded-full">
+                    ✓ {verificationForm.fileName}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-sky-50 rounded-xl p-3 border border-sky-200 text-[11px] text-sky-900 leading-relaxed flex items-start gap-2">
+              <ShieldCheck className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+              <span>
+                تخضع الوثائق للتدقيق المباشر من مسؤولي وساطة وصلة الأكاديمية لحماية حقوق الطلاب ومنع الحسابات الوهمية.
+              </span>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={closeModal}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50"
+              >
+                إلغاء
+              </button>
+              <button
+                type="submit"
+                className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-6 py-2.5 rounded-xl font-bold shadow-md transition-colors flex items-center gap-1.5"
+              >
+                <Award className="w-4 h-4" />
+                <span>إرسال للتحقق الأكاديمي</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* 2. Project Details Modal */}
+      {activeModal === 'project-details' && modalPayload && (
+        <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+          <button
+            onClick={closeModal}
+            className="absolute top-5 left-5 text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          {/* Header Badges */}
+          <div className="flex items-center gap-2 flex-wrap mb-3">
+            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{modalPayload.escrowBadge || 'مضمون بحساب الكريمي'}</span>
+            </span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+              {modalPayload.category}
+            </span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700">
+              {modalPayload.status}
+            </span>
+          </div>
+
+          <h3 className="text-lg sm:text-xl font-black text-[#0B192C] mb-2 leading-snug">
+            {modalPayload.title}
+          </h3>
+
+          {/* Budget & Client banner */}
+          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-5 flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <img
+                src={modalPayload.clientAvatar}
+                alt={modalPayload.clientName}
+                className="w-10 h-10 rounded-full object-cover border border-slate-200"
+              />
+              <div>
+                <span className="font-bold text-xs text-[#0B192C] block">
+                  {modalPayload.clientName}
+                </span>
+                <span className="text-[10px] text-slate-400 font-normal">
+                  {modalPayload.clientEntity}
+                </span>
+              </div>
+            </div>
+
+            <div className="text-left">
+              <span className="text-[10px] text-slate-400 block font-normal">الميزانية المرصودة</span>
+              <span className="text-lg font-black text-emerald-800">
+                {modalPayload.budgetYER.toLocaleString()} ر.ي
+              </span>
+            </div>
+          </div>
+
+          {/* Duration & Emergency Buffer */}
+          <div className="grid grid-cols-2 gap-3 mb-5 text-xs">
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span className="text-[10px] text-slate-400 block mb-0.5">المدة المطلوبة للتسليم</span>
+              <span className="font-bold text-slate-800">{modalPayload.requiredDurationDays || 15} يوماً</span>
+            </div>
+
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
+              <span className="text-[10px] text-amber-700 block mb-0.5">الهامش الزمني المعتمد</span>
+              <span className="font-bold">{modalPayload.bufferLabel || '+4 أيام طوارئ'}</span>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="mb-5">
+            <h4 className="font-bold text-xs text-[#0B192C] mb-2">وصف ومخرجات المشروع</h4>
+            <p className="text-xs text-slate-600 leading-relaxed font-normal bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+              {modalPayload.description}
+            </p>
+          </div>
+
+          {/* Technologies */}
+          {modalPayload.technologies && (
+            <div className="mb-6">
+              <h4 className="font-bold text-xs text-[#0B192C] mb-2">التقنيات المطلوبة</h4>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {modalPayload.technologies.map((tech, idx) => (
+                  <span
+                    key={idx}
+                    className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-teal-50 text-teal-800 border border-teal-200"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Action Footer */}
+          <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+            <button
+              onClick={closeModal}
+              className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50"
+            >
+              إغلاق
+            </button>
+
+            <button
+              onClick={() => {
+                closeModal();
+                navigateTo('freelancer-jobs');
+              }}
+              className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-md transition-colors flex items-center gap-1.5"
+            >
+              <span>تقديم عرض لهذا المشروع</span>
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Create Project Modal (Client) */}
       {activeModal === 'create-project' && (
         <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto">
           <button
@@ -219,7 +471,7 @@ export const GlobalModals = () => {
         </div>
       )}
 
-      {/* 2. Instant Withdrawal Modal */}
+      {/* 4. Instant Withdrawal Modal */}
       {activeModal === 'instant-withdrawal' && (
         <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 border border-slate-200 shadow-2xl relative">
           <button
@@ -323,7 +575,7 @@ export const GlobalModals = () => {
         </div>
       )}
 
-      {/* 3. Emergency Buffer Settings Modal */}
+      {/* 5. Emergency Buffer Settings Modal */}
       {activeModal === 'buffer-settings' && (
         <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 border border-slate-200 shadow-2xl relative">
           <button
@@ -395,7 +647,7 @@ export const GlobalModals = () => {
         </div>
       )}
 
-      {/* 4. Client Upload Remittance Proof Modal */}
+      {/* 6. Client Upload Remittance Proof Modal */}
       {activeModal === 'client-upload-proof' && (
         <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto">
           <button
@@ -511,7 +763,7 @@ export const GlobalModals = () => {
         </div>
       )}
 
-      {/* 5. Receipt Preview Modal (Admin & Client) */}
+      {/* 7. Receipt Preview Modal (Admin & Client) */}
       {activeModal === 'receipt-preview' && modalPayload && (
         <div className="bg-white rounded-3xl max-w-md w-full p-6 border border-slate-200 shadow-2xl relative">
           <button
@@ -581,7 +833,7 @@ export const GlobalModals = () => {
         </div>
       )}
 
-      {/* 6. Student Document Preview Modal (Admin) */}
+      {/* 8. Student Document Preview Modal (Admin) */}
       {activeModal === 'student-doc-preview' && modalPayload && (
         <div className="bg-white rounded-3xl max-w-md w-full p-6 border border-slate-200 shadow-2xl relative">
           <button
@@ -627,7 +879,7 @@ export const GlobalModals = () => {
         </div>
       )}
 
-      {/* 7. Add Portfolio Item Modal */}
+      {/* 9. Add Portfolio Item Modal */}
       {activeModal === 'add-portfolio-item' && (
         <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto">
           <button
@@ -739,4 +991,3 @@ export const GlobalModals = () => {
 };
 
 export default GlobalModals;
-

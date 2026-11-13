@@ -30,7 +30,7 @@ export const FreelancerSidebar = () => {
       <div>
         {/* Top Branding */}
         <div className="p-5 border-b border-slate-800/80 flex items-center gap-3">
-          <WaslaChainIcon size={34} />
+          <WaslaChainIcon size={34} variant="inverted" />
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-white font-black text-xl tracking-tight">وصلة</span>

@@ -52,7 +52,12 @@ export const AdminDashboard = () => {
       <header className="bg-white border-b border-slate-200 sticky top-8 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <WaslaLogo variant="dark" size="md" onClick={() => navigateTo('landing')} />
+            <WaslaLogo
+              variant="dark"
+              size="md"
+              subTitle="WASLA.YE"
+              onClick={() => navigateTo('landing')}
+            />
             <span className="hidden sm:inline text-xs font-bold px-2.5 py-1 rounded-md bg-teal-50 text-teal-800 border border-teal-200">
               الإدارة المركزية
             </span>

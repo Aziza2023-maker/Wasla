@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useReducer } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import {
   INITIAL_USER,
   INITIAL_CLIENT,
@@ -15,14 +15,21 @@ import {
 const WaslaContext = createContext();
 
 export const WaslaProvider = ({ children }) => {
-  // Navigation & Role State
-  const [activeScreen, setActiveScreen] = useState('landing'); // 'landing' | 'login' | 'register' | 'role-selection' | 'forgot-password' | 'freelancer-overview' | 'freelancer-jobs' | 'freelancer-portfolio' | 'freelancer-contact' | 'freelancer-financial' | 'client-dashboard' | 'admin-panel' | 'student-alt'
+  // Navigation & Role-Based Session State
+  const [activeScreen, setActiveScreen] = useState('landing');
   const [currentRole, setCurrentRole] = useState('guest'); // 'guest' | 'freelancer' | 'client' | 'admin'
-  const [selectedRoleSignup, setSelectedRoleSignup] = useState('client'); // for role selection screen: 'client' | 'freelancer'
+  const [selectedRoleSignup, setSelectedRoleSignup] = useState('client'); // for onboarding flow
+  const [activeFreelancerProfile, setActiveFreelancerProfile] = useState('arwa'); // 'arwa' | 'osama'
 
-  // User States
+  // User Profiles
   const [freelancerUser, setFreelancerUser] = useState(INITIAL_USER);
   const [clientUser, setClientUser] = useState(INITIAL_CLIENT);
+  const [adminUser] = useState({
+    name: 'المشرف المالي والرقابي',
+    entity: 'الإدارة المركزية لمنصة وصلة',
+    badge: 'مسؤول وساطة مرخص',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+  });
 
   // Entities State
   const [projects, setProjects] = useState(INITIAL_PROJECTS);
@@ -30,13 +37,14 @@ export const WaslaProvider = ({ children }) => {
   const [remittances, setRemittances] = useState(INITIAL_REMITTANCES);
   const [verificationQueue, setVerificationQueue] = useState(STUDENT_VERIFICATION_QUEUE);
   const [portfolioProjects, setPortfolioProjects] = useState(PORTFOLIO_PROJECTS);
+  const [selectedProjectDetails, setSelectedProjectDetails] = useState(INITIAL_PROJECTS[0]);
 
   // Toasts
   const [toasts, setToasts] = useState([]);
 
   // Modals state
-  const [activeModal, setActiveModal] = useState(null); // string id of active modal
-  const [modalPayload, setModalPayload] = useState(null); // contextual data for modal
+  const [activeModal, setActiveModal] = useState(null);
+  const [modalPayload, setModalPayload] = useState(null);
 
   // Helper Toast function
   const addToast = (title, message, type = 'success', duration = 4000) => {
@@ -53,23 +61,68 @@ export const WaslaProvider = ({ children }) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  // Screen & Role Switcher
+  // Strict Role-Based Navigation & Session Guard
   const navigateTo = (screen, role = null) => {
-    setActiveScreen(screen);
+    // If explicit role is passed, switch to it
     if (role) {
       setCurrentRole(role);
-    } else {
-      if (screen.startsWith('freelancer') || screen === 'student-alt') {
-        setCurrentRole('freelancer');
-      } else if (screen.startsWith('client')) {
-        setCurrentRole('client');
-      } else if (screen === 'admin-panel') {
-        setCurrentRole('admin');
-      } else if (['landing', 'login', 'register', 'role-selection', 'forgot-password'].includes(screen)) {
-        setCurrentRole('guest');
-      }
+      setActiveScreen(screen);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
     }
+
+    // Role-based protection rules:
+    if (screen.startsWith('freelancer') || screen === 'student-alt') {
+      if (currentRole !== 'freelancer' && currentRole !== 'guest') {
+        addToast(
+          'تنبيه الصلاحيات',
+          'تم التبديل تلقائياً إلى وضع الطالب المستقل للوصول للوحة التحكم.',
+          'info'
+        );
+      }
+      setCurrentRole('freelancer');
+    } else if (screen.startsWith('client')) {
+      if (currentRole !== 'client' && currentRole !== 'guest') {
+        addToast(
+          'تنبيه الصلاحيات',
+          'تم التبديل تلقائياً إلى وضع صاحب العمل / العميل للوصول للوحة العقود.',
+          'info'
+        );
+      }
+      setCurrentRole('client');
+    } else if (screen === 'admin-panel') {
+      if (currentRole !== 'admin') {
+        addToast(
+          'بوابة الإدارة المركزية',
+          'تم التحقق من الصلاحيات الإدارية وفتح مسار الرقابة المالية والوساطة Escrow.',
+          'info'
+        );
+      }
+      setCurrentRole('admin');
+    } else if (['landing', 'login', 'register', 'role-selection', 'forgot-password'].includes(screen)) {
+      // Guest or public screens
+    }
+
+    setActiveScreen(screen);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Switch Active User / Role seamlessly
+  const switchRole = (newRole) => {
+    setCurrentRole(newRole);
+    if (newRole === 'freelancer') {
+      setActiveScreen('freelancer-overview');
+      addToast('وضع المستقل', 'تم تفعيل حساب الطالب المستقل (م. أروى الحمادي).');
+    } else if (newRole === 'client') {
+      setActiveScreen('client-dashboard');
+      addToast('وضع العميل', 'تم تفعيل حساب العميل صاحب المشاريع (شهاب صالح).');
+    } else if (newRole === 'admin') {
+      setActiveScreen('admin-panel');
+      addToast('بوابة الإدارة', 'تم تفعيل حساب المشرف المالي والإداري.');
+    } else {
+      setActiveScreen('landing');
+      addToast('تسجيل الخروج', 'أنت تتصفح المنصة كزائر الآن.');
+    }
   };
 
   // Open & Close Modals
@@ -81,6 +134,12 @@ export const WaslaProvider = ({ children }) => {
   const closeModal = () => {
     setActiveModal(null);
     setModalPayload(null);
+  };
+
+  // View Project Details
+  const viewProjectDetails = (project) => {
+    setSelectedProjectDetails(project);
+    openModal('project-details', project);
   };
 
   // Freelancer: Submit Proposal
@@ -108,6 +167,35 @@ export const WaslaProvider = ({ children }) => {
       `تم تقديم عرضك المالي بقيمة ${proposalData.bidAmount.toLocaleString()} ر.ي مع هامش طوارئ (+${proposalData.bufferDays} أيام). العرض محمي تحت مظلة الضمان الأكاديمي.`,
       'success',
       5000
+    );
+    closeModal();
+  };
+
+  // Freelancer: Student Academic Verification Submission
+  const submitAcademicVerification = (verificationData) => {
+    const newVerificationRequest = {
+      id: `ver_${Date.now()}`,
+      name: freelancerUser.name,
+      initials: 'أ.ح',
+      university: verificationData.university || freelancerUser.university,
+      faculty: verificationData.faculty || freelancerUser.faculty,
+      level: verificationData.level || 'المستوى الرابع',
+      academicId: verificationData.academicId || '2021-CS-1105',
+      docName: verificationData.fileName || 'بطاقة_جامعية_معتمدة.pdf',
+      docSize: '2.1 ميجابايت',
+      docTime: 'الآن',
+      docType: 'pdf',
+      docPreviewUrl: 'https://images.unsplash.com/photo-1589330694653-dad6ef0140df?auto=format&fit=crop&q=80&w=400',
+      status: 'قيد المراجعة',
+    };
+
+    setVerificationQueue((prev) => [newVerificationRequest, ...prev]);
+
+    addToast(
+      'تم رفع وثيقة التحقق الأكاديمي بنجاح!',
+      'طلبك الآن في طابور اعتماد بطاقات الطلاب لدى الإدارة المركزية، وسيتم منحك شارة "طالب موثق" فور التحقق.',
+      'success',
+      6000
     );
     closeModal();
   };
@@ -235,7 +323,6 @@ export const WaslaProvider = ({ children }) => {
       })
     );
 
-    // Increase released count
     setClientUser((prev) => ({
       ...prev,
       releasedTransfersCount: prev.releasedTransfersCount + 1,
@@ -344,9 +431,16 @@ export const WaslaProvider = ({ children }) => {
       })
     );
 
+    // If it was Arwa, ensure badge is active
+    setFreelancerUser((prev) => ({
+      ...prev,
+      isVerified: true,
+      verifiedBadgeText: 'طالب موثق (معتمد)',
+    }));
+
     addToast(
       'تم اعتماد التوثيق الأكاديمي!',
-      `تم منح شارة "توثيق أكاديمي معتمد" للطالب (${studentName}) وتفعيل أولوية الظهور في سوق العمل بنسبة 35%.`,
+      `تم منح شارة "طالب موثق" للطالب (${studentName}) وتفعيل أولوية الظهور في سوق العمل بنسبة 35%.`,
       'success',
       5000
     );
@@ -389,13 +483,17 @@ export const WaslaProvider = ({ children }) => {
         currentRole,
         selectedRoleSignup,
         setSelectedRoleSignup,
+        activeFreelancerProfile,
+        setActiveFreelancerProfile,
         navigateTo,
+        switchRole,
 
         // Users
         freelancerUser,
         setFreelancerUser,
         clientUser,
         setClientUser,
+        adminUser,
 
         // Entities
         projects,
@@ -403,12 +501,14 @@ export const WaslaProvider = ({ children }) => {
         remittances,
         verificationQueue,
         portfolioProjects,
+        selectedProjectDetails,
         serviceCategories: SERVICE_CATEGORIES,
         universitiesList: UNIVERSITIES_LIST,
         peerStudents: PEER_STUDENTS,
 
         // Actions
         submitProposal,
+        submitAcademicVerification,
         withdrawFunds,
         updateEmergencyBuffer,
         publishProject,
@@ -418,6 +518,7 @@ export const WaslaProvider = ({ children }) => {
         rejectRemittance,
         approveStudentVerification,
         addPortfolioProject,
+        viewProjectDetails,
 
         // Toasts
         toasts,
@@ -445,4 +546,3 @@ export const useWasla = () => {
 };
 
 export default WaslaContext;
-

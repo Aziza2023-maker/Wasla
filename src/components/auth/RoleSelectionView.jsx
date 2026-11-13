@@ -31,7 +31,12 @@ export const RoleSelectionView = () => {
       {/* Top Navigation */}
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
-          <WaslaLogo variant="dark" size="md" onClick={() => navigateTo('landing')} />
+          <WaslaLogo
+            variant="dark"
+            size="md"
+            subTitle="بوابة العمل الحر الأكاديمي"
+            onClick={() => navigateTo('landing')}
+          />
 
           {/* Stepper (1 اختيار الدور - 2 بيانات الحساب - 3 التوثيق الأكاديمي) */}
           <div className="hidden md:flex items-center gap-6 text-xs text-slate-500 font-medium">

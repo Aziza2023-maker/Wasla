@@ -1,75 +1,173 @@
-// WaslaLogo.jsx - Exact SVG Wasla Chain-Link Branding
+// WaslaLogo.jsx - Exact Vector Branding matching Official Wasla Guidelines
 import React from 'react';
 
-export const WaslaChainIcon = ({ size = 32, className = '' }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 100 100"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className={`inline-block ${className}`}
-  >
-    {/* Dark link */}
-    <path
-      d="M32 58 C22 48 22 32 34 20 C46 8 62 8 72 18 C78 24 80 32 78 40"
-      stroke="#0B192C"
-      strokeWidth="11"
-      strokeLinecap="round"
-    />
-    {/* Interlocking Teal link */}
-    <path
-      d="M68 42 C78 52 78 68 66 80 C54 92 38 92 28 82 C22 76 20 68 22 60"
-      stroke="#0D9488"
-      strokeWidth="11"
-      strokeLinecap="round"
-    />
-    {/* Connection overlapping nodes */}
-    <circle cx="34" cy="20" r="5.5" fill="#38BDF8" />
-    <circle cx="66" cy="80" r="5.5" fill="#10B981" />
-  </svg>
-);
+export const WaslaChainIcon = ({
+  size = 40,
+  variant = 'full', // 'full' | 'inverted' | 'monochrome' | 'dark' | 'light'
+  className = '',
+}) => {
+  const isLight = variant === 'inverted' || variant === 'light';
+  const isMono = variant === 'monochrome';
+  const navyColor = isLight ? '#FFFFFF' : '#0F172A';
+  const blueColor = isLight ? (isMono ? '#FFFFFF' : '#38BDF8') : isMono ? '#0F172A' : '#0EA5E9';
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`inline-block shrink-0 ${className}`}
+    >
+      {/* Group rotated -45 degrees around center (50, 50) */}
+      <g transform="rotate(-45 50 50)">
+        {/* Top-Right Link (Navy #0F172A) */}
+        <rect
+          x="40"
+          y="39"
+          width="42"
+          height="22"
+          rx="11"
+          fill="none"
+          stroke={navyColor}
+          strokeWidth="7.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+
+        {/* Bottom-Left Link (Sky Blue #0EA5E9) */}
+        <rect
+          x="18"
+          y="39"
+          width="42"
+          height="22"
+          rx="11"
+          fill="none"
+          stroke={blueColor}
+          strokeWidth="7.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+
+        {/* Interlocking Overlap: Navy bottom arc passing over Cyan bottom link */}
+        <path
+          d="M 40 50 A 11 11 0 0 0 51 61 H 64"
+          fill="none"
+          stroke={navyColor}
+          strokeWidth="7.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+    </svg>
+  );
+};
 
 export const WaslaLogo = ({
-  variant = 'dark', // 'dark' | 'light' | 'white'
-  size = 'md',      // 'sm' | 'md' | 'lg'
-  showSubtitle = true,
-  subtitleText = 'بوابة العمل الحر الأكاديمي',
+  variant = 'full', // 'full' | 'inverted' | 'monochrome' | 'dark' | 'light'
+  layout = 'horizontal', // 'horizontal' | 'vertical'
+  size = 'md', // 'sm' | 'md' | 'lg' | 'xl'
+  showEnglish = true,
+  subTitle = null, // e.g. "بوابة العمل الحر الأكاديمي" or "WASLA.YE"
+  subtitleText = null,
+  className = '',
   onClick = null,
 }) => {
-  const iconSizes = { sm: 26, md: 34, lg: 42 };
-  const textSizes = {
-    sm: 'text-lg',
-    md: 'text-2xl',
-    lg: 'text-3xl'
+  const effectiveSubtitle = subTitle || subtitleText;
+  const iconSizes = { sm: 28, md: 38, lg: 52, xl: 72 };
+  const arabicSizes = {
+    sm: 'text-xl',
+    md: 'text-2xl sm:text-3xl',
+    lg: 'text-4xl',
+    xl: 'text-5xl sm:text-6xl',
+  };
+  const englishSizes = {
+    sm: 'text-[9px] tracking-[0.25em]',
+    md: 'text-xs tracking-[0.3em]',
+    lg: 'text-sm tracking-[0.35em]',
+    xl: 'text-lg tracking-[0.4em]',
   };
 
-  const isLight = variant === 'light' || variant === 'white';
+  const isLight = variant === 'inverted' || variant === 'light';
+  const textColor = isLight ? 'text-white' : 'text-[#0F172A]';
 
+  if (layout === 'vertical') {
+    return (
+      <div
+        onClick={onClick}
+        className={`flex flex-col items-center justify-center text-center select-none ${
+          onClick ? 'cursor-pointer group' : ''
+        } ${className}`}
+      >
+        <div className="mb-2 transition-transform duration-200 group-hover:scale-105">
+          <WaslaChainIcon size={iconSizes[size]} variant={variant} />
+        </div>
+        <div className="flex flex-col items-center">
+          <span
+            className={`font-black leading-tight ${arabicSizes[size]} ${textColor}`}
+            style={{ fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif" }}
+          >
+            وصلة
+          </span>
+          {showEnglish && (
+            <span
+              className={`font-black uppercase -mt-0.5 ${englishSizes[size]} ${
+                isLight ? 'text-slate-300' : 'text-[#0F172A]'
+              }`}
+            >
+              WASLA
+            </span>
+          )}
+          {effectiveSubtitle && (
+            <span className={`text-[11px] mt-1 font-medium ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+              {effectiveSubtitle}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Horizontal Layout
   return (
     <div
       onClick={onClick}
-      className={`flex items-center gap-2.5 select-none ${onClick ? 'cursor-pointer' : ''}`}
+      className={`flex items-center gap-3 select-none ${
+        onClick ? 'cursor-pointer group' : ''
+      } ${className}`}
+      dir="rtl"
     >
-      <WaslaChainIcon size={iconSizes[size]} />
-      <div className="flex flex-col">
-        <div className="flex items-center gap-1.5 leading-none">
-          <span className={`font-black tracking-tight ${textSizes[size]} ${isLight ? 'text-white' : 'text-[#0B192C]'}`}>
-            وصلة
+      <div className="transition-transform duration-200 group-hover:scale-105">
+        <WaslaChainIcon size={iconSizes[size]} variant={variant} />
+      </div>
+      <div className="flex flex-col text-right justify-center">
+        <span
+          className={`font-black leading-none ${arabicSizes[size]} ${textColor}`}
+          style={{ fontFamily: "'Cairo', 'IBM Plex Sans Arabic', sans-serif" }}
+        >
+          وصلة
+        </span>
+        {effectiveSubtitle ? (
+          <span
+            className={`text-[10px] mt-1 font-medium ${
+              isLight ? 'text-slate-300' : 'text-slate-500'
+            }`}
+          >
+            {effectiveSubtitle}
           </span>
-          <span className="text-teal-600 font-bold text-xs px-1.5 py-0.5 rounded bg-teal-50 border border-teal-200">
-            WASLA.YE
+        ) : showEnglish ? (
+          <span
+            className={`font-black uppercase tracking-[0.22em] text-[10px] mt-1 ${
+              isLight ? 'text-slate-300' : 'text-[#0F172A]'
+            }`}
+          >
+            WASLA
           </span>
-        </div>
-        {showSubtitle && (
-          <span className={`text-[10px] font-medium tracking-wide mt-0.5 ${isLight ? 'text-slate-300' : 'text-slate-500'}`}>
-            {subtitleText}
-          </span>
-        )}
+        ) : null}
       </div>
     </div>
   );
 };
 
 export default WaslaLogo;
-

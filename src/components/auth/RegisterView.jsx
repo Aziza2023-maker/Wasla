@@ -45,7 +45,12 @@ export const RegisterView = () => {
       {/* Top Navigation */}
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <WaslaLogo variant="dark" size="md" onClick={() => navigateTo('landing')} />
+          <WaslaLogo
+            variant="dark"
+            size="md"
+            subTitle="منصة الكفاءات والفرص الجامعية"
+            onClick={() => navigateTo('landing')}
+          />
 
           <nav className="hidden md:flex items-center gap-6 text-xs text-slate-500 font-medium">
             <button onClick={() => navigateTo('landing')} className="hover:text-slate-900 transition-colors">
