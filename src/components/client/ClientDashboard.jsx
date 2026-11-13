@@ -84,11 +84,11 @@ export const ClientDashboard = () => {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => openModal('create-project')}
+              onClick={() => navigateTo('services')}
               className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1.5"
             >
-              <Plus className="w-4 h-4" />
-              <span>نشر مشروع جديد</span>
+              <Briefcase className="w-4 h-4" />
+              <span>تصفح وطلب خدمة مصغرة</span>
             </button>
 
             <div className="flex items-center gap-2.5 border-r border-slate-200 pr-3">
@@ -119,11 +119,11 @@ export const ClientDashboard = () => {
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2.5 h-2.5 rounded-full bg-teal-500" />
               <h1 className="text-xl sm:text-2xl font-black text-[#0B192C]">
-                لوحة تحكم العميل وإدارة العقود
+                لوحة تحكم العميل وإدارة طلبات الخدمات
               </h1>
             </div>
             <p className="text-xs text-slate-500 font-normal">
-              نظام وساطة حرة آمن يربط بين أصحاب الأعمال والمشاريع وطلاب الجامعات والكليات الأكفاء في اليمن
+              نظام وساطة حرة آمن لتصفح وطلب الخدمات المصغرة ومتابعة تنفيذها مع طلاب الجامعات اليمنية بضمان Escrow
             </p>
           </div>
 
@@ -194,14 +194,14 @@ export const ClientDashboard = () => {
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
                     <h3 className="font-black text-base text-[#0B192C]">
-                      المشاريع الحالية وطلبات المستقلين
+                      الخدمات المصغرة والطلبات الجارية مع المستقلين
                     </h3>
                     <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-800">
                       {clientContracts.length} نشطة
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 font-normal">
-                    متابعة دقيقة لكل طالب مستقل، المبالغ المحجوزة والجدول الزمني لتسليم المشروع
+                    متابعة دقيقة لكل طالب مستقل، المبالغ المحجوزة في الضمان المالي Escrow ومواعيد التسليم
                   </p>
                 </div>
 

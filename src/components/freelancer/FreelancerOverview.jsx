@@ -63,18 +63,21 @@ export const FreelancerOverview = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            onClick={() => openModal('academic-verify')}
+            className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold hover:bg-teal-100 transition-colors"
+          >
             <ShieldCheck className="w-4 h-4 text-teal-600" />
-            <span>طالبة جامعة صنعاء معتمدة (دفعة 2025)</span>
-          </div>
+            <span>توثيق البطاقة الجامعية</span>
+          </button>
 
           <button
-            onClick={() => navigateTo('freelancer-jobs')}
+            onClick={() => openModal('add-portfolio-item')}
             className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
-            <span>تقديم عرض جديد</span>
+            <span>نشر خدمة مصغرة جديدة (Gig)</span>
           </button>
         </div>
       </div>
