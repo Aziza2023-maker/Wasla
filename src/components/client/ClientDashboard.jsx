@@ -54,7 +54,7 @@ export const ClientDashboard = () => {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans text-right" dir="rtl">
       {/* 1. Header (Matching Mockup) */}
-      <header className="bg-white border-b border-slate-200 sticky top-8 z-30">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
           <WaslaLogo
             variant="dark"
@@ -67,18 +67,18 @@ export const ClientDashboard = () => {
             <span className="font-bold text-teal-800 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
               لوحة العميل
             </span>
-            <button onClick={() => navigateTo('student-alt')} className="hover:text-slate-900 transition-colors">
+            <button onClick={() => navigateTo('freelancers')} className="hover:text-slate-900 transition-colors">
               تصفح المستقلين
             </button>
-            <button onClick={() => navigateTo('freelancer-jobs')} className="hover:text-slate-900 transition-colors">
-              المشاريع العامة
+            <button onClick={() => navigateTo('services')} className="hover:text-slate-900 transition-colors">
+              سوق الخدمات
             </button>
             <div className="flex items-center gap-1.5 text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 text-[11px] font-bold">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>وساطة الضمان الآمن (100% موثق)</span>
             </div>
-            <button onClick={() => navigateTo('admin-panel')} className="hover:text-slate-900 transition-colors">
-              مركز الدعم
+            <button onClick={() => navigateTo('support')} className="hover:text-slate-900 transition-colors">
+              مركز الدعم والنزاعات
             </button>
           </nav>
 

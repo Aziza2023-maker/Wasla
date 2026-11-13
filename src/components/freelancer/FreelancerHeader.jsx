@@ -14,7 +14,7 @@ export const FreelancerHeader = () => {
   const { freelancerUser, openModal, navigateTo } = useWasla();
 
   return (
-    <header className="bg-white border-b border-slate-200/90 h-20 px-6 flex items-center justify-between sticky top-8 z-20 font-sans" dir="rtl">
+    <header className="bg-white border-b border-slate-200/90 h-20 px-6 flex items-center justify-between sticky top-0 z-20 font-sans" dir="rtl">
       {/* Search Input */}
       <div className="flex-1 max-w-md">
         <div className="relative">

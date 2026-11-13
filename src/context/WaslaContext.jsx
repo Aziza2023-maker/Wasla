@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import {
   INITIAL_USER,
   INITIAL_CLIENT,
@@ -9,7 +9,9 @@ import {
   PORTFOLIO_PROJECTS,
   SERVICE_CATEGORIES,
   UNIVERSITIES_LIST,
-  PEER_STUDENTS
+  PEER_STUDENTS,
+  SERVICES_CATALOG,
+  COMMUNITY_TOPICS
 } from '../data/initialData';
 
 const WaslaContext = createContext();
@@ -38,6 +40,8 @@ export const WaslaProvider = ({ children }) => {
   const [verificationQueue, setVerificationQueue] = useState(STUDENT_VERIFICATION_QUEUE);
   const [portfolioProjects, setPortfolioProjects] = useState(PORTFOLIO_PROJECTS);
   const [selectedProjectDetails, setSelectedProjectDetails] = useState(INITIAL_PROJECTS[0]);
+  const [servicesCatalog, setServicesCatalog] = useState(SERVICES_CATALOG);
+  const [communityTopics, setCommunityTopics] = useState(COMMUNITY_TOPICS);
 
   // Toasts
   const [toasts, setToasts] = useState([]);
@@ -61,50 +65,88 @@ export const WaslaProvider = ({ children }) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  // Strict Role-Based Navigation & Session Guard
-  const navigateTo = (screen, role = null) => {
-    // If explicit role is passed, switch to it
-    if (role) {
-      setCurrentRole(role);
-      setActiveScreen(screen);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
+  // Route URL Mappings
+  const routeToHash = {
+    'landing': '#/',
+    'services': '#/services',
+    'freelancers': '#/freelancers',
+    'support': '#/support',
+    'community': '#/community',
+    'login': '#/auth/login',
+    'register': '#/auth/register',
+    'role-selection': '#/auth/role-selection',
+    'forgot-password': '#/auth/forgot-password',
+    'client-dashboard': '#/client/dashboard',
+    'freelancer-overview': '#/freelancer/dashboard',
+    'freelancer-jobs': '#/freelancer/jobs',
+    'freelancer-portfolio': '#/freelancer/portfolio',
+    'freelancer-contact': '#/freelancer/contact',
+    'freelancer-financial': '#/freelancer/financial',
+    'student-alt': '#/freelancer/student-alt',
+    'admin-panel': '#/admin/secure-portal',
+  };
+
+  const hashToRoute = {
+    '#/': 'landing',
+    '': 'landing',
+    '#/services': 'services',
+    '#/freelancers': 'freelancers',
+    '#/support': 'support',
+    '#/community': 'community',
+    '#/auth/login': 'login',
+    '#/auth/register': 'register',
+    '#/auth/role-selection': 'role-selection',
+    '#/auth/forgot-password': 'forgot-password',
+    '#/client/dashboard': 'client-dashboard',
+    '#/freelancer/dashboard': 'freelancer-overview',
+    '#/freelancer/jobs': 'freelancer-jobs',
+    '#/freelancer/portfolio': 'freelancer-portfolio',
+    '#/freelancer/contact': 'freelancer-contact',
+    '#/freelancer/financial': 'freelancer-financial',
+    '#/freelancer/student-alt': 'student-alt',
+    '#/admin/secure-portal': 'admin-panel',
+  };
+
+  // Listen for browser back / forward navigation
+  useEffect(() => {
+    const handleHashChange = () => {
+      const currentHash = window.location.hash || '#/';
+      const targetRoute = hashToRoute[currentHash] || 'landing';
+      setActiveScreen(targetRoute);
+    };
+
+    if (window.location.hash) {
+      handleHashChange();
     }
 
-    // Role-based protection rules:
-    if (screen.startsWith('freelancer') || screen === 'student-alt') {
-      if (currentRole !== 'freelancer' && currentRole !== 'guest') {
-        addToast(
-          'تنبيه الصلاحيات',
-          'تم التبديل تلقائياً إلى وضع الطالب المستقل للوصول للوحة التحكم.',
-          'info'
-        );
-      }
-      setCurrentRole('freelancer');
-    } else if (screen.startsWith('client')) {
-      if (currentRole !== 'client' && currentRole !== 'guest') {
-        addToast(
-          'تنبيه الصلاحيات',
-          'تم التبديل تلقائياً إلى وضع صاحب العمل / العميل للوصول للوحة العقود.',
-          'info'
-        );
-      }
-      setCurrentRole('client');
-    } else if (screen === 'admin-panel') {
-      if (currentRole !== 'admin') {
-        addToast(
-          'بوابة الإدارة المركزية',
-          'تم التحقق من الصلاحيات الإدارية وفتح مسار الرقابة المالية والوساطة Escrow.',
-          'info'
-        );
-      }
-      setCurrentRole('admin');
-    } else if (['landing', 'login', 'register', 'role-selection', 'forgot-password'].includes(screen)) {
-      // Guest or public screens
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Strict Role-Based Navigation & Session Guard
+  const navigateTo = (screen, role = null) => {
+    if (role) {
+      setCurrentRole(role);
     }
 
     setActiveScreen(screen);
+    const targetHash = routeToHash[screen] || '#/';
+    if (window.location.hash !== targetHash) {
+      window.location.hash = targetHash;
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Logout & Session Reset
+  const logout = () => {
+    setCurrentRole('guest');
+    navigateTo('landing');
+    addToast(
+      'تم تسجيل الخروج بنجاح',
+      'تم إغلاق الجلسة بأمان. تتصفح منصة وصلة الآن كزائر.',
+      'info',
+      3000
+    );
   };
 
   // Switch Active User / Role seamlessly
@@ -481,12 +523,14 @@ export const WaslaProvider = ({ children }) => {
         // Screen & Role
         activeScreen,
         currentRole,
+        setCurrentRole,
         selectedRoleSignup,
         setSelectedRoleSignup,
         activeFreelancerProfile,
         setActiveFreelancerProfile,
         navigateTo,
         switchRole,
+        logout,
 
         // Users
         freelancerUser,
@@ -505,6 +549,8 @@ export const WaslaProvider = ({ children }) => {
         serviceCategories: SERVICE_CATEGORIES,
         universitiesList: UNIVERSITIES_LIST,
         peerStudents: PEER_STUDENTS,
+        servicesCatalog,
+        communityTopics,
 
         // Actions
         submitProposal,

@@ -19,10 +19,10 @@ export const RoleSelectionView = () => {
   const handleContinue = () => {
     if (selectedRoleSignup === 'client') {
       addToast('تم اختيار حساب العميل', 'مرحباً بك! يمكنك الآن نشر المشاريع وإدارة عقود الوساطة المالية.');
-      navigateTo('client-dashboard');
+      navigateTo('client-dashboard', 'client');
     } else {
       addToast('تم اختيار حساب المستقل الأكاديمي', 'مرحباً بك! يمكنك استعراض سوق العمل وبدء توثيق هويتك الجامعية.');
-      navigateTo('freelancer-overview');
+      navigateTo('freelancer-overview', 'freelancer');
     }
   };
 

@@ -25,17 +25,17 @@ export const LoginView = () => {
     e.preventDefault();
     if (email.includes('student') || email.includes('arwa') || email.includes('edu')) {
       addToast('تم تسجيل الدخول بنجاح!', 'مرحباً م. أروى الحمادي. تم تحميل لوحة تحكم المستقل والأداء الأكاديمي.');
-      navigateTo('freelancer-overview');
+      navigateTo('freelancer-overview', 'freelancer');
     } else {
       addToast('تم تسجيل الدخول بنجاح!', 'مرحباً شهاب صالح. تم تحميل لوحة تحكم العميل وإدارة العقود.');
-      navigateTo('client-dashboard');
+      navigateTo('client-dashboard', 'client');
     }
   };
 
   const handleQuickAcademicLogin = () => {
     setEmail('arwa.alhamadi@su.edu.ye');
     addToast('تم التحقق عبر البريد الأكاديمي!', 'مرحباً م. أروى الحمادي (جامعة صنعاء).');
-    navigateTo('freelancer-overview');
+    navigateTo('freelancer-overview', 'freelancer');
   };
 
   return (
@@ -43,20 +43,25 @@ export const LoginView = () => {
       {/* Top Navigation */}
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <WaslaLogo variant="dark" size="md" onClick={() => navigateTo('landing')} />
+          <WaslaLogo
+            variant="dark"
+            size="md"
+            subTitle="بوابة العمل الحر الأكاديمي"
+            onClick={() => navigateTo('landing')}
+          />
 
           <nav className="hidden md:flex items-center gap-6 text-xs text-slate-500 font-medium">
-            <button onClick={() => navigateTo('freelancer-jobs')} className="hover:text-slate-900 transition-colors">
-              تصفح المشاريع
+            <button onClick={() => navigateTo('services')} className="hover:text-slate-900 transition-colors">
+              تصفح الخدمات
             </button>
-            <button onClick={() => navigateTo('student-alt')} className="hover:text-slate-900 transition-colors">
+            <button onClick={() => navigateTo('freelancers')} className="hover:text-slate-900 transition-colors">
               المستقلون المعتمدون
             </button>
-            <button onClick={() => navigateTo('admin-panel')} className="hover:text-slate-900 transition-colors">
+            <button onClick={() => navigateTo('support')} className="hover:text-slate-900 transition-colors">
               ضمان المعاملات المالية
             </button>
-            <button onClick={() => navigateTo('landing')} className="hover:text-slate-900 transition-colors">
-              شركاء الجامعات
+            <button onClick={() => navigateTo('community')} className="hover:text-slate-900 transition-colors">
+              ملتقى الجامعات
             </button>
           </nav>
 

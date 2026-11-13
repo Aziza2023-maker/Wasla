@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useWasla } from '../../context/WaslaContext';
-import WaslaLogo from '../common/WaslaLogo';
+import Navbar from '../common/Navbar';
+import Footer from '../common/Footer';
 import {
   Search,
   Code2,
@@ -17,11 +18,7 @@ import {
   CheckCircle,
   Laptop,
   ClipboardList,
-  ArrowLeft,
-  ChevronLeft,
-  Sparkles,
-  Building2,
-  Users
+  Sparkles
 } from 'lucide-react';
 
 export const LandingPage = () => {
@@ -30,7 +27,7 @@ export const LandingPage = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    navigateTo('freelancer-jobs');
+    navigateTo('services');
   };
 
   const getCategoryIcon = (iconName) => {
@@ -58,48 +55,8 @@ export const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans" dir="rtl">
-      {/* 1. Header (Dark Navy #0B192C) */}
-      <header className="bg-[#0B192C] text-white border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center gap-8">
-            <WaslaLogo variant="light" size="md" onClick={() => navigateTo('landing')} />
-
-            {/* Navigation links */}
-            <nav className="hidden md:flex items-center gap-6 text-sm text-slate-300 font-medium">
-              <button onClick={() => navigateTo('landing')} className="hover:text-white transition-colors">
-                المجتمع
-              </button>
-              <button onClick={() => navigateTo('student-alt')} className="hover:text-white transition-colors">
-                المستقلين
-              </button>
-              <button onClick={() => navigateTo('freelancer-jobs')} className="hover:text-white transition-colors">
-                الخدمات
-              </button>
-              <button onClick={() => navigateTo('admin-panel')} className="hover:text-white transition-colors">
-                الدعم والوساطة
-              </button>
-            </nav>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigateTo('login')}
-              className="text-sm font-semibold text-slate-200 hover:text-white px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors"
-            >
-              تسجيل الدخول
-            </button>
-            <button
-              onClick={() => navigateTo('role-selection')}
-              className="bg-[#0D9488] hover:bg-[#0F766E] text-white text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5"
-            >
-              <span>سجل كطالب</span>
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* 1. Header (Navbar component with Dark Navy style) */}
+      <Navbar variant="dark" />
 
       {/* 2. Hero Section (Dark Navy #0B192C) */}
       <section className="bg-[#0B192C] text-white pt-14 pb-20 relative overflow-hidden">
@@ -148,42 +105,66 @@ export const LandingPage = () => {
             <h3 className="text-slate-300 text-sm font-bold mb-8">كيف نعمل؟</h3>
             <div className="flex items-center justify-center gap-3 sm:gap-6 flex-wrap">
               {/* Step 1 */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-slate-300">
+              <button
+                type="button"
+                onClick={() => navigateTo('client-dashboard')}
+                className="flex flex-col items-center group cursor-pointer"
+              >
+                <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-teal-400 group-hover:bg-teal-900/60 transition-colors">
                   <ClipboardList className="w-5 h-5" />
                 </div>
-                <span className="text-xs text-slate-300 font-medium">طلب مشروع</span>
-              </div>
+                <span className="text-xs text-slate-300 font-medium group-hover:text-teal-400 transition-colors">
+                  طلب مشروع
+                </span>
+              </button>
 
               <div className="text-slate-600 hidden sm:block">←</div>
 
               {/* Step 2 */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-slate-300">
+              <button
+                type="button"
+                onClick={() => navigateTo('services')}
+                className="flex flex-col items-center group cursor-pointer"
+              >
+                <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-teal-400 group-hover:bg-teal-900/60 transition-colors">
                   <Laptop className="w-5 h-5" />
                 </div>
-                <span className="text-xs text-slate-300 font-medium">عمل حر</span>
-              </div>
+                <span className="text-xs text-slate-300 font-medium group-hover:text-teal-400 transition-colors">
+                  عمل حر
+                </span>
+              </button>
 
               <div className="text-slate-600 hidden sm:block">←</div>
 
               {/* Step 3 */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-teal-400">
+              <button
+                type="button"
+                onClick={() => navigateTo('support')}
+                className="flex flex-col items-center group cursor-pointer"
+              >
+                <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-teal-400 group-hover:bg-teal-900/60 transition-colors">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                <span className="text-xs text-slate-300 font-medium">دفع محلي آمن</span>
-              </div>
+                <span className="text-xs text-slate-300 font-medium group-hover:text-teal-400 transition-colors">
+                  دفع محلي آمن
+                </span>
+              </button>
 
               <div className="text-slate-600 hidden sm:block">←</div>
 
               {/* Step 4 */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-teal-400">
+              <button
+                type="button"
+                onClick={() => navigateTo('support')}
+                className="flex flex-col items-center group cursor-pointer"
+              >
+                <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-teal-400 group-hover:bg-teal-900/60 transition-colors">
                   <CheckCircle className="w-5 h-5" />
                 </div>
-                <span className="text-xs text-slate-300 font-medium">تسليم مضمون</span>
-              </div>
+                <span className="text-xs text-slate-300 font-medium group-hover:text-teal-400 transition-colors">
+                  تسليم مضمون
+                </span>
+              </button>
             </div>
           </div>
         </div>
@@ -204,7 +185,7 @@ export const LandingPage = () => {
             {serviceCategories.map((cat) => (
               <div
                 key={cat.id}
-                onClick={() => navigateTo('freelancer-jobs')}
+                onClick={() => navigateTo('services')}
                 className="bg-white rounded-xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-teal-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer group"
               >
                 <div className="w-14 h-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -231,12 +212,15 @@ export const LandingPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Card 1: Time Buffer */}
-            <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4 text-right">
-              <div className="w-12 h-12 rounded-xl bg-[#ECFDF5] border border-emerald-200 flex items-center justify-center shrink-0">
+            <div
+              onClick={() => navigateTo('support')}
+              className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex items-center gap-4 text-right cursor-pointer group"
+            >
+              <div className="w-12 h-12 rounded-xl bg-[#ECFDF5] border border-emerald-200 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                 <Clock className="w-6 h-6 text-emerald-600" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-[#0B192C] mb-1">
+                <h4 className="font-bold text-sm text-[#0B192C] mb-1 group-hover:text-teal-700 transition-colors">
                   المدة الزمنية الإضافية (هامش زمني)
                 </h4>
                 <p className="text-xs text-slate-500 font-normal leading-relaxed">
@@ -246,12 +230,15 @@ export const LandingPage = () => {
             </div>
 
             {/* Card 2: Local Cash Escrow */}
-            <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4 text-right">
-              <div className="w-12 h-12 rounded-xl bg-[#ECFDF5] border border-emerald-200 flex items-center justify-center shrink-0">
+            <div
+              onClick={() => navigateTo('support')}
+              className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex items-center gap-4 text-right cursor-pointer group"
+            >
+              <div className="w-12 h-12 rounded-xl bg-[#ECFDF5] border border-emerald-200 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                 <Wallet className="w-6 h-6 text-emerald-600" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-[#0B192C] mb-1">
+                <h4 className="font-bold text-sm text-[#0B192C] mb-1 group-hover:text-teal-700 transition-colors">
                   وساطة نقدية محلية موثوقة
                 </h4>
                 <p className="text-xs text-slate-500 font-normal leading-relaxed">
@@ -263,29 +250,10 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* 5. Footer (Dark Navy #0B192C) */}
-      <footer className="bg-[#0B192C] text-slate-400 py-6 border-t border-slate-800 text-xs">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <span>منصة وصلة - جميع الحقوق محفوظة © 2025</span>
-          </div>
-
-          <div className="flex items-center gap-6 text-xs text-slate-400">
-            <button onClick={() => navigateTo('admin-panel')} className="hover:text-white transition-colors">
-              وساطة الضمان المالي
-            </button>
-            <button onClick={() => navigateTo('landing')} className="hover:text-white transition-colors">
-              سياسة الخصوصية
-            </button>
-            <button onClick={() => navigateTo('landing')} className="hover:text-white transition-colors">
-              الشروط والأحكام
-            </button>
-          </div>
-        </div>
-      </footer>
+      {/* 5. Unified Footer */}
+      <Footer />
     </div>
   );
 };
 
 export default LandingPage;
-

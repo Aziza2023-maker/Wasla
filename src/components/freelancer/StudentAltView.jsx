@@ -30,7 +30,7 @@ export const StudentAltView = () => {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans text-right" dir="rtl">
       {/* Top Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-8 z-30">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
           <WaslaLogo
             variant="dark"
@@ -43,13 +43,13 @@ export const StudentAltView = () => {
             <span className="font-bold text-teal-800 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
               لوحة المستقل (عرض الطالب الموثق)
             </span>
-            <button onClick={() => navigateTo('freelancer-jobs')} className="hover:text-slate-900">
-              تصفح المشاريع
+            <button onClick={() => navigateTo('services')} className="hover:text-slate-900">
+              تصفح الخدمات
             </button>
             <button onClick={() => navigateTo('freelancer-contact')} className="hover:text-slate-900">
               الرسائل والاتصال
             </button>
-            <button onClick={() => navigateTo('admin-panel')} className="hover:text-slate-900">
+            <button onClick={() => navigateTo('support')} className="hover:text-slate-900">
               إجراءات الضمان الأكاديمي
             </button>
           </nav>
