@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWasla } from '../../context/WaslaContext';
 import WaslaLogo from '../common/WaslaLogo';
 import {
@@ -15,7 +15,12 @@ import {
   Phone,
   Eye,
   EyeOff,
-  AlertCircle
+  AlertCircle,
+  FileText,
+  Link,
+  Code2,
+  Compass,
+  Check
 } from 'lucide-react';
 
 export const RegisterView = () => {
@@ -25,23 +30,41 @@ export const RegisterView = () => {
     universitiesList,
     setFreelancerUser,
     setClientUser,
-    openModal
+    openModal,
+    selectedRoleSignup,
+    setSelectedRoleSignup
   } = useWasla();
 
-  // Role Selection State: 'freelancer' (student) or 'client'
-  const [accountType, setAccountType] = useState('freelancer');
+  // Role Selection State: dynamically initialized from selectedRoleSignup ('freelancer' or 'client')
+  const [accountType, setAccountType] = useState(selectedRoleSignup || 'freelancer');
 
-  // Form Fields
+  useEffect(() => {
+    if (selectedRoleSignup) {
+      setAccountType(selectedRoleSignup);
+    }
+  }, [selectedRoleSignup]);
+
+  // Common Form Fields
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(true);
+
+  // Freelancer / Student Dynamic Fields
   const [university, setUniversity] = useState('جامعة صنعاء');
   const [faculty, setFaculty] = useState('كلية الحاسوب وتكنولوجيا المعلومات');
+  const [technicalCategory, setTechnicalCategory] = useState('برمجة وتطوير البرمجيات');
+  const [skills, setSkills] = useState('');
+  const [bio, setBio] = useState('');
+  const [portfolioLink, setPortfolioLink] = useState('');
   const [academicLevel, setAcademicLevel] = useState('السنة الرابعة (دفعة 2025)');
+
+  // Client Dynamic Fields
+  const [companyName, setCompanyName] = useState('');
   const [phone, setPhone] = useState('');
-  const [clientType, setClientType] = useState('شركة أو جهة تجارية');
-  const [agreeTerms, setAgreeTerms] = useState(true);
+  const [clientType, setClientType] = useState('شركة أو مؤسسة تجارية');
+  const [projectDescription, setProjectDescription] = useState('');
 
   // Validation Errors State
   const [errors, setErrors] = useState({});
@@ -71,16 +94,28 @@ export const RegisterView = () => {
       errs.password = 'كلمة المرور يجب ألا تقل عن 8 أحرف وأرقام';
     }
 
-    // Role-specific validation
+    // Freelancer specific validations
     if (accountType === 'freelancer') {
       if (!faculty.trim()) {
         errs.faculty = 'يرجى تحديد الكلية والتخصص الجامعي';
       }
-    } else {
+      if (!skills.trim()) {
+        errs.skills = 'يرجى كتابة أهم المهارات والتقنيات التي تتقنها (مثال: React, Figma, Python)';
+      }
+      if (!bio.trim() || bio.trim().length < 15) {
+        errs.bio = 'يرجى كتابة نبذة مهنية مختصرة لا تقل عن 15 حرفاً تعرّف بها عن خبراتك';
+      }
+    }
+
+    // Client specific validations
+    if (accountType === 'client') {
       if (!phone.trim()) {
-        errs.phone = 'يرجى إدخال رقم الهاتف أو الواتساب للتنسيق المالي';
+        errs.phone = 'يرجى إدخال رقم الهاتف أو الواتساب للتنسيق المالي (الكريمي/النجم)';
       } else if (!/^[0-9+\s-]{7,15}$/.test(phone.trim())) {
         errs.phone = 'يرجى إدخال رقم هاتف صالح (مثال: 773892104)';
+      }
+      if (!companyName.trim()) {
+        errs.companyName = 'يرجى إدخال اسم الشركة أو المؤسسة أو الاسم التجاري';
       }
     }
 
@@ -99,7 +134,7 @@ export const RegisterView = () => {
     if (!validateForm()) {
       addToast(
         'بيانات غير مكتملة',
-        'يرجى مراجعة الحقول المحددة باللون الأحمر وتصحيح البيانات المطلوبة.',
+        'يرجى مراجعة الحقول المحددة باللون الأحمر وإكمال البيانات المطلوبة بدقة.',
         'warning',
         4000
       );
@@ -107,16 +142,19 @@ export const RegisterView = () => {
     }
 
     if (accountType === 'client') {
-      // Create Client Profile
+      // Create Client Profile with Dynamic Fields
       setClientUser((prev) => ({
         ...prev,
         name: fullName.trim(),
+        company: companyName.trim() || 'شركة مستقلة',
         title: `${clientType} • عميل موثق`,
+        projectDescription: projectDescription.trim() || prev.projectDescription,
+        phone: phone.trim(),
       }));
 
       addToast(
         'تم إنشاء حساب العميل بنجاح!',
-        `مرحباً بك يا ${fullName}. تم توجيهك إلى لوحة العميل لبدء تصفح وطلب الخدمات وضمان المستحقات عبر Escrow.`,
+        `مرحباً بك يا ${fullName}. تم حفظ بيانات شركتك وجهزنا لك لوحة العميل لطرح المشاريع وتصفح المستقلين.`,
         'success',
         5000
       );
@@ -124,19 +162,24 @@ export const RegisterView = () => {
       // Smart Redirect strictly to Client Dashboard
       navigateTo('client-dashboard', 'client');
     } else {
-      // Create Freelancer / Student Profile
+      // Create Freelancer / Student Profile with Dynamic Fields
       setFreelancerUser((prev) => ({
         ...prev,
         name: fullName.trim(),
         university: university,
         faculty: faculty.trim(),
+        title: `${technicalCategory} • ${university}`,
+        shortTitle: technicalCategory,
         academicLevel: academicLevel,
-        isVerified: false, // Needs academic verification upload
+        skillsSummary: skills.trim(),
+        bio: bio.trim(),
+        portfolioUrl: portfolioLink.trim() || prev.portfolioUrl,
+        isVerified: false, // Pending academic verification
       }));
 
       addToast(
-        'تم إنشاء حساب الطالب المستقل بنجاح!',
-        `مرحباً بك يا ${fullName}. يرجى رفع بطاقتك الجامعية لنيل شارة "طالب موثق" وبدء استقبال طلبات الخدمات.`,
+        'تم إنشاء حساب المستقل الأكاديمي بنجاح!',
+        `مرحباً بك يا ${fullName}. تم تسجيل مهاراتك وسجل تخصصك، والآن يرجى رفع بطاقتك الجامعية لنيل شارة التوثيق.`,
         'success',
         6000
       );
@@ -145,7 +188,7 @@ export const RegisterView = () => {
       navigateTo('freelancer-overview', 'freelancer');
       setTimeout(() => {
         openModal('academic-verify');
-      }, 700);
+      }, 600);
     }
   };
 
@@ -194,34 +237,44 @@ export const RegisterView = () => {
           {/* Left Form Card */}
           <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-sm flex flex-col justify-between">
             <div>
-              {/* Header Badge */}
-              <div className="inline-flex items-center gap-1.5 text-xs text-teal-700 font-bold bg-teal-50 px-3 py-1 rounded-full border border-teal-200 mb-3">
-                <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-                <span>إنشاء حساب موثق جديد</span>
+              {/* Header Badge & Stepper Status */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="inline-flex items-center gap-1.5 text-xs text-teal-700 font-bold bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+                  <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+                  <span>الخطوة 2: استكمال بيانات الحساب</span>
+                </div>
+                <button
+                  onClick={() => navigateTo('role-selection')}
+                  className="text-xs text-slate-400 hover:text-teal-600 font-bold flex items-center gap-1"
+                >
+                  <span>تغيير الدور</span>
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                </button>
               </div>
 
               <h2 className="text-2xl sm:text-3xl font-black text-[#0B192C] mb-1">
-                انضم إلى منصة وصلة
+                إنشاء حساب في منصة وصلة
               </h2>
               <p className="text-xs text-slate-400 font-normal mb-6 leading-relaxed">
-                حدد طبيعة حسابك وأدخل بياناتك للوصول فوراً إلى لوحة التحكم المخصصة لك.
+                املأ بياناتك بدقة لتخصيص لوحة التحكم والوصول لخدمات الوساطة المالية المحلية وحسابات الضمان.
               </p>
 
-              {/* 1. PROMINENT ACCOUNT TYPE SELECTOR */}
+              {/* 1. DYNAMIC ROLE TOGGLE SELECTOR */}
               <div className="mb-6 space-y-2">
                 <label className="block text-xs font-black text-[#0B192C]">
-                  اختر نوع الحساب في المنصة <span className="text-rose-500">*</span>
+                  نوع الحساب المحدد <span className="text-rose-500">*</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {/* Option A: Freelancer / Student */}
                   <div
                     onClick={() => {
                       setAccountType('freelancer');
+                      setSelectedRoleSignup('freelancer');
                       setErrors({});
                     }}
                     className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3 text-right ${
                       accountType === 'freelancer'
-                        ? 'border-teal-500 bg-teal-50/60 shadow-xs'
+                        ? 'border-teal-500 bg-teal-50/60 shadow-xs ring-2 ring-teal-500/10'
                         : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                   >
@@ -244,7 +297,7 @@ export const RegisterView = () => {
                         )}
                       </div>
                       <span className="text-[11px] text-slate-500 font-normal block leading-tight mt-0.5">
-                        أقدم خدمات مصغرة وأستفيد من الهامش الزمني للأرباح
+                        أقدم خدماتي، وأستفيد من الهامش الزمني للأرباح
                       </span>
                     </div>
                   </div>
@@ -253,11 +306,12 @@ export const RegisterView = () => {
                   <div
                     onClick={() => {
                       setAccountType('client');
+                      setSelectedRoleSignup('client');
                       setErrors({});
                     }}
                     className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3 text-right ${
                       accountType === 'client'
-                        ? 'border-emerald-500 bg-emerald-50/60 shadow-xs'
+                        ? 'border-emerald-500 bg-emerald-50/60 shadow-xs ring-2 ring-emerald-500/10'
                         : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                   >
@@ -273,14 +327,14 @@ export const RegisterView = () => {
                     <div>
                       <div className="flex items-center gap-1.5">
                         <span className="font-black text-xs text-[#0B192C]">
-                          أنا عميل (أبحث عن خدمات)
+                          أنا عميل (صاحب عمل)
                         </span>
                         {accountType === 'client' && (
                           <span className="w-2 h-2 rounded-full bg-emerald-500" />
                         )}
                       </div>
                       <span className="text-[11px] text-slate-500 font-normal block leading-tight mt-0.5">
-                        أوظف كفاءات جامعية مع حماية مالية Escrow 100%
+                        أطرح مشاريع وأوظف كفاءات بضمان Escrow
                       </span>
                     </div>
                   </div>
@@ -395,92 +449,254 @@ export const RegisterView = () => {
                   )}
                 </div>
 
-                {/* ROLE-SPECIFIC CONDITIONAL FIELDS */}
+                {/* ========================================================================= */}
+                {/* 2. DYNAMIC REGISTRATION FIELDS (FREELANCER VS CLIENT)                      */}
+                {/* ========================================================================= */}
+
                 {accountType === 'freelancer' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                    {/* University */}
-                    <div>
-                      <label className="block text-xs font-bold text-[#0B192C] mb-1">
-                        الجامعة اليمنية <span className="text-rose-500">*</span>
-                      </label>
-                      <select
-                        value={university}
-                        onChange={(e) => setUniversity(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium outline-none focus:border-teal-500"
-                      >
-                        {universitiesList.map((u) => (
-                          <option key={u.id} value={u.name}>
-                            {u.name} ({u.city})
-                          </option>
-                        ))}
-                      </select>
+                  /* FREELANCER SPECIFIC FIELDS */
+                  <div className="space-y-4 pt-2 border-t border-slate-100">
+                    <div className="flex items-center gap-1.5 text-teal-800 font-bold text-xs">
+                      <Code2 className="w-4 h-4 text-teal-600" />
+                      <span>بيانات المسار الأكاديمي والمهارات التقنية:</span>
                     </div>
 
-                    {/* Faculty & Major */}
+                    {/* University & Technical Category */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-[#0B192C] mb-1">
+                          الجامعة اليمنية <span className="text-rose-500">*</span>
+                        </label>
+                        <select
+                          value={university}
+                          onChange={(e) => setUniversity(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium outline-none focus:border-teal-500"
+                        >
+                          {universitiesList.map((u) => (
+                            <option key={u.id} value={u.name}>
+                              {u.name} ({u.city})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-[#0B192C] mb-1">
+                          التصنيف التقني الرئيسي <span className="text-rose-500">*</span>
+                        </label>
+                        <select
+                          value={technicalCategory}
+                          onChange={(e) => setTechnicalCategory(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium outline-none focus:border-teal-500"
+                        >
+                          <option value="برمجة وتطوير البرمجيات">برمجة وتطوير البرمجيات (Web/Mobile)</option>
+                          <option value="تصميم واجهات وتجربة المستخدم">تصميم واجهات UI/UX وجرافيك</option>
+                          <option value="ترجمة وكتابة أبحاث أكاديمية">ترجمة وبحوث طبية وأكاديمية</option>
+                          <option value="تحليل بيانات وذكاء اصطناعي">تحليل بيانات ونماذج AI</option>
+                          <option value="إدارة شبكات وحلول سحابية">شبكات، أمن معلومات وسيرفرات</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Faculty and Academic Level */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-[#0B192C] mb-1">
+                          الكلية والتخصص الأكاديمي <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={faculty}
+                          onChange={(e) => {
+                            setFaculty(e.target.value);
+                            if (errors.faculty) setErrors({ ...errors, faculty: null });
+                          }}
+                          placeholder="مثال: كلية الحاسوب - هندسة برمجيات"
+                          className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs text-slate-800 font-medium outline-none ${
+                            errors.faculty ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200 focus:border-teal-500'
+                          }`}
+                        />
+                        {errors.faculty && (
+                          <span className="text-[11px] font-bold text-rose-500 block mt-1">
+                            {errors.faculty}
+                          </span>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-[#0B192C] mb-1">
+                          المستوى الدراسي
+                        </label>
+                        <select
+                          value={academicLevel}
+                          onChange={(e) => setAcademicLevel(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium outline-none focus:border-teal-500"
+                        >
+                          <option value="السنة الثانية">السنة الثانية</option>
+                          <option value="السنة الثالثة">السنة الثالثة</option>
+                          <option value="السنة الرابعة (دفعة 2025)">السنة الرابعة (مشروع تخرج / دفعة 2025)</option>
+                          <option value="خريج جامعي معتمد">خريج جامعي معتمد (حديث التخرج)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Skills Field */}
                     <div>
                       <label className="block text-xs font-bold text-[#0B192C] mb-1">
-                        الكلية والتخصص <span className="text-rose-500">*</span>
+                        المهارات التقنية واللغات البرمجية <span className="text-rose-500">*</span>
                       </label>
                       <input
                         type="text"
-                        value={faculty}
+                        value={skills}
                         onChange={(e) => {
-                          setFaculty(e.target.value);
-                          if (errors.faculty) setErrors({ ...errors, faculty: null });
+                          setSkills(e.target.value);
+                          if (errors.skills) setErrors({ ...errors, skills: null });
                         }}
-                        placeholder="مثال: هندسة برمجيات"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium outline-none focus:border-teal-500"
+                        placeholder="مثال: React, Tailwind, Next.js, Node.js, Git, Supabase"
+                        className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs text-slate-800 font-medium outline-none ${
+                          errors.skills ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200 focus:border-teal-500'
+                        }`}
                       />
-                      {errors.faculty && (
+                      {errors.skills && (
                         <span className="text-[11px] font-bold text-rose-500 block mt-1">
-                          {errors.faculty}
+                          {errors.skills}
                         </span>
                       )}
                     </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                    {/* Phone for remittances */}
+
+                    {/* Professional Bio Field */}
                     <div>
                       <label className="block text-xs font-bold text-[#0B192C] mb-1">
-                        رقم الهاتف / الواتساب للتنسيق <span className="text-rose-500">*</span>
+                        النبذة المهنية وخلاصة الخبرات <span className="text-rose-500">*</span>
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={bio}
+                        onChange={(e) => {
+                          setBio(e.target.value);
+                          if (errors.bio) setErrors({ ...errors, bio: null });
+                        }}
+                        placeholder="اكتب نبذة موجزة عن خبراتك الأكاديمية وأسلوبك في العمل البرمجي مع العملاء..."
+                        className={`w-full bg-slate-50 border rounded-xl p-2.5 text-xs text-slate-800 font-medium outline-none leading-relaxed ${
+                          errors.bio ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200 focus:border-teal-500'
+                        }`}
+                      />
+                      {errors.bio && (
+                        <span className="text-[11px] font-bold text-rose-500 block mt-1">
+                          {errors.bio}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Portfolio / Work Link */}
+                    <div>
+                      <label className="block text-xs font-bold text-[#0B192C] mb-1">
+                        رابط معرض الأعمال أو GitHub (اختياري)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="url"
+                          value={portfolioLink}
+                          onChange={(e) => setPortfolioLink(e.target.value)}
+                          placeholder="https://github.com/username أو رابط موقعك"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium outline-none focus:border-teal-500 pl-8"
+                        />
+                        <Link className="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* CLIENT SPECIFIC FIELDS */
+                  <div className="space-y-4 pt-2 border-t border-slate-100">
+                    <div className="flex items-center gap-1.5 text-emerald-800 font-bold text-xs">
+                      <Briefcase className="w-4 h-4 text-emerald-600" />
+                      <span>بيانات الشركة والمشاريع والتنسيق المالي:</span>
+                    </div>
+
+                    {/* Company / Organization Name */}
+                    <div>
+                      <label className="block text-xs font-bold text-[#0B192C] mb-1">
+                        اسم الشركة / المؤسسة / الاسم التجاري <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
                         <input
                           type="text"
-                          value={phone}
+                          value={companyName}
                           onChange={(e) => {
-                            setPhone(e.target.value);
-                            if (errors.phone) setErrors({ ...errors, phone: null });
+                            setCompanyName(e.target.value);
+                            if (errors.companyName) setErrors({ ...errors, companyName: null });
                           }}
-                          placeholder="مثال: 773892104"
-                          className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs text-slate-800 outline-none font-medium pl-8 ${
-                            errors.phone ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200 focus:border-teal-500'
+                          placeholder="مثال: شركة مدار للحلول التقنية أو متجر الأفق"
+                          className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs text-slate-800 font-medium outline-none pl-8 ${
+                            errors.companyName ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200 focus:border-teal-500'
                           }`}
                         />
-                        <Phone className="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" />
+                        <Building className="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" />
                       </div>
-                      {errors.phone && (
+                      {errors.companyName && (
                         <span className="text-[11px] font-bold text-rose-500 block mt-1">
-                          {errors.phone}
+                          {errors.companyName}
                         </span>
                       )}
                     </div>
 
-                    {/* Client Type */}
+                    {/* Phone for local remittance coordination */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-[#0B192C] mb-1">
+                          رقم الهاتف / الواتساب للتنسيق <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={phone}
+                            onChange={(e) => {
+                              setPhone(e.target.value);
+                              if (errors.phone) setErrors({ ...errors, phone: null });
+                            }}
+                            placeholder="مثال: 773892104"
+                            className={`w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs text-slate-800 outline-none font-medium pl-8 ${
+                              errors.phone ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200 focus:border-teal-500'
+                            }`}
+                          />
+                          <Phone className="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" />
+                        </div>
+                        {errors.phone && (
+                          <span className="text-[11px] font-bold text-rose-500 block mt-1">
+                            {errors.phone}
+                          </span>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-[#0B192C] mb-1">
+                          طبيعة النشاط التجاري
+                        </label>
+                        <select
+                          value={clientType}
+                          onChange={(e) => setClientType(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium outline-none focus:border-teal-500"
+                        >
+                          <option value="شركة أو مؤسسة تجارية">شركة أو مؤسسة تجارية</option>
+                          <option value="صاحب مشروع ناشئ">صاحب مشروع ناشئ / ريادي</option>
+                          <option value="تاجر / متجر محلي">تاجر / متجر محلي</option>
+                          <option value="عميل فردي مباشر">عميل فردي مباشر</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Project Overview / Needs Description */}
                     <div>
                       <label className="block text-xs font-bold text-[#0B192C] mb-1">
-                        طبيعة النشاط
+                        وصف المشروع أو الخدمات المطلوبة عادة (اختياري)
                       </label>
-                      <select
-                        value={clientType}
-                        onChange={(e) => setClientType(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium outline-none focus:border-teal-500"
-                      >
-                        <option value="شركة أو مؤسسة تجارية">شركة أو مؤسسة تجارية</option>
-                        <option value="صاحب مشروع ناشئ">صاحب مشروع ناشئ / رائد أعمال</option>
-                        <option value="باحث عن خدمات شخصية">باحث عن خدمات شخصية</option>
-                      </select>
+                      <textarea
+                        rows={2}
+                        value={projectDescription}
+                        onChange={(e) => setProjectDescription(e.target.value)}
+                        placeholder="مثال: نبحث عن طلاب ومستقلين لتطوير مواقع وتطبيقات جوال وتصاميم تسويقية بصفة دورية..."
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-medium outline-none leading-relaxed"
+                      />
                     </div>
                   </div>
                 )}
@@ -517,8 +733,8 @@ export const RegisterView = () => {
                 >
                   <span>
                     {accountType === 'freelancer'
-                      ? 'إنشاء حساب طالب مستقل والانتقال للوحة التحكم'
-                      : 'إنشاء حساب عميل والبدء في طلب الخدمات'}
+                      ? 'إتمام التسجيل والانتقال للوحة المستقل وسوق العمل'
+                      : 'إتمام التسجيل والدخول للوحة العميل ونشر المشاريع'}
                   </span>
                   <ArrowLeft className="w-4 h-4" />
                 </button>

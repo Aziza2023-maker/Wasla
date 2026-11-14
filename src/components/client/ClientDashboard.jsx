@@ -82,13 +82,21 @@ export const ClientDashboard = () => {
             </button>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => openModal('create-project')}
+              className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-3.5 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1.5"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>نشر مشروع جديد</span>
+            </button>
+
             <button
               onClick={() => navigateTo('services')}
-              className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1.5"
+              className="bg-slate-100 hover:bg-slate-200 text-[#0B192C] px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 border border-slate-200"
             >
               <Briefcase className="w-4 h-4" />
-              <span>تصفح وطلب خدمة مصغرة</span>
+              <span>تصفح الخدمات</span>
             </button>
 
             <div className="flex items-center gap-2.5 border-r border-slate-200 pr-3">
