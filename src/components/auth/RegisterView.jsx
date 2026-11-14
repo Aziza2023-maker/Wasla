@@ -32,7 +32,10 @@ export const RegisterView = () => {
     setClientUser,
     openModal,
     selectedRoleSignup,
-    setSelectedRoleSignup
+    setSelectedRoleSignup,
+    register,
+    isAuthenticated,
+    currentRole
   } = useWasla();
 
   // Role Selection State: dynamically initialized from selectedRoleSignup ('freelancer' or 'client')
@@ -143,14 +146,21 @@ export const RegisterView = () => {
 
     if (accountType === 'client') {
       // Create Client Profile with Dynamic Fields
-      setClientUser((prev) => ({
-        ...prev,
+      const clientData = {
         name: fullName.trim(),
         company: companyName.trim() || 'شركة مستقلة',
         title: `${clientType} • عميل موثق`,
-        projectDescription: projectDescription.trim() || prev.projectDescription,
+        projectDescription: projectDescription.trim(),
         phone: phone.trim(),
+      };
+
+      setClientUser((prev) => ({
+        ...prev,
+        ...clientData,
       }));
+
+      // Synchronize authenticated global state and persist session
+      register('client', clientData);
 
       addToast(
         'تم إنشاء حساب العميل بنجاح!',
@@ -163,8 +173,7 @@ export const RegisterView = () => {
       navigateTo('client-dashboard', 'client');
     } else {
       // Create Freelancer / Student Profile with Dynamic Fields
-      setFreelancerUser((prev) => ({
-        ...prev,
+      const freelancerData = {
         name: fullName.trim(),
         university: university,
         faculty: faculty.trim(),
@@ -173,9 +182,17 @@ export const RegisterView = () => {
         academicLevel: academicLevel,
         skillsSummary: skills.trim(),
         bio: bio.trim(),
-        portfolioUrl: portfolioLink.trim() || prev.portfolioUrl,
+        portfolioUrl: portfolioLink.trim(),
         isVerified: false, // Pending academic verification
+      };
+
+      setFreelancerUser((prev) => ({
+        ...prev,
+        ...freelancerData,
       }));
+
+      // Synchronize authenticated global state and persist session
+      register('freelancer', freelancerData);
 
       addToast(
         'تم إنشاء حساب المستقل الأكاديمي بنجاح!',

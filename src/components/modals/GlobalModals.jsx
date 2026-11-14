@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useWasla } from '../../context/WaslaContext';
+import ReadinessGuide from '../common/ReadinessGuide';
 import {
   X,
   ShieldCheck,
@@ -19,7 +20,8 @@ import {
   Calendar,
   Check,
   Award,
-  ChevronLeft
+  ChevronLeft,
+  Sparkles
 } from 'lucide-react';
 
 export const GlobalModals = () => {
@@ -346,9 +348,19 @@ export const GlobalModals = () => {
             <span className="w-2.5 h-2.5 rounded-full bg-teal-500" />
             <h3 className="text-xl font-black text-[#0B192C]">نشر مشروع أكاديمي جديد</h3>
           </div>
-          <p className="text-xs text-slate-500 font-normal mb-6">
+          <p className="text-xs text-slate-500 font-normal mb-4">
             اطرح متطلبات مشروعك، وسيتم حجز ميزانية المشروع في حساب الضمان المحلي (Escrow) لدى الكريمي أو النجم لحماية الطرفين.
           </p>
+
+          {/* Interactive Readiness Guide Collapsible for Clients */}
+          <div className="mb-5">
+            <ReadinessGuide
+              mode="client"
+              variant="collapsible"
+              defaultExpanded={false}
+              showRoleSwitcher={false}
+            />
+          </div>
 
           <form
             onSubmit={(e) => {
@@ -984,6 +996,41 @@ export const GlobalModals = () => {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* 10. Standalone Readiness Guide Modal */}
+      {activeModal === 'readiness-guide' && (
+        <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+          <button
+            onClick={closeModal}
+            className="absolute top-5 left-5 text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-teal-500" />
+            <h3 className="text-xl font-black text-[#0B192C]">دليل الجاهزية الذكي لمنصة وصلة</h3>
+          </div>
+          <p className="text-xs text-slate-500 font-normal mb-5">
+            إرشادات وقوائم تحقق تفاعلية لضمان وضوح النطاق، تفعيل الهامش الزمني للطوارئ (+48h)، وحماية المعاملات المالية عبر الوساطة المحلية.
+          </p>
+
+          <ReadinessGuide
+            mode={modalPayload?.mode || 'client'}
+            defaultExpanded={true}
+            showRoleSwitcher={true}
+          />
+
+          <div className="flex items-center justify-end pt-5 border-t border-slate-100 mt-5">
+            <button
+              onClick={closeModal}
+              className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-6 py-2.5 rounded-xl text-xs font-bold transition-colors shadow-xs"
+            >
+              إغلاق الدليل
+            </button>
+          </div>
         </div>
       )}
     </div>

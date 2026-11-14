@@ -16,7 +16,14 @@ import {
 } from 'lucide-react';
 
 export const LoginView = () => {
-  const { navigateTo, addToast, setCurrentRole } = useWasla();
+  const {
+    navigateTo,
+    addToast,
+    setCurrentRole,
+    login,
+    isAuthenticated,
+    currentRole
+  } = useWasla();
 
   // Role Login Mode: 'freelancer' | 'client' | 'admin'
   const [loginRole, setLoginRole] = useState('freelancer');
@@ -57,9 +64,9 @@ export const LoginView = () => {
       return;
     }
 
-    // Role-based redirect logic
+    // Role-based redirect logic with immediate synchronized authentication
     if (loginRole === 'admin' || email.includes('admin')) {
-      setCurrentRole('admin');
+      login('admin');
       addToast(
         'تم تسجيل الدخول كمسؤول نظام',
         'مرحباً بك في بوابة الإدارة والرقابة المالية المركزية للتحقق من حوالات الكريمي والنجم.',
@@ -68,7 +75,7 @@ export const LoginView = () => {
       );
       navigateTo('admin-panel', 'admin');
     } else if (loginRole === 'client' || email.includes('client') || email.includes('shehab') || email.includes('madar')) {
-      setCurrentRole('client');
+      login('client');
       addToast(
         'تم تسجيل الدخول بنجاح!',
         'مرحباً بك يا شهاب صالح. تم توجيهك إلى لوحة العميل لإدارة طلبات الخدمات وعقود Escrow.',
@@ -77,7 +84,7 @@ export const LoginView = () => {
       );
       navigateTo('client-dashboard', 'client');
     } else {
-      setCurrentRole('freelancer');
+      login('freelancer');
       addToast(
         'تم تسجيل الدخول بنجاح!',
         'مرحباً م. أروى الحمادي. تم توجيهك إلى لوحة المستقل الأكاديمي وسوق الخدمات.',
@@ -142,6 +149,23 @@ export const LoginView = () => {
               <p className="text-xs text-slate-400 font-normal mb-6 leading-relaxed">
                 حدد دورك وأدخل بيانات حسابك للوصول المباشر إلى لوحة التحكم
               </p>
+
+              {/* Already authenticated banner */}
+              {isAuthenticated && currentRole !== 'guest' && (
+                <div className="mb-6 p-3.5 rounded-2xl bg-teal-50 border border-teal-200 text-teal-900 text-xs flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-teal-600 shrink-0" />
+                    <span>أنت مسجل حالياً بحساب <strong>{currentRole === 'client' ? 'عميل' : currentRole === 'freelancer' ? 'طالب مستقل' : 'مسؤول إداري'}</strong></span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => navigateTo(currentRole === 'client' ? 'client-dashboard' : currentRole === 'freelancer' ? 'freelancer-overview' : 'admin-panel')}
+                    className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-3 py-1.5 rounded-lg font-bold text-xs transition-colors shrink-0 shadow-xs"
+                  >
+                    الذهاب للوحة التحكم
+                  </button>
+                </div>
+              )}
 
               {/* ROLE SWITCHER TABS */}
               <div className="mb-6 p-1 bg-slate-100 rounded-2xl flex items-center gap-1 border border-slate-200">

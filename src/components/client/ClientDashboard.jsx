@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useWasla } from '../../context/WaslaContext';
 import WaslaLogo from '../common/WaslaLogo';
+import ReadinessGuide from '../common/ReadinessGuide';
 import {
   Briefcase,
   Plus,
@@ -20,7 +21,9 @@ import {
   CreditCard,
   Lock,
   Headphones,
-  UserCheck
+  UserCheck,
+  PlusCircle,
+  Sparkles
 } from 'lucide-react';
 
 export const ClientDashboard = () => {
@@ -83,6 +86,14 @@ export const ClientDashboard = () => {
           </nav>
 
           <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => openModal('readiness-guide', { mode: 'client' })}
+              className="hidden md:flex items-center gap-1.5 bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 px-3 py-2.5 rounded-xl font-bold text-xs transition-colors shadow-2xs"
+            >
+              <Sparkles className="w-4 h-4 text-teal-600" />
+              <span>دليل الجاهزية</span>
+            </button>
+
             <button
               onClick={() => openModal('create-project')}
               className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-3.5 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1.5"
@@ -196,6 +207,14 @@ export const ClientDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Main Table Column (9 cols on lg) */}
           <div className="lg:col-span-9 space-y-4">
+            {/* Interactive Readiness Guide for Clients */}
+            <ReadinessGuide
+              mode="client"
+              variant="collapsible"
+              defaultExpanded={false}
+              showRoleSwitcher={true}
+            />
+
             <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
               {/* Header & Search */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 mb-5">

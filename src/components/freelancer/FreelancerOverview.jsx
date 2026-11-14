@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useWasla } from '../../context/WaslaContext';
+import ReadinessGuide from '../common/ReadinessGuide';
 import {
   Sparkles,
   Plus,
@@ -64,6 +65,14 @@ export const FreelancerOverview = () => {
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            onClick={() => openModal('readiness-guide', { mode: 'freelancer' })}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold hover:bg-teal-100 transition-colors shadow-2xs"
+          >
+            <Sparkles className="w-4 h-4 text-teal-600" />
+            <span>دليل الجاهزية الذكي</span>
+          </button>
+
           <button
             onClick={() => openModal('academic-verify')}
             className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold hover:bg-teal-100 transition-colors"
@@ -255,6 +264,14 @@ export const FreelancerOverview = () => {
           </div>
         </div>
       </div>
+
+      {/* 2.5. Interactive Readiness Guide Section for Freelancers */}
+      <ReadinessGuide
+        mode="freelancer"
+        variant="collapsible"
+        defaultExpanded={true}
+        showRoleSwitcher={true}
+      />
 
       {/* 3. Main Split Section: Active Projects Tracker vs Side Widgets */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

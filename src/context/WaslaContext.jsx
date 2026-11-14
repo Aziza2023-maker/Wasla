@@ -14,18 +14,68 @@ import {
   COMMUNITY_TOPICS
 } from '../data/initialData';
 
+// Helper utilities for clean, robust session persistence
+const loadStoredSession = () => {
+  try {
+    const raw = localStorage.getItem('wasla_auth_session');
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data && data.isAuthenticated && ['freelancer', 'client', 'admin'].includes(data.role)) {
+        return data;
+      }
+    }
+  } catch (e) {
+    console.warn('Could not read session from localStorage', e);
+  }
+  return null;
+};
+
+const persistAuthSession = (isAuthenticated, role, userData = null) => {
+  try {
+    if (isAuthenticated && role && role !== 'guest') {
+      localStorage.setItem(
+        'wasla_auth_session',
+        JSON.stringify({
+          isAuthenticated: true,
+          role,
+          userData,
+          timestamp: Date.now()
+        })
+      );
+    } else {
+      localStorage.removeItem('wasla_auth_session');
+    }
+  } catch (e) {
+    console.warn('Could not persist session to localStorage', e);
+  }
+};
+
 const WaslaContext = createContext();
 
 export const WaslaProvider = ({ children }) => {
-  // Navigation & Role-Based Session State
+  // Navigation & Role-Based Session State initialized with safe persistence
+  const initialSession = loadStoredSession();
+
   const [activeScreen, setActiveScreen] = useState('landing');
-  const [currentRole, setCurrentRole] = useState('guest'); // 'guest' | 'freelancer' | 'client' | 'admin'
+  const [isAuthenticated, setIsAuthenticated] = useState(Boolean(initialSession?.isAuthenticated));
+  const [currentRole, setCurrentRoleState] = useState(initialSession?.role || 'guest'); // 'guest' | 'freelancer' | 'client' | 'admin'
   const [selectedRoleSignup, setSelectedRoleSignup] = useState('client'); // for onboarding flow
   const [activeFreelancerProfile, setActiveFreelancerProfile] = useState('arwa'); // 'arwa' | 'osama'
 
-  // User Profiles
-  const [freelancerUser, setFreelancerUser] = useState(INITIAL_USER);
-  const [clientUser, setClientUser] = useState(INITIAL_CLIENT);
+  // User Profiles (restoring any customized profile from session if available)
+  const [freelancerUser, setFreelancerUser] = useState(() => {
+    if (initialSession?.role === 'freelancer' && initialSession?.userData) {
+      return { ...INITIAL_USER, ...initialSession.userData };
+    }
+    return INITIAL_USER;
+  });
+
+  const [clientUser, setClientUser] = useState(() => {
+    if (initialSession?.role === 'client' && initialSession?.userData) {
+      return { ...INITIAL_CLIENT, ...initialSession.userData };
+    }
+    return INITIAL_CLIENT;
+  });
   const [adminUser] = useState({
     name: 'المشرف المالي والرقابي',
     entity: 'الإدارة المركزية لمنصة وصلة',
@@ -123,10 +173,57 @@ export const WaslaProvider = ({ children }) => {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  // Set Current Role with immediate session synchronization
+  const setCurrentRole = (role) => {
+    setCurrentRoleState(role);
+    const isAuth = role !== 'guest';
+    setIsAuthenticated(isAuth);
+    persistAuthSession(isAuth, role);
+  };
+
+  // Login handler: guarantees immediate state update & persistence
+  const login = (role, userData = null) => {
+    setIsAuthenticated(true);
+    setCurrentRoleState(role);
+    if (userData) {
+      if (role === 'client') {
+        setClientUser((prev) => ({ ...prev, ...userData }));
+      } else if (role === 'freelancer') {
+        setFreelancerUser((prev) => ({ ...prev, ...userData }));
+      }
+    }
+    persistAuthSession(
+      true,
+      role,
+      userData || (role === 'client' ? clientUser : role === 'freelancer' ? freelancerUser : adminUser)
+    );
+  };
+
+  // Register handler: guarantees immediate state update & persistence
+  const register = (role, userData = null) => {
+    setIsAuthenticated(true);
+    setCurrentRoleState(role);
+    if (userData) {
+      if (role === 'client') {
+        setClientUser((prev) => ({ ...prev, ...userData }));
+      } else if (role === 'freelancer') {
+        setFreelancerUser((prev) => ({ ...prev, ...userData }));
+      }
+    }
+    persistAuthSession(
+      true,
+      role,
+      userData || (role === 'client' ? clientUser : role === 'freelancer' ? freelancerUser : adminUser)
+    );
+  };
+
   // Strict Role-Based Navigation & Session Guard
   const navigateTo = (screen, role = null) => {
     if (role) {
-      setCurrentRole(role);
+      setCurrentRoleState(role);
+      const isAuth = role !== 'guest';
+      setIsAuthenticated(isAuth);
+      persistAuthSession(isAuth, role);
     }
 
     setActiveScreen(screen);
@@ -139,8 +236,10 @@ export const WaslaProvider = ({ children }) => {
 
   // Logout & Session Reset
   const logout = () => {
-    setCurrentRole('guest');
-    navigateTo('landing');
+    setIsAuthenticated(false);
+    setCurrentRoleState('guest');
+    persistAuthSession(false, 'guest');
+    navigateTo('landing', 'guest');
     addToast(
       'تم تسجيل الخروج بنجاح',
       'تم إغلاق الجلسة بأمان. تتصفح منصة وصلة الآن كزائر.',
@@ -151,19 +250,20 @@ export const WaslaProvider = ({ children }) => {
 
   // Switch Active User / Role seamlessly
   const switchRole = (newRole) => {
-    setCurrentRole(newRole);
     if (newRole === 'freelancer') {
-      setActiveScreen('freelancer-overview');
+      login('freelancer');
+      navigateTo('freelancer-overview', 'freelancer');
       addToast('وضع المستقل', 'تم تفعيل حساب الطالب المستقل (م. أروى الحمادي).');
     } else if (newRole === 'client') {
-      setActiveScreen('client-dashboard');
+      login('client');
+      navigateTo('client-dashboard', 'client');
       addToast('وضع العميل', 'تم تفعيل حساب العميل صاحب المشاريع (شهاب صالح).');
     } else if (newRole === 'admin') {
-      setActiveScreen('admin-panel');
+      login('admin');
+      navigateTo('admin-panel', 'admin');
       addToast('بوابة الإدارة', 'تم تفعيل حساب المشرف المالي والإداري.');
     } else {
-      setActiveScreen('landing');
-      addToast('تسجيل الخروج', 'أنت تتصفح المنصة كزائر الآن.');
+      logout();
     }
   };
 
@@ -520,6 +620,12 @@ export const WaslaProvider = ({ children }) => {
   return (
     <WaslaContext.Provider
       value={{
+        // Authentication & Session
+        isAuthenticated,
+        setIsAuthenticated,
+        login,
+        register,
+
         // Screen & Role
         activeScreen,
         currentRole,
