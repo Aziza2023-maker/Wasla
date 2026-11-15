@@ -59,23 +59,43 @@ export const LandingPage = () => {
       <Navbar variant="dark" />
 
       {/* 2. Hero Section (Dark Navy #0B192C) */}
-      <section className="bg-[#0B192C] text-white pt-14 pb-20 relative overflow-hidden">
+      <section className="bg-[#0B192C] text-white pt-12 pb-20 relative overflow-hidden">
         {/* Subtle background glow */}
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+          {/* MVP Station Badge */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300 text-xs font-bold mb-6">
+            <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+            <span>محطة الإطلاق الأولى (MVP): المكلا • جامعة حضرموت والمجتمع التجاري المحلي</span>
+          </div>
+
           {/* Main Headline */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight mb-4">
             منصة <span className="text-teal-400">"وصلة"</span> - حل عمل حر مضمون
             <br />
-            للطلاب والكليات في اليمن
+            لطلاب وخريجي كليات <span className="text-teal-400">المكلا وجامعة حضرموت</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-slate-300 text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
-            نربطك بأفضل الكفاءات والمبدعين مع وساطة صرافة محلية آمنة ومضمونة للأكاديمي والتاجر.
+          <p className="text-slate-300 text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed font-normal">
+            نربط كفاءات طلاب جامعة حضرموت وكليات المكلا بأصحاب المحلات والمؤسسات التجارية ورواد الأعمال المحليين، مع وساطة مالية محلية آمنة (العمقي، الكريمي، والنجم) تضمن حقوق المستقل والتاجر.
           </p>
+
+          {/* Localized Feature Highlights Pills */}
+          <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap text-[11px] sm:text-xs text-slate-300 mb-8 font-medium">
+            <span className="bg-slate-800/80 border border-slate-700/80 px-3 py-1 rounded-full flex items-center gap-1.5">
+              <span>🏛️ كليات جامعة حضرموت (فلك، فوه، ومجمع الكليات)</span>
+            </span>
+            <span className="bg-slate-800/80 border border-slate-700/80 px-3 py-1 rounded-full flex items-center gap-1.5">
+              <span>🏪 محلات وأسواق المكلا (الشرج، الديس، الخور)</span>
+            </span>
+            <span className="bg-slate-800/80 border border-slate-700/80 px-3 py-1 rounded-full flex items-center gap-1.5 text-teal-300">
+              <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
+              <span>وساطة مالية عبر العمقي والكريمي</span>
+            </span>
+          </div>
 
           {/* Integrated Search Bar */}
           <form
@@ -89,7 +109,7 @@ export const LandingPage = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث عن خدمات أو مستقلين - وساطة صرافة محلية آمنة (الكريمي/النجم)"
+              placeholder="ابحث عن خدمات أو مستقلين في المكلا وحضرموت - وساطة صرافة محلية (العمقي / الكريمي / النجم)"
               className="w-full text-xs sm:text-sm bg-transparent outline-none text-slate-800 placeholder-slate-400 font-medium"
             />
             <button
@@ -100,21 +120,24 @@ export const LandingPage = () => {
             </button>
           </form>
 
-          {/* 4-Step Workflow Bar ("كيف نعمل؟") */}
+          {/* 4-Step Workflow Bar ("كيف نعمل في المكلا؟") */}
           <div className="mt-16 pt-8 border-t border-slate-800/80">
-            <h3 className="text-slate-300 text-sm font-bold mb-8">كيف نعمل؟</h3>
+            <h3 className="text-slate-300 text-sm font-bold mb-8">كيف نعمل في مجتمع المكلا وحضرموت المحلي؟</h3>
             <div className="flex items-center justify-center gap-3 sm:gap-6 flex-wrap">
               {/* Step 1 */}
               <button
                 type="button"
                 onClick={() => navigateTo('client-dashboard')}
-                className="flex flex-col items-center group cursor-pointer"
+                className="flex flex-col items-center group cursor-pointer max-w-[110px] text-center"
               >
                 <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-teal-400 group-hover:bg-teal-900/60 transition-colors">
                   <ClipboardList className="w-5 h-5" />
                 </div>
-                <span className="text-xs text-slate-300 font-medium group-hover:text-teal-400 transition-colors">
-                  طلب مشروع
+                <span className="text-xs text-slate-300 font-bold group-hover:text-teal-400 transition-colors mb-0.5">
+                  طرح المشروع
+                </span>
+                <span className="text-[10px] text-slate-400 font-normal">
+                  متاجر وشركات المكلا
                 </span>
               </button>
 
@@ -124,13 +147,16 @@ export const LandingPage = () => {
               <button
                 type="button"
                 onClick={() => navigateTo('services')}
-                className="flex flex-col items-center group cursor-pointer"
+                className="flex flex-col items-center group cursor-pointer max-w-[110px] text-center"
               >
                 <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-teal-400 group-hover:bg-teal-900/60 transition-colors">
                   <Laptop className="w-5 h-5" />
                 </div>
-                <span className="text-xs text-slate-300 font-medium group-hover:text-teal-400 transition-colors">
-                  عمل حر
+                <span className="text-xs text-slate-300 font-bold group-hover:text-teal-400 transition-colors mb-0.5">
+                  عروض الكفاءات
+                </span>
+                <span className="text-[10px] text-slate-400 font-normal">
+                  طلاب جامعة حضرموت
                 </span>
               </button>
 
@@ -140,13 +166,16 @@ export const LandingPage = () => {
               <button
                 type="button"
                 onClick={() => navigateTo('support')}
-                className="flex flex-col items-center group cursor-pointer"
+                className="flex flex-col items-center group cursor-pointer max-w-[110px] text-center"
               >
                 <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-teal-400 group-hover:bg-teal-900/60 transition-colors">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                <span className="text-xs text-slate-300 font-medium group-hover:text-teal-400 transition-colors">
+                <span className="text-xs text-slate-300 font-bold group-hover:text-teal-400 transition-colors mb-0.5">
                   دفع محلي آمن
+                </span>
+                <span className="text-[10px] text-slate-400 font-normal">
+                  العمقي والكريمي والنجم
                 </span>
               </button>
 
@@ -156,13 +185,16 @@ export const LandingPage = () => {
               <button
                 type="button"
                 onClick={() => navigateTo('support')}
-                className="flex flex-col items-center group cursor-pointer"
+                className="flex flex-col items-center group cursor-pointer max-w-[110px] text-center"
               >
                 <div className="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-2 text-teal-400 group-hover:bg-teal-900/60 transition-colors">
                   <CheckCircle className="w-5 h-5" />
                 </div>
-                <span className="text-xs text-slate-300 font-medium group-hover:text-teal-400 transition-colors">
-                  تسليم مضمون
+                <span className="text-xs text-slate-300 font-bold group-hover:text-teal-400 transition-colors mb-0.5">
+                  تسليم وتحرير
+                </span>
+                <span className="text-[10px] text-slate-400 font-normal">
+                  استلام برضا تام
                 </span>
               </button>
             </div>
@@ -206,8 +238,11 @@ export const LandingPage = () => {
       {/* 4. Exclusive Guarantees Section (الضمانات والمميزات الحصرية) */}
       <section className="py-12 bg-[#F1F5F9]/60 border-t border-slate-200">
         <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-xs font-bold mb-3">
+            <span>معايير الأمان المالي والزمني لمجتمع حضرموت والمكلا</span>
+          </div>
           <h2 className="text-xl sm:text-2xl font-black text-[#0B192C] mb-8">
-            الضمانات والمميزات الحصرية
+            الضمانات والمميزات الحصرية لرواد الأعمال والطلاب
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -221,10 +256,10 @@ export const LandingPage = () => {
               </div>
               <div>
                 <h4 className="font-bold text-sm text-[#0B192C] mb-1 group-hover:text-teal-700 transition-colors">
-                  المدة الزمنية الإضافية (هامش زمني)
+                  المدة الزمنية الإضافية (بروتوكول طوارئ الشبكة)
                 </h4>
                 <p className="text-xs text-slate-500 font-normal leading-relaxed">
-                  حماية إضافية تضمن إنجاز المهام ومراجعتها بدون أي تأخير أكاديمي
+                  حماية تلقائية لتقييم طلاب جامعة حضرموت في حال انقطاع الطاقة أو خطوط الاتصالات بالمكلا
                 </p>
               </div>
             </div>
@@ -239,10 +274,10 @@ export const LandingPage = () => {
               </div>
               <div>
                 <h4 className="font-bold text-sm text-[#0B192C] mb-1 group-hover:text-teal-700 transition-colors">
-                  وساطة نقدية محلية موثوقة
+                  وساطة نقدية محلية موثوقة (العمقي والكريمي والنجم)
                 </h4>
                 <p className="text-xs text-slate-500 font-normal leading-relaxed">
-                  تحويلات مالية آمنة ومضمونة عبر الكريمي والنجم وكافة البنوك المحلية
+                  حجز أموال المشروع وصرفها عبر شبكات الصرافة الرائدة بحضرموت واليمن بضمان 100%
                 </p>
               </div>
             </div>

@@ -20,13 +20,13 @@ export const Footer = () => {
               onClick={() => navigateTo('landing')}
             />
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm font-normal">
-              المنصة اليمنية الأولى المتخصصة في ربط طلاب الجامعات والكليات الأكفاء بأصحاب المشاريع والشركات، مع وساطة مالية محلية مشفرة (Escrow) عبر شبكات الصرافة والبنوك المعتمدة.
+              المنصة المتخصصة في ربط طلاب وخريجي الجامعات (محطة الإطلاق الأولى: جامعة حضرموت والمكلا) بأصحاب المتاجر والمشاريع والشركات، مع وساطة مالية محلية مشفرة (Escrow) عبر شبكات الصرافة والبنوك المعتمدة.
             </p>
 
             <div className="pt-2 flex flex-wrap gap-2 text-[11px]">
               <span className="bg-[#15253C] text-teal-300 px-3 py-1 rounded-full border border-slate-700 flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
-                <span>ضمان الكريمي والنجم المالي</span>
+                <span>ضمان العمقي والكريمي والنجم</span>
               </span>
               <span className="bg-[#15253C] text-slate-300 px-3 py-1 rounded-full border border-slate-700 flex items-center gap-1.5">
                 <Lock className="w-3.5 h-3.5 text-slate-400" />
@@ -192,7 +192,7 @@ export const Footer = () => {
       <div className="border-t border-slate-800/60 py-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
           <div>
-            © 2026 منصة وصلة (Wasla) — جميع الحقوق محفوظة لوساطة العمل الحر لطلاب الجامعات اليمنية.
+            © 2026 منصة وصلة (Wasla) — محطة الإطلاق الأولى: المكلا وجامعة حضرموت • لكافة الجامعات اليمنية.
           </div>
 
           <div className="flex items-center gap-6">
