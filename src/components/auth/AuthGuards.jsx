@@ -259,7 +259,7 @@ export const FreelancerAuthGuard = ({ children }) => {
   // 4. User is unauthenticated (guest visitor)
   const handleInstantFreelancerLogin = () => {
     login('freelancer');
-    addToast('تم تسجيل الدخول بنجاح!', 'مرحباً م. أروى الحمادي (جامعة صنعاء). تم فتح لوحة تحكم الطالب المستقل.');
+    addToast('تم تسجيل الدخول بنجاح!', 'مرحباً م. أروى الحمادي (جامعة حضرموت). تم فتح لوحة تحكم الطالب المستقل.');
     navigateTo('freelancer-overview', 'freelancer');
   };
 
@@ -391,7 +391,7 @@ export const AdminAuthGuard = ({ children }) => {
             المصادقة الإدارية المركزية
           </h2>
           <p className="text-xs text-slate-400 leading-relaxed font-normal">
-            يتطلب الدخول إلى هذا المسار صلاحية المشرف المالي للتحقق من حوالات الكريمي والنجم وتدقيق البطاقات الجامعية للطلاب.
+            يتطلب الدخول إلى هذا المسار صلاحية المشرف المالي للتحقق من حوالات العمقي والكريمي وبن دول والبسيري وتدقيق البطاقات الجامعية للطلاب بالمكلا وحضرموت.
           </p>
         </div>
 

@@ -23,7 +23,9 @@ import {
   Headphones,
   UserCheck,
   PlusCircle,
-  Sparkles
+  Sparkles,
+  Eye,
+  AlertCircle
 } from 'lucide-react';
 
 export const ClientDashboard = () => {
@@ -32,7 +34,6 @@ export const ClientDashboard = () => {
     clientContracts,
     navigateTo,
     openModal,
-    releaseEscrow,
     addToast
   } = useWasla();
 
@@ -142,12 +143,12 @@ export const ClientDashboard = () => {
               </h1>
             </div>
             <p className="text-xs text-slate-500 font-normal">
-              نظام وساطة حرة آمن لتصفح وطلب الخدمات المصغرة ومتابعة تنفيذها مع طلاب الجامعات اليمنية بضمان Escrow
+              نظام وساطة حرة آمن لتصفح وطلب الخدمات ومتابعة تنفيذها مع كفاءات كليات ومعاهد المكلا وجامعة حضرموت بضمان Escrow
             </p>
           </div>
 
           <div className="bg-slate-100 rounded-xl px-3 py-1.5 text-xs text-slate-600 font-semibold self-start sm:self-auto border border-slate-200">
-            بوابة وسيطة معتمدة (الكريمي / ون كاش / التحويل البنكي)
+            بوابات وسيطة معتمدة بالمكلا (العمقي / الكريمي / بن دول / البسيري)
           </div>
         </div>
 
@@ -194,7 +195,7 @@ export const ClientDashboard = () => {
                 {clientUser.releasedTransfersCount} حوالة
               </div>
               <span className="text-[11px] text-amber-700 font-bold">
-                إجمالي الصرف المكتمل عبر الكريمي وبنوك اليمن
+                إجمالي الصرف المكتمل عبر شبكات صرافة وبنوك حضرموت
               </span>
             </div>
             <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 shrink-0">
@@ -221,14 +222,14 @@ export const ClientDashboard = () => {
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
                     <h3 className="font-black text-base text-[#0B192C]">
-                      الخدمات المصغرة والطلبات الجارية مع المستقلين
+                      متابعة حالة الطلبات والمشاريع الجارية
                     </h3>
                     <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-800">
-                      {clientContracts.length} نشطة
+                      {clientContracts.length} طلبات نشطة
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 font-normal">
-                    متابعة دقيقة لكل طالب مستقل، المبالغ المحجوزة في الضمان المالي Escrow ومواعيد التسليم
+                    عرض مبسط لمتابعة تقدم المهام وحالة الاعتماد الإداري المحمية بالوساطة المالية
                   </p>
                 </div>
 
@@ -265,42 +266,48 @@ export const ClientDashboard = () => {
                 </div>
               </div>
 
-              {/* Table */}
+              {/* Simplified Orders Status Table (No Escrow Release Buttons) */}
               <div className="overflow-x-auto">
                 <table className="w-full text-right text-xs">
                   <thead>
                     <tr className="border-b border-slate-200 text-slate-400 font-bold text-[11px]">
-                      <th className="pb-3 pr-2">الطالب المستقل</th>
+                      <th className="pb-3 pr-2">الطلب / الخدمة</th>
+                      <th className="pb-3">الطالب المستقل</th>
                       <th className="pb-3">الكلية والجامعة</th>
                       <th className="pb-3">المبلغ المتفق</th>
-                      <th className="pb-3">حالة الإنجاز</th>
-                      <th className="pb-3">الهامش والضمان</th>
-                      <th className="pb-3 pl-2 text-center">إجراءات</th>
+                      <th className="pb-3">حالة الطلب</th>
+                      <th className="pb-3">الضمان المالي (Escrow)</th>
+                      <th className="pb-3 pl-2 text-center">الإجراءات المتاحة</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {filteredContracts.map((contract) => (
                       <tr key={contract.id} className="hover:bg-slate-50/60 transition-colors">
-                        {/* Student */}
+                        {/* Order & Role */}
                         <td className="py-4 pr-2">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs shrink-0">
+                          <span className="font-bold text-[#0B192C] block">
+                            {contract.studentRole}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            عقد #{contract.id}
+                          </span>
+                        </td>
+
+                        {/* Student */}
+                        <td className="py-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs shrink-0">
                               {contract.studentInitials}
                             </div>
-                            <div>
-                              <span className="font-bold text-[#0B192C] block">
-                                {contract.studentName}
-                              </span>
-                              <span className="text-[10px] text-slate-400 font-normal">
-                                {contract.studentRole}
-                              </span>
-                            </div>
+                            <span className="font-semibold text-slate-800">
+                              {contract.studentName}
+                            </span>
                           </div>
                         </td>
 
                         {/* College & University */}
                         <td className="py-4 text-slate-600">
-                          <span className="font-semibold block">{contract.college}</span>
+                          <span className="font-medium block">{contract.college}</span>
                           <span className="text-[10px] text-slate-400">{contract.university}</span>
                         </td>
 
@@ -309,57 +316,59 @@ export const ClientDashboard = () => {
                           {contract.agreedBudget}
                         </td>
 
-                        {/* Status */}
+                        {/* Simplified Order Status */}
                         <td className="py-4">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold ${
-                              contract.statusType === 'amber'
-                                ? 'bg-amber-50 text-amber-800 border border-amber-200'
-                                : contract.statusType === 'blue'
-                                ? 'bg-blue-50 text-blue-800 border border-blue-200'
-                                : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                            }`}
-                          >
-                            <span
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                contract.statusType === 'amber'
-                                  ? 'bg-amber-500'
-                                  : contract.statusType === 'blue'
-                                  ? 'bg-blue-500'
-                                  : 'bg-emerald-500'
-                              }`}
-                            />
-                            {contract.status}
+                          {contract.status.includes('للمراجعة') ? (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                              <Clock className="w-3.5 h-3.5 text-amber-600" />
+                              <span>في انتظار تأكيد المسؤول</span>
+                            </span>
+                          ) : contract.status.includes('قيد التنفيذ') ? (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                              <span>قيد التنفيذ ({contract.status.replace('قيد التنفيذ', '').trim() || 'جارٍ العمل'})</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>مكتمل بنجاح</span>
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Escrow Status (Protected/Read-Only) */}
+                        <td className="py-4">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
+                            <ShieldCheck className="w-3 h-3 text-teal-600" />
+                            <span>
+                              {contract.status.includes('مكتمل')
+                                ? 'تم صرف الضمان للطالب'
+                                : 'محجوز بأمان لدى الإدارة'}
+                            </span>
                           </span>
                         </td>
 
-                        {/* Buffer & Escrow */}
-                        <td className="py-4">
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
-                            {contract.escrowStatus}
-                          </span>
-                        </td>
-
-                        {/* Actions */}
+                        {/* Client Actions (Strictly Read-Only / Review - NO Escrow Release) */}
                         <td className="py-4 pl-2 text-center">
-                          {contract.canRelease ? (
+                          {contract.status.includes('مكتمل') ? (
                             <button
-                              onClick={() => releaseEscrow(contract.id)}
-                              className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-xs transition-colors whitespace-nowrap"
-                            >
-                              تحرير الضمان
-                            </button>
-                          ) : contract.canRate ? (
-                            <button
-                              onClick={() => addToast('تقييم الطالب', 'تم فتح نموذج التقييم ومنح الطالب 5 نجوم.')}
-                              className="border border-slate-200 hover:bg-slate-50 text-slate-700 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
+                              onClick={() => addToast('تقييم أداء الطالب', 'تم فتح نموذج التقييم ومنح الطالب 5 نجوم.')}
+                              className="border border-slate-200 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
                             >
                               تقييم الطالب
                             </button>
+                          ) : contract.status.includes('للمراجعة') ? (
+                            <button
+                              onClick={() => addToast('معاينة المخرجات', 'المخرجات المسلمة قيد التدقيق الإداري من قبل المشرف المالي لتحرير الضمان.')}
+                              className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors whitespace-nowrap flex items-center justify-center gap-1 mx-auto"
+                            >
+                              <Eye className="w-3.5 h-3.5 text-slate-500" />
+                              <span>معاينة التسليم</span>
+                            </button>
                           ) : (
                             <button
-                              onClick={() => addToast('عرض التقدم', 'جاري جلب تفاصيل المعالم ونماذج العمل المرفوعة.')}
-                              className="border border-slate-200 hover:bg-slate-50 text-slate-700 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
+                              onClick={() => addToast('عرض التقدم', 'العمل جاري من قبل الطالب وفق الجدول الزمني وهامش الطوارئ المعتمد.')}
+                              className="border border-slate-200 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
                             >
                               عرض التقدم
                             </button>
@@ -371,9 +380,25 @@ export const ClientDashboard = () => {
                 </table>
               </div>
 
+              {/* Safety & Escrow Notice */}
+              <div className="mt-4 p-3.5 rounded-xl bg-teal-50/70 border border-teal-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-teal-900">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-teal-700 shrink-0" />
+                  <p className="font-medium text-[11px] leading-relaxed">
+                    <strong>ملاحظة أمان الوساطة (Escrow):</strong> تحرير وصرف مبالغ الضمان المالي للمستقلين يتم مركزياً وحصرياً عبر الإدارة المالية لمنصة «وصلة» بعد التأكد من مطابقة مخرجات العمل واستلامك للمشروع كاملاً.
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigateTo('support')}
+                  className="text-teal-800 hover:underline font-bold text-[11px] whitespace-nowrap shrink-0 self-end sm:self-auto"
+                >
+                  سياسة الضمان
+                </button>
+              </div>
+
               {/* Pagination */}
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-                <span>عرض {filteredContracts.length} من أصل 6 مشاريع مسجلة في هذا الشهر</span>
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 mt-2">
+                <span>عرض {filteredContracts.length} من أصل {clientContracts.length} مشاريع مسجلة</span>
                 <div className="flex items-center gap-1.5">
                   <button className="px-2.5 py-1 rounded border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold">
                     السابق
@@ -401,67 +426,105 @@ export const ClientDashboard = () => {
                   </h3>
                 </div>
                 <span className="text-xs text-teal-700 font-bold">
-                  تحويل محلي آمن (الكريمي / النجم)
+                  شبكات الصرافة والوساطة المحلية المعتمدة بالمكلا
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* 1. Kuraimi */}
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 flex flex-col justify-between">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                {/* 1. Omgy */}
+                <div className="rounded-xl border border-teal-200 bg-teal-50/50 p-3 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="w-6 h-6 rounded-full bg-teal-600 text-white flex items-center justify-center text-[10px] font-bold">
                         ★
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-                        وسيلة آمنة
+                      <span className="text-[9px] font-bold text-teal-800 bg-teal-100 px-1.5 py-0.5 rounded">
+                        حضرموت
                       </span>
                     </div>
-                    <h4 className="font-bold text-xs text-[#0B192C]">صرافة الكريمي</h4>
-                    <span className="text-[10px] text-slate-400">Kuraimi Express</span>
+                    <h4 className="font-bold text-xs text-[#0B192C]">شركة العمقي للصرافة</h4>
+                    <span className="text-[10px] text-slate-500">Al-Omgy Exchange</span>
                   </div>
-                  <div className="pt-2 border-t border-emerald-100 text-[10px] text-emerald-700 font-bold mt-2">
+                  <div className="pt-1.5 border-t border-teal-100 text-[10px] text-teal-700 font-bold mt-2">
+                    ✓ معتمد كلياً
+                  </div>
+                </div>
+
+                {/* 2. Kuraimi */}
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold">
+                        ★
+                      </div>
+                      <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded">
+                        بنك معتمد
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-xs text-[#0B192C]">بنك الكريمي</h4>
+                    <span className="text-[10px] text-slate-500">Kuraimi Express</span>
+                  </div>
+                  <div className="pt-1.5 border-t border-emerald-100 text-[10px] text-emerald-700 font-bold mt-2">
                     ✓ تم التحقق
                   </div>
                 </div>
 
-                {/* 2. Najm */}
-                <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4 flex flex-col justify-between">
+                {/* 3. Bin Dowla */}
+                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="w-7 h-7 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">
                         ★
                       </div>
-                      <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
-                        دعم محلي
+                      <span className="text-[9px] font-bold text-blue-800 bg-blue-100 px-1.5 py-0.5 rounded">
+                        إسلامي
                       </span>
                     </div>
-                    <h4 className="font-bold text-xs text-[#0B192C]">صرافة النجم</h4>
-                    <span className="text-[10px] text-slate-400">Authorized Partner</span>
+                    <h4 className="font-bold text-xs text-[#0B192C]">بنك بن دول</h4>
+                    <span className="text-[10px] text-slate-500">Bin Dowla Bank</span>
                   </div>
-                  <div className="pt-2 border-t border-amber-100 text-[10px] text-amber-700 font-bold mt-2">
-                    ✓ معتمدة
+                  <div className="pt-1.5 border-t border-blue-100 text-[10px] text-blue-700 font-bold mt-2">
+                    ✓ فرع المكلا
                   </div>
                 </div>
 
-                {/* 3. Upload Proof Button */}
-                <div className="rounded-xl border border-slate-200 p-4 bg-slate-50 flex flex-col justify-between">
+                {/* 4. Buseiri */}
+                <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-3 flex flex-col justify-between">
                   <div>
-                    <h4 className="font-bold text-xs text-[#0B192C] mb-1">
-                      رفع إثبات التحويل (Upload Proof)
-                    </h4>
-                    <span className="text-[10px] text-slate-400 block mb-3">
-                      رفع إثبات التحويل لكفالة العقد
-                    </span>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">
+                        ★
+                      </div>
+                      <span className="text-[9px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">
+                        كاش فوري
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-xs text-[#0B192C]">شركة البسيري للصرافة</h4>
+                    <span className="text-[10px] text-slate-500">Al-Buseiri Exchange</span>
                   </div>
-                  <button
-                    onClick={() => openModal('client-upload-proof')}
-                    className="w-full bg-[#0D9488] hover:bg-[#0F766E] text-white py-2 rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center justify-center gap-1.5"
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>استعراض</span>
-                  </button>
+                  <div className="pt-1.5 border-t border-amber-100 text-[10px] text-amber-700 font-bold mt-2">
+                    ✓ معتمد محلياً
+                  </div>
                 </div>
+              </div>
+
+              {/* Upload Proof Banner */}
+              <div className="rounded-xl border border-slate-200 p-4 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div>
+                  <h4 className="font-bold text-xs text-[#0B192C] mb-0.5">
+                    رفع إثبات التحويل المالي (Upload Remittance Proof)
+                  </h4>
+                  <span className="text-[11px] text-slate-500">
+                    أرفق صورة السند أو إشعار الإيداع الصادر عن العمقي، الكريمي، بن دول، أو البسيري لكفالة عقد المشروع فوراً
+                  </span>
+                </div>
+                <button
+                  onClick={() => openModal('client-upload-proof')}
+                  className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center justify-center gap-2 shrink-0"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>رفع سند الإيداع</span>
+                </button>
               </div>
             </div>
           </div>
@@ -535,7 +598,7 @@ export const ClientDashboard = () => {
               </p>
               <div className="flex items-center justify-between pt-3 border-t border-slate-800 text-[10px] text-slate-400">
                 <button
-                  onClick={() => navigateTo('admin-panel')}
+                  onClick={() => navigateTo('support')}
                   className="text-teal-400 hover:underline font-bold"
                 >
                   شروط الوساطة
@@ -552,9 +615,9 @@ export const ClientDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>منصة وصلة © 2025 - جميع الحقوق محفوظة لوساطة العمل الحر لطلاب الجامعات اليمنية.</span>
           <div className="flex items-center gap-4 text-xs">
-            <button onClick={() => navigateTo('admin-panel')} className="hover:text-slate-600">سياسة الضمان المالي</button>
+            <button onClick={() => navigateTo('support')} className="hover:text-slate-600">سياسة الضمان المالي</button>
             <button onClick={() => navigateTo('landing')} className="hover:text-slate-600">التحقق من الكليات</button>
-            <button onClick={() => navigateTo('admin-panel')} className="hover:text-slate-600">اتصل بالإدارة</button>
+            <button onClick={() => navigateTo('support')} className="hover:text-slate-600">مركز الدعم والوساطة</button>
           </div>
         </div>
       </footer>

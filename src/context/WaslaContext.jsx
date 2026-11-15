@@ -354,7 +354,12 @@ export const WaslaProvider = ({ children }) => {
       balanceYER: prev.balanceYER - amount,
     }));
 
-    const providerName = provider === 'kuraimi' ? 'بنك الكريمي (حساب 330452***)' : 'شبكة النجم للحوالات';
+    let providerName = 'شركة العمقي للصرافة (حساب 254019***)';
+    if (provider === 'kuraimi') providerName = 'بنك الكريمي (حساب 220894***)';
+    else if (provider === 'bindowla') providerName = 'بنك بن دول للتمويل الأصغر الإسلامي (حساب 108392***)';
+    else if (provider === 'buseiri') providerName = 'شركة البسيري للصرافة (فرع المكلا)';
+    else if (provider === 'omgy') providerName = 'شركة العمقي للصرافة (فرع الشرج)';
+
     addToast(
       'تم تحويل الأرباح بنجاح!',
       `تم إرسال ${amount.toLocaleString()} ر.ي إلى ${providerName}. ستصلك رسالة SMS تأكيدية خلال لحظات.`,
@@ -472,7 +477,7 @@ export const WaslaProvider = ({ children }) => {
 
     addToast(
       'تم تحرير الضمان المالي!',
-      'تم تحويل المبلغ المحجوز بالكامل إلى رصيد الطالب المستقل بنجاح مع إشعار بنك الكريمي/النجم.',
+      'تم تحويل المبلغ المحجوز بالكامل إلى رصيد المستقل بنجاح مع إشعار الوسيط المالي المعتمد (العمقي/الكريمي/بن دول/البسيري).',
       'success',
       5000
     );
@@ -481,22 +486,23 @@ export const WaslaProvider = ({ children }) => {
 
   // Client: Upload Payment Remittance Proof
   const uploadRemittanceProof = (remittanceData) => {
+    const prefix = remittanceData.providerType === 'kuraimi' ? 'KR' : remittanceData.providerType === 'bindowla' ? 'BD' : remittanceData.providerType === 'buseiri' ? 'BS' : 'OM';
     const newRem = {
       id: `rem_${Date.now()}`,
-      code: `#KR-${Math.floor(1000000 + Math.random() * 9000000)}`,
+      code: `#${prefix}-${Math.floor(1000000 + Math.random() * 9000000)}`,
       timeAgo: 'الآن',
       senderClient: clientUser.name,
       senderEntity: clientUser.company,
-      provider: remittanceData.provider || 'الكريمي إكسبرس',
-      providerType: remittanceData.providerType || 'kuraimi',
+      provider: remittanceData.provider || 'شركة العمقي للصرافة',
+      providerType: remittanceData.providerType || 'omgy',
       amountYER: Number(remittanceData.amountYER) || 250000,
       targetProject: remittanceData.targetProject || 'مشروع جديد قيد الضمان',
       studentName: remittanceData.studentName || 'م. أروى الحمادي',
-      studentUniversity: 'جامعة صنعاء',
+      studentUniversity: 'جامعة حضرموت',
       status: 'سند مرفوع حديثاً',
       statusType: 'yellow',
       receiptUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=400',
-      notes: remittanceData.notes || 'إيداع رسمي عبر التطبيق المحلي.',
+      notes: remittanceData.notes || 'إيداع رسمي عبر التطبيق المحلي المعتمد.',
     };
 
     setRemittances((prev) => [newRem, ...prev]);
@@ -595,7 +601,7 @@ export const WaslaProvider = ({ children }) => {
       title: projectData.title,
       category: projectData.category || 'تطوير الويب',
       categoryTag: projectData.categoryTag || 'مشروع تخرج ممتاز',
-      headerBadge: projectData.headerBadge || 'جامعة صنعاء 2024',
+      headerBadge: projectData.headerBadge || 'جامعة حضرموت 2025',
       rating: 5.0,
       ratingCount: 1,
       description: projectData.description,

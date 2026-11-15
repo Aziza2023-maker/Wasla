@@ -60,7 +60,7 @@ export const SupportEscrowPage = () => {
     {
       step: '01',
       title: 'الاتفاق وحجز الضمان (Escrow)',
-      desc: 'يقوم صاحب العمل باختيار المستقل وتحديد المتطلبات، ثم إيداع المبلغ عبر حساب الكريمي أو النجم ليتم تجميده في الحساب الوسيط المعلق.',
+      desc: 'يقوم صاحب العمل باختيار المستقل وتحديد المتطلبات، ثم إيداع المبلغ عبر شبكات الصرافة والبنوك المعتمدة بحضرموت (العمقي، الكريمي، بن دول، أو البسيري) ليتم تجميده في الحساب الوسيط المعلق.',
       icon: Lock,
     },
     {
@@ -78,7 +78,7 @@ export const SupportEscrowPage = () => {
     {
       step: '04',
       title: 'التحرير الفوري للأرباح',
-      desc: 'بمجرد اعتماد المخرجات، يتحرر المبلغ فورياً إلى حساب المستقل على الكريمي (مميز / إكسبرس) أو حوالة النجم دون أي تأخير.',
+      desc: 'بمجرد اعتماد المخرجات، يتحرر المبلغ فورياً إلى حساب المستقل على العمقي، الكريمي، بن دول، أو البسيري دون أي تأخير.',
       icon: ShieldCheck,
     },
   ];
@@ -100,7 +100,7 @@ export const SupportEscrowPage = () => {
               حقوقك المالية ومواعيدك الأكاديمية محمية بنسبة 100%
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl font-normal">
-              منصة وصلة صُممت خصيصاً للواقع اليمني لتوفر وساطة مالية مرخصة عبر بنك الكريمي وشبكة النجم، ونظام حماية استثنائي لمواعيد تسليم الطلاب ضد ظروف الطاقة والاتصالات.
+              منصة وصلة صُممت خصيصاً للواقع المحلي في المكلا ومحافظة حضرموت لتوفر وساطة مالية مرخصة عبر شبكات الصرافة والبنوك المعتمدة (العمقي، الكريمي، بن دول، والبسيري)، ونظام حماية استثنائي لمواعيد تسليم الطلاب ضد ظروف الطاقة والاتصالات.
             </p>
           </div>
         </div>
@@ -174,25 +174,45 @@ export const SupportEscrowPage = () => {
           </div>
 
           <div className="lg:col-span-5 bg-white rounded-2xl p-6 border border-emerald-200 shadow-md space-y-4">
-            <h4 className="font-black text-sm text-[#0B192C]">بيانات الشركاء الماليين المعتمدين</h4>
-            <div className="space-y-3 text-xs">
+            <h4 className="font-black text-sm text-[#0B192C]">شبكات الصرافة والوساطة المالية المعتمدة بالمكلا</h4>
+            <div className="space-y-2.5 text-xs">
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
-                  <strong className="block text-slate-800">بنك الكريمي للتمويل الأصغر</strong>
-                  <span className="text-slate-400 text-[11px]">حساب مميز: 220 894 1120</span>
+                  <strong className="block text-slate-800">شركة العمقي للصرافة</strong>
+                  <span className="text-slate-400 text-[11px]">حساب معتمد: 254 019 3301 • فرع الشرج</span>
                 </div>
-                <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md font-bold text-[10px]">
-                  معتمد فورياً
+                <span className="bg-teal-100 text-teal-800 px-2 py-0.5 rounded-md font-bold text-[10px]">
+                  المركز الرئيسي
                 </span>
               </div>
 
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
-                  <strong className="block text-slate-800">شبكة النجم للحوالات</strong>
-                  <span className="text-slate-400 text-[11px]">حوالة باسم: منصة وصلة للوساطة الأكاديمية</span>
+                  <strong className="block text-slate-800">بنك الكريمي للتمويل الأصغر الإسلامي</strong>
+                  <span className="text-slate-400 text-[11px]">حساب مميز: 220 894 1120</span>
                 </div>
                 <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md font-bold text-[10px]">
-                  صرف فوري
+                  إيداع فوري
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                  <strong className="block text-slate-800">بنك بن دول للتمويل الأصغر الإسلامي</strong>
+                  <span className="text-slate-400 text-[11px]">حساب معتمد: 108 392 4410 • فرع الخور</span>
+                </div>
+                <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-md font-bold text-[10px]">
+                  فرع المكلا
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                  <strong className="block text-slate-800">شركة البسيري للصرافة</strong>
+                  <span className="text-slate-400 text-[11px]">حساب معتمد: 319 802 1150 • حي السلام</span>
+                </div>
+                <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-bold text-[10px]">
+                  حوالة كاش
                 </span>
               </div>
             </div>
@@ -257,7 +277,7 @@ export const SupportEscrowPage = () => {
                   onChange={(e) => setTicketForm({ ...ticketForm, category: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 outline-none focus:border-teal-500 focus:bg-white"
                 >
-                  <option value="وساطة مالية وحوالات">وساطة مالية وحوالات (الكريمي / النجم)</option>
+                  <option value="وساطة مالية وحوالات">وساطة مالية وحوالات (العمقي / الكريمي / بن دول / البسيري)</option>
                   <option value="توثيق بطاقة جامعية">توثيق بطاقة جامعية وأكاديمية</option>
                   <option value="فض نزاع مشروع">فض نزاع وتدخل وسيط أكاديمي</option>
                   <option value="تفعيل الهامش الزمني">استفسار عن تفعيل الهامش الزمني للطوارئ</option>

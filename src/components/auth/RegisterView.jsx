@@ -55,8 +55,8 @@ export const RegisterView = () => {
   const [agreeTerms, setAgreeTerms] = useState(true);
 
   // Freelancer / Student Dynamic Fields
-  const [university, setUniversity] = useState('جامعة صنعاء');
-  const [faculty, setFaculty] = useState('كلية الحاسوب وتكنولوجيا المعلومات');
+  const [university, setUniversity] = useState('جامعة حضرموت');
+  const [faculty, setFaculty] = useState('كلية الحاسوب وتكنولوجيا المعلومات (فلك)');
   const [technicalCategory, setTechnicalCategory] = useState('برمجة وتطوير البرمجيات');
   const [skills, setSkills] = useState('');
   const [bio, setBio] = useState('');
@@ -113,7 +113,7 @@ export const RegisterView = () => {
     // Client specific validations
     if (accountType === 'client') {
       if (!phone.trim()) {
-        errs.phone = 'يرجى إدخال رقم الهاتف أو الواتساب للتنسيق المالي (الكريمي/النجم)';
+        errs.phone = 'يرجى إدخال رقم الهاتف أو الواتساب للتنسيق المالي (العمقي/الكريمي/بن دول/البسيري)';
       } else if (!/^[0-9+\s-]{7,15}$/.test(phone.trim())) {
         errs.phone = 'يرجى إدخال رقم هاتف صالح (مثال: 773892104)';
       }
@@ -482,7 +482,7 @@ export const RegisterView = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-bold text-[#0B192C] mb-1">
-                          الجامعة اليمنية <span className="text-rose-500">*</span>
+                          الجامعة أو الكلية التقنية (المكلا وحضرموت) <span className="text-rose-500">*</span>
                         </label>
                         <select
                           value={university}
@@ -811,7 +811,7 @@ export const RegisterView = () => {
                   <div>
                     <h4 className="font-bold text-xs text-white mb-0.5">وساطة مالية Escrow وهامش طوارئ</h4>
                     <p className="text-[10px] text-slate-400 font-normal leading-relaxed">
-                      حجز المبالغ عبر الكريمي والنجم وهامش +48 ساعة لحماية تقييم الطلاب أثناء انقطاع الطاقة.
+                      حجز المبالغ عبر شبكات الصرافة المعتمدة (العمقي، الكريمي، بن دول، البسيري) وهامش طوارئ لحماية تقييم الطلاب.
                     </p>
                   </div>
                 </div>

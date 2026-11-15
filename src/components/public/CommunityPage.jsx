@@ -39,7 +39,7 @@ export const CommunityPage = () => {
       id: 'comm_' + Date.now(),
       title: newTopicTitle,
       author: 'م. أروى الحمادي',
-      university: 'جامعة صنعاء',
+      university: 'جامعة حضرموت',
       repliesCount: 0,
       likesCount: 1,
       date: 'الآن',

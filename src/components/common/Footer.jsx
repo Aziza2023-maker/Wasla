@@ -26,7 +26,7 @@ export const Footer = () => {
             <div className="pt-2 flex flex-wrap gap-2 text-[11px]">
               <span className="bg-[#15253C] text-teal-300 px-3 py-1 rounded-full border border-slate-700 flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
-                <span>ضمان العمقي والكريمي والنجم</span>
+                <span>ضمان العمقي، الكريمي، بن دول، والبسيري</span>
               </span>
               <span className="bg-[#15253C] text-slate-300 px-3 py-1 rounded-full border border-slate-700 flex items-center gap-1.5">
                 <Lock className="w-3.5 h-3.5 text-slate-400" />
@@ -133,31 +133,35 @@ export const Footer = () => {
             </ul>
           </div>
 
-          {/* Col 5: Partner Universities */}
+          {/* Col 5: Partner Universities in Mukalla */}
           <div className="space-y-3">
             <h4 className="text-xs font-black text-white uppercase tracking-wider">
-              الجامعات اليمنية الشريكة
+              جامعات وكليات المكلا وحضرموت
             </h4>
             <ul className="space-y-2 text-xs text-slate-400">
               <li className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />
-                <span>جامعة صنعاء</span>
+                <span>جامعة حضرموت (HU)</span>
               </li>
               <li className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />
-                <span>جامعة عدن</span>
+                <span>جامعة الريان (المكلا)</span>
               </li>
               <li className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />
-                <span>جامعة تعز</span>
+                <span>جامعة الأحقاف (المكلا)</span>
               </li>
               <li className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />
-                <span>جامعة حضرموت</span>
+                <span>جامعة العلوم والتكنولوجيا (فرع المكلا)</span>
               </li>
               <li className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />
-                <span>جامعة العلوم والتكنولوجيا</span>
+                <span>جامعة العرب (المكلا)</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />
+                <span>الكلية التقنية والمعاهد بالمكلا (MTC)</span>
               </li>
             </ul>
           </div>
@@ -168,21 +172,21 @@ export const Footer = () => {
       <div className="border-t border-slate-800/80 bg-[#081322] py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-2 text-slate-400">
-            <span className="text-[11px] font-bold">بوابات الوساطة النقدية المعتمدة في اليمن:</span>
+            <span className="text-[11px] font-bold">شبكات الصرافة والوساطة المحلية المعتمدة بالمكلا:</span>
           </div>
 
-          <div className="flex items-center gap-4 flex-wrap justify-center">
-            <span className="px-3 py-1 rounded-md bg-slate-800 text-slate-300 font-bold text-[11px] border border-slate-700">
-              بنك الكريمي للتمويل الأصغر (الكريمي إكسبرس / مميز)
+          <div className="flex items-center gap-3 flex-wrap justify-center">
+            <span className="px-3 py-1 rounded-md bg-slate-800 text-teal-300 font-bold text-[11px] border border-slate-700">
+              شركة العمقي للصرافة
             </span>
-            <span className="px-3 py-1 rounded-md bg-slate-800 text-slate-300 font-bold text-[11px] border border-slate-700">
-              شبكة النجم للحوالات
+            <span className="px-3 py-1 rounded-md bg-slate-800 text-emerald-300 font-bold text-[11px] border border-slate-700">
+              بنك الكريمي للتمويل الأصغر الإسلامي
             </span>
-            <span className="px-3 py-1 rounded-md bg-slate-800 text-slate-300 font-bold text-[11px] border border-slate-700">
-              محفظة ون كاش (OneCash)
+            <span className="px-3 py-1 rounded-md bg-slate-800 text-blue-300 font-bold text-[11px] border border-slate-700">
+              بنك بن دول للتمويل الأصغر الإسلامي
             </span>
-            <span className="px-3 py-1 rounded-md bg-slate-800 text-slate-300 font-bold text-[11px] border border-slate-700">
-              التحويل البنكي المباشر
+            <span className="px-3 py-1 rounded-md bg-slate-800 text-amber-300 font-bold text-[11px] border border-slate-700">
+              شركة البسيري للصرافة
             </span>
           </div>
         </div>
@@ -192,7 +196,7 @@ export const Footer = () => {
       <div className="border-t border-slate-800/60 py-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
           <div>
-            © 2026 منصة وصلة (Wasla) — محطة الإطلاق الأولى: المكلا وجامعة حضرموت • لكافة الجامعات اليمنية.
+            © 2026 منصة وصلة (Wasla) — محطة الإطلاق الحصرية: المكلا ومحافظة حضرموت.
           </div>
 
           <div className="flex items-center gap-6">

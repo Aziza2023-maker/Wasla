@@ -80,7 +80,7 @@ export const LandingPage = () => {
 
           {/* Subtitle */}
           <p className="text-slate-300 text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed font-normal">
-            نربط كفاءات طلاب جامعة حضرموت وكليات المكلا بأصحاب المحلات والمؤسسات التجارية ورواد الأعمال المحليين، مع وساطة مالية محلية آمنة (العمقي، الكريمي، والنجم) تضمن حقوق المستقل والتاجر.
+            نربط كفاءات طلاب جامعة حضرموت وكليات المكلا بأصحاب المحلات والمؤسسات التجارية ورواد الأعمال المحليين، مع وساطة مالية محلية آمنة (العمقي، الكريمي، بن دول، والبسيري) تضمن حقوق المستقل والتاجر.
           </p>
 
           {/* Localized Feature Highlights Pills */}
@@ -93,7 +93,7 @@ export const LandingPage = () => {
             </span>
             <span className="bg-slate-800/80 border border-slate-700/80 px-3 py-1 rounded-full flex items-center gap-1.5 text-teal-300">
               <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
-              <span>وساطة مالية عبر العمقي والكريمي</span>
+              <span>وساطة مالية عبر العمقي، الكريمي، بن دول، والبسيري</span>
             </span>
           </div>
 
@@ -109,7 +109,7 @@ export const LandingPage = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث عن خدمات أو مستقلين في المكلا وحضرموت - وساطة صرافة محلية (العمقي / الكريمي / النجم)"
+              placeholder="ابحث عن خدمات أو مستقلين في المكلا وحضرموت - وساطة صرافة معتمدة (العمقي / الكريمي / بن دول / البسيري)"
               className="w-full text-xs sm:text-sm bg-transparent outline-none text-slate-800 placeholder-slate-400 font-medium"
             />
             <button
@@ -175,7 +175,7 @@ export const LandingPage = () => {
                   دفع محلي آمن
                 </span>
                 <span className="text-[10px] text-slate-400 font-normal">
-                  العمقي والكريمي والنجم
+                  العمقي والكريمي وبن دول
                 </span>
               </button>
 
@@ -274,7 +274,7 @@ export const LandingPage = () => {
               </div>
               <div>
                 <h4 className="font-bold text-sm text-[#0B192C] mb-1 group-hover:text-teal-700 transition-colors">
-                  وساطة نقدية محلية موثوقة (العمقي والكريمي والنجم)
+                  وساطة نقدية محلية موثوقة (العمقي، الكريمي، بن دول، والبسيري)
                 </h4>
                 <p className="text-xs text-slate-500 font-normal leading-relaxed">
                   حجز أموال المشروع وصرفها عبر شبكات الصرافة الرائدة بحضرموت واليمن بضمان 100%

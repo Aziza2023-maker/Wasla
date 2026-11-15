@@ -25,8 +25,11 @@ import {
 
 export const AdminDashboard = () => {
   const {
+    currentRole,
     remittances,
     verificationQueue,
+    clientContracts,
+    releaseEscrow,
     confirmAndLockEscrow,
     rejectRemittance,
     approveStudentVerification,
@@ -36,15 +39,28 @@ export const AdminDashboard = () => {
   } = useWasla();
 
   const [activeAccordion, setActiveAccordion] = useState(1);
-  const [remittanceFilter, setRemittanceFilter] = useState('all'); // 'all' | 'kuraimi' | 'najm'
+  const [remittanceFilter, setRemittanceFilter] = useState('all'); // 'all' | 'omgy' | 'kuraimi' | 'bindowla' | 'buseiri'
+  const [contractFilter, setContractFilter] = useState('all'); // 'all' | 'pending_release' | 'completed' | 'in_progress'
+
+  const isAdmin = currentRole === 'admin';
 
   const filteredRemittances = remittances.filter((r) => {
+    if (remittanceFilter === 'omgy') return r.providerType === 'omgy';
     if (remittanceFilter === 'kuraimi') return r.providerType === 'kuraimi';
-    if (remittanceFilter === 'najm') return r.providerType === 'najm';
+    if (remittanceFilter === 'bindowla') return r.providerType === 'bindowla';
+    if (remittanceFilter === 'buseiri') return r.providerType === 'buseiri';
+    return true;
+  });
+
+  const filteredAdminContracts = (clientContracts || []).filter((c) => {
+    if (contractFilter === 'pending_release') return c.canRelease || c.status.includes('للمراجعة');
+    if (contractFilter === 'completed') return c.status.includes('مكتمل');
+    if (contractFilter === 'in_progress') return c.status.includes('قيد التنفيذ');
     return true;
   });
 
   const totalEscrowPoolYER = remittances.reduce((acc, r) => acc + (r.amountYER || 0), 0);
+  const pendingReleaseCount = (clientContracts || []).filter((c) => c.canRelease || c.status.includes('للمراجعة')).length;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans text-right" dir="rtl">
@@ -72,7 +88,7 @@ export const AdminDashboard = () => {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>الوساطة مفعلة: الكريمي والنجم</span>
+              <span>الوساطة مفعلة: العمقي، الكريمي، بن دول، البسيري</span>
             </div>
 
             <button
@@ -138,7 +154,7 @@ export const AdminDashboard = () => {
 
                   {activeAccordion === 1 && (
                     <div className="p-4 bg-white text-xs text-slate-600 leading-relaxed font-normal border-t border-slate-100">
-                      يقوم العميل بإيداع القيمة المالية للمشروع عبر رقم الحساب المعتمد لمنصة وصلة لدى بنك الكريمي للتمويل الأصغر الإسلامي - خدمة الكريمي إكسبرس أو إم فلوس، أو عبر شركة النجم للحوالات، يتم رفع رقم الحوالة وصورة السند فوراً، حيث يقوم المشرف المالي بمطابقة الاسم والمبلغ بنكياً، وحجز المبلغ كضمان معلق ولا يتم تحويله لحساب الطالب إلا بعد تأكيد الاستلام النهائي للمشروع.
+                      يقوم العميل بإيداع القيمة المالية للمشروع عبر الحسابات المعتمدة لمنصة وصلة لدى شبكات الصرافة والبنوك المحلية في المكلا وحضرموت (شركة العمقي للصرافة، بنك الكريمي إكسبرس، بنك بن دول للتمويل الأصغر الإسلامي، أو شركة البسيري للصرافة)، حيث يتم رفع رقم الحوالة وصورة السند فوراً، ويقوم المشرف المالي بمطابقة الاسم والمبلغ بنكياً، وحجز المبلغ كضمان معلق (Escrow) لحين إكمال المشروع وتأكيد استلام المخرجات.
                     </div>
                   )}
                 </div>
@@ -221,14 +237,14 @@ export const AdminDashboard = () => {
               </h2>
 
               <p className="text-xs text-slate-300 font-normal leading-relaxed mb-6">
-                منصة «وصلة» لا تكتفي بالربط، بل تضمن كافة التعاملات والتحويلات المالية المتبادلة بين الطرفين، وتوفر بيئة عمل آمنة واحترافية للوساطة مع شبكات الصرافة المحلية (الكريمي والنجم) لحماية الطالب والعميل على حد سواء حتى اكتمال المشروع وتسليمه بنجاح.
+                منصة «وصلة» لا تكتفي بالربط، بل تضمن كافة التعاملات والتحويلات المالية المتبادلة بين الطرفين، وتوفر بيئة عمل آمنة واحترافية للوساطة مع شبكات الصرافة والبنوك المحلية المعتمدة بالمكلا وحضرموت (العمقي، الكريمي، بن دول، والبسيري) لحماية المستقل والعميل على حد سواء حتى اكتمال المشروع وتسليمه بنجاح.
               </p>
 
               {/* 3 Metric Pills */}
               <div className="grid grid-cols-3 gap-2.5 mb-6 text-center">
                 <div className="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800">
                   <span className="text-[10px] text-teal-400 block font-bold mb-0.5">السوق المحلي</span>
-                  <span className="text-[10px] text-slate-300">صنعاء - عدن - حضرموت</span>
+                  <span className="text-[10px] text-slate-300">المكلا - محافظة حضرموت</span>
                 </div>
                 <div className="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800">
                   <span className="text-[10px] text-teal-400 block font-bold mb-0.5">وساطة مالية</span>
@@ -272,7 +288,7 @@ export const AdminDashboard = () => {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-black text-base text-[#0B192C]">
-                  سجل إيداعات الحوالات المحلية المعلقة (صرافة الكريمي والنجم)
+                  سجل إيداعات الحوالات المحلية المعلقة (العمقي، الكريمي، بن دول، البسيري)
                 </h3>
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
                   بانتظار التأكيد ({remittances.length})
@@ -283,7 +299,7 @@ export const AdminDashboard = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+            <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold flex-wrap">
               <button
                 onClick={() => setRemittanceFilter('all')}
                 className={`px-3 py-1.5 rounded-lg transition-all ${
@@ -295,24 +311,44 @@ export const AdminDashboard = () => {
                 الكل ({remittances.length})
               </button>
               <button
+                onClick={() => setRemittanceFilter('omgy')}
+                className={`px-3 py-1.5 rounded-lg transition-all ${
+                  remittanceFilter === 'omgy'
+                    ? 'bg-white text-teal-800 shadow-xs font-bold'
+                    : 'text-slate-500'
+                }`}
+              >
+                العمقي ({remittances.filter((r) => r.providerType === 'omgy').length})
+              </button>
+              <button
                 onClick={() => setRemittanceFilter('kuraimi')}
                 className={`px-3 py-1.5 rounded-lg transition-all ${
                   remittanceFilter === 'kuraimi'
-                    ? 'bg-white text-slate-900 shadow-xs font-bold'
+                    ? 'bg-white text-emerald-800 shadow-xs font-bold'
                     : 'text-slate-500'
                 }`}
               >
-                الكريمي (M Floos)
+                الكريمي ({remittances.filter((r) => r.providerType === 'kuraimi').length})
               </button>
               <button
-                onClick={() => setRemittanceFilter('najm')}
+                onClick={() => setRemittanceFilter('bindowla')}
                 className={`px-3 py-1.5 rounded-lg transition-all ${
-                  remittanceFilter === 'najm'
-                    ? 'bg-white text-slate-900 shadow-xs font-bold'
+                  remittanceFilter === 'bindowla'
+                    ? 'bg-white text-blue-800 shadow-xs font-bold'
                     : 'text-slate-500'
                 }`}
               >
-                النجم للحوالات
+                بن دول ({remittances.filter((r) => r.providerType === 'bindowla').length})
+              </button>
+              <button
+                onClick={() => setRemittanceFilter('buseiri')}
+                className={`px-3 py-1.5 rounded-lg transition-all ${
+                  remittanceFilter === 'buseiri'
+                    ? 'bg-white text-amber-800 shadow-xs font-bold'
+                    : 'text-slate-500'
+                }`}
+              >
+                البسيري ({remittances.filter((r) => r.providerType === 'buseiri').length})
               </button>
             </div>
           </div>
@@ -452,6 +488,215 @@ export const AdminDashboard = () => {
           </div>
         </div>
 
+        {/* Central Administrative Escrow Release & Contracts Oversight Section (Strict Admin-Only RBAC) */}
+        {isAdmin ? (
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
+            {/* Header & Tabs */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 mb-5">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-7 h-7 rounded-lg bg-teal-600 text-white flex items-center justify-center">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-black text-base text-[#0B192C]">
+                    جدول التتبع والرقابة المركزية: فحص المخرجات وتحرير الضمان المالي للمستقلين (Escrow Release)
+                  </h3>
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
+                    صلاحية إدارية حصرية
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 font-normal">
+                  صلاحية المشرف المالي الحصرية لمطابقة تسليمات الطلاب وفك حجز الضمان وتحويل المستحقات لحساب المستقل (العمقي / الكريمي / بن دول / البسيري)
+                </p>
+              </div>
+
+              {/* Filter Tabs */}
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+                <button
+                  onClick={() => setContractFilter('all')}
+                  className={`px-3 py-1.5 rounded-lg transition-all ${
+                    contractFilter === 'all'
+                      ? 'bg-white text-slate-900 shadow-xs font-bold'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  جميع العقود ({clientContracts.length})
+                </button>
+                <button
+                  onClick={() => setContractFilter('pending_release')}
+                  className={`px-3 py-1.5 rounded-lg transition-all ${
+                    contractFilter === 'pending_release'
+                      ? 'bg-white text-amber-900 shadow-xs font-bold'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  بانتظار تحرير الضمان ({pendingReleaseCount})
+                </button>
+                <button
+                  onClick={() => setContractFilter('in_progress')}
+                  className={`px-3 py-1.5 rounded-lg transition-all ${
+                    contractFilter === 'in_progress'
+                      ? 'bg-white text-blue-900 shadow-xs font-bold'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  قيد التنفيذ
+                </button>
+                <button
+                  onClick={() => setContractFilter('completed')}
+                  className={`px-3 py-1.5 rounded-lg transition-all ${
+                    contractFilter === 'completed'
+                      ? 'bg-white text-emerald-900 shadow-xs font-bold'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  المحررة والمكتملة
+                </button>
+              </div>
+            </div>
+
+            {/* Admin Contracts Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-right text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-400 font-bold text-[11px]">
+                    <th className="pb-3 pr-2">رقم العقد</th>
+                    <th className="pb-3">الطالب المستقل</th>
+                    <th className="pb-3">الكلية والجامعة</th>
+                    <th className="pb-3">المشروع / المهمة</th>
+                    <th className="pb-3">مبلغ الضمان</th>
+                    <th className="pb-3">حالة الإنجاز</th>
+                    <th className="pb-3">حالة الضمان في Escrow</th>
+                    <th className="pb-3 pl-2 text-center">إجراءات الرقابة وتحرير الضمان</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredAdminContracts.map((contract) => (
+                    <tr key={contract.id} className="hover:bg-slate-50/60 transition-colors">
+                      {/* Contract ID */}
+                      <td className="py-4 pr-2 font-mono font-bold text-slate-700">
+                        #{contract.id}
+                      </td>
+
+                      {/* Student */}
+                      <td className="py-4">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs shrink-0">
+                            {contract.studentInitials}
+                          </div>
+                          <div>
+                            <span className="font-bold text-[#0B192C] block">
+                              {contract.studentName}
+                            </span>
+                            <span className="text-[10px] text-slate-400">
+                              {contract.bufferTag}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* College & University */}
+                      <td className="py-4 text-slate-600">
+                        <span className="font-semibold block">{contract.college}</span>
+                        <span className="text-[10px] text-slate-400">{contract.university}</span>
+                      </td>
+
+                      {/* Role / Project */}
+                      <td className="py-4 text-slate-700 max-w-xs font-medium truncate">
+                        {contract.studentRole}
+                      </td>
+
+                      {/* Budget */}
+                      <td className="py-4 font-black text-slate-900">
+                        {contract.agreedBudget}
+                      </td>
+
+                      {/* Status */}
+                      <td className="py-4">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                            contract.statusType === 'amber'
+                              ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                              : contract.statusType === 'blue'
+                              ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                              : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              contract.statusType === 'amber'
+                                ? 'bg-amber-500'
+                                : contract.statusType === 'blue'
+                                ? 'bg-blue-500'
+                                : 'bg-emerald-500'
+                            }`}
+                          />
+                          {contract.status}
+                        </span>
+                      </td>
+
+                      {/* Escrow Status */}
+                      <td className="py-4">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
+                          {contract.escrowStatus}
+                        </span>
+                      </td>
+
+                      {/* Administrative Actions */}
+                      <td className="py-4 pl-2 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => addToast('فحص المخرجات', `جاري استعراض ملفات وتسليم الطالب (${contract.studentName}) لمطابقة الشروط والمواصفات.`)}
+                            className="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-colors"
+                          >
+                            معاينة الكود
+                          </button>
+
+                          {contract.canRelease ? (
+                            <button
+                              onClick={() => releaseEscrow(contract.id)}
+                              className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-xs transition-colors whitespace-nowrap flex items-center gap-1.5"
+                            >
+                              <Lock className="w-3.5 h-3.5" />
+                              <span>تحرير وصرف الضمان</span>
+                            </button>
+                          ) : contract.status.includes('مكتمل') ? (
+                            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              <span>تم الصرف والتحرير</span>
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-medium text-slate-400 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200">
+                              قيد التنفيذ
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Admin Notice */}
+            <div className="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-500 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-teal-600" />
+                <span>إجمالي العقود الخاضعة لرقابة الوساطة: {clientContracts.length} عقود • الضمان المالي محمي بالكامل حتى اعتماد الإدارة.</span>
+              </div>
+              <span className="text-[11px] font-bold text-teal-800">
+                بوابة الرقابة والضمان Escrow v2.4
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center text-rose-800">
+            <AlertTriangle className="w-8 h-8 text-rose-600 mx-auto mb-2" />
+            <h4 className="font-black text-sm mb-1">وصول إداري مقيّد</h4>
+            <p className="text-xs text-rose-600">هذه الخاصية تتطلب صلاحيات المسؤول المالي (Admin) فقط ولا تظهر لبقية الأدوار.</p>
+          </div>
+        )}
+
         {/* Bottom Section: Student Academic ID Verification Queue (طابور اعتماد بطاقات الطلاب والجامعات) */}
         <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-5">
@@ -560,7 +805,7 @@ export const AdminDashboard = () => {
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-4 text-xs text-slate-400 text-center">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>صنعاء • عدن • حضرموت • بوابات الدفع: بنك الكريمي • صرافة النجم</span>
+          <span>المكلا • محافظة حضرموت • شبكات الصرافة والوساطة: العمقي • الكريمي • بن دول • البسيري</span>
           <span>جميع الحقوق محفوظة لمنصة وصلة للعمل الحر والوساطة الطلابية 2026 ©</span>
         </div>
       </footer>

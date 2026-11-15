@@ -41,7 +41,7 @@ export const DirectContactHub = () => {
               </span>
             </div>
             <p className="text-xs text-slate-500 font-normal leading-relaxed max-w-3xl">
-              تتيح منصة «وصلة» للطلبة والعملاء التواصل الفوري عبر قنواتهم المفضلة دون حصرهم في واجهات بطيئة أو معقدة مع ضمان كامل المستحقات عبر حسابات الضمان المحلي المعتمدة (الكريمي إكسبرس والنجم للحوالات).
+              تتيح منصة «وصلة» للطلبة والعملاء التواصل الفوري عبر قنواتهم المفضلة دون حصرهم في واجهات بطيئة أو معقدة مع ضمان كامل المستحقات عبر حسابات الضمان المحلي المعتمدة (العمقي، الكريمي، بن دول، والبسيري).
             </p>
           </div>
 
@@ -122,7 +122,7 @@ export const DirectContactHub = () => {
                     </div>
                     <div>
                       <h4 className="font-bold text-xs text-[#0B192C]">بريد جامعي معتمد</h4>
-                      <span className="text-[10px] text-slate-400 font-normal">جامعة صنعاء • كلية الهندسة</span>
+                      <span className="text-[10px] text-slate-400 font-normal">جامعة حضرموت • كلية الحاسوب (فلك)</span>
                     </div>
                   </div>
                   <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700">معتمد</span>

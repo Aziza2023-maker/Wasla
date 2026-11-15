@@ -45,7 +45,7 @@ export const GlobalModals = () => {
   const [newProject, setNewProject] = useState({
     title: '',
     budgetYER: '180000',
-    escrowProvider: 'الكريمي إكسبرس',
+    escrowProvider: 'شركة العمقي للصرافة',
     category: 'برمجة وتطوير',
     durationDays: '15',
     bufferDays: '4',
@@ -55,8 +55,8 @@ export const GlobalModals = () => {
 
   // Academic Verification Form State
   const [verificationForm, setVerificationForm] = useState({
-    university: 'جامعة صنعاء',
-    faculty: 'كلية الحاسوب وتكنولوجيا المعلومات',
+    university: 'جامعة حضرموت',
+    faculty: 'كلية الحاسوب وتكنولوجيا المعلومات (فلك)',
     level: 'المستوى الرابع (دفعة 2025)',
     academicId: '2021-CS-1105',
     fileName: 'بطاقة_جامعية_محدثة.pdf',
@@ -64,7 +64,7 @@ export const GlobalModals = () => {
 
   // Withdrawal Modal State
   const [withdrawAmt, setWithdrawAmt] = useState(freelancerUser.balanceYER.toString());
-  const [withdrawProvider, setWithdrawProvider] = useState('kuraimi');
+  const [withdrawProvider, setWithdrawProvider] = useState('omgy');
 
   // Buffer Settings State
   const [bufferDaysInput, setBufferDaysInput] = useState(4);
@@ -72,12 +72,12 @@ export const GlobalModals = () => {
 
   // Upload Remittance Proof State
   const [remittanceProof, setRemittanceProof] = useState({
-    provider: 'الكريمي إكسبرس',
-    providerType: 'kuraimi',
+    provider: 'شركة العمقي للصرافة',
+    providerType: 'omgy',
     amountYER: '350000',
-    targetProject: clientContracts[0]?.studentRole || 'تطوير تطبيق ويب لإدارة العيادات',
+    targetProject: clientContracts[0]?.studentRole || 'تطوير تطبيق ويب لإدارة العيادات بالمكلا',
     studentName: 'م. أروى الحمادي',
-    notes: 'إيداع رسمي معتمد عبر تطبيق الكريمي جوال برقم العملية #982310.',
+    notes: 'إيداع رسمي معتمد عبر حساب العمقي للصرافة - فرع المكلا برقم العملية #OM-982310.',
   });
 
   // Add Portfolio State
@@ -85,7 +85,7 @@ export const GlobalModals = () => {
     title: '',
     category: 'تطوير الويب',
     categoryTag: 'مشروع تخرج ممتاز',
-    headerBadge: 'جامعة صنعاء 2024',
+    headerBadge: 'جامعة حضرموت 2025',
     description: '',
     tags: 'React, Node.js, Tailwind',
     imageUrl: '',
@@ -134,7 +134,7 @@ export const GlobalModals = () => {
             className="space-y-4 text-xs"
           >
             <div>
-              <label className="font-bold text-slate-800 block mb-1">الجامعة اليمنية</label>
+              <label className="font-bold text-slate-800 block mb-1">الجامعة أو الكلية التقنية (المكلا وحضرموت)</label>
               <select
                 value={verificationForm.university}
                 onChange={(e) => setVerificationForm({ ...verificationForm, university: e.target.value })}
@@ -233,7 +233,7 @@ export const GlobalModals = () => {
           <div className="flex items-center gap-2 flex-wrap mb-3">
             <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>{modalPayload.escrowBadge || 'مضمون بحساب الكريمي'}</span>
+              <span>{modalPayload.escrowBadge || 'مضمون بوساطة محلية معتمدة (العمقي/الكريمي/بن دول/البسيري)'}</span>
             </span>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
               {modalPayload.category}
@@ -349,7 +349,7 @@ export const GlobalModals = () => {
             <h3 className="text-xl font-black text-[#0B192C]">نشر مشروع أكاديمي جديد</h3>
           </div>
           <p className="text-xs text-slate-500 font-normal mb-4">
-            اطرح متطلبات مشروعك، وسيتم حجز ميزانية المشروع في حساب الضمان المحلي (Escrow) لدى الكريمي أو النجم لحماية الطرفين.
+            اطرح متطلبات مشروعك، وسيتم حجز ميزانية المشروع في حساب الضمان المحلي (Escrow) المعتمد (العمقي، الكريمي، بن دول، أو البسيري) لحماية الطرفين.
           </p>
 
           {/* Interactive Readiness Guide Collapsible for Clients */}
@@ -400,9 +400,10 @@ export const GlobalModals = () => {
                   onChange={(e) => setNewProject({ ...newProject, escrowProvider: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-teal-500 font-medium"
                 >
-                  <option value="الكريمي إكسبرس">الكريمي إكسبرس (بنك الكريمي)</option>
-                  <option value="شبكة النجم">شبكة النجم للحوالات</option>
-                  <option value="محفظة ون كاش">محفظة ون كاش الإلكترونية</option>
+                  <option value="شركة العمقي للصرافة">شركة العمقي للصرافة</option>
+                  <option value="بنك الكريمي (الكريمي إكسبرس)">بنك الكريمي (الكريمي إكسبرس)</option>
+                  <option value="بنك بن دول للتمويل الأصغر الإسلامي">بنك بن دول للتمويل الأصغر الإسلامي</option>
+                  <option value="شركة البسيري للصرافة">شركة البسيري للصرافة</option>
                 </select>
               </div>
             </div>
@@ -501,7 +502,7 @@ export const GlobalModals = () => {
             السحب الفوري للأرباح الأكاديمية
           </h3>
           <p className="text-xs text-slate-500 font-normal mb-6">
-            تحويل مباشر إلى حسابك لدى بنك الكريمي أو استلام كاش فوري عبر شبكة النجم للحوالات.
+            تحويل مباشر وفوري عبر شبكات الصرافة والبنوك المحلية المعتمدة في المكلا وحضرموت (العمقي، الكريمي، بن دول، والبسيري).
           </p>
 
           <div className="bg-emerald-50/70 rounded-xl p-3.5 border border-emerald-200 mb-5">
@@ -534,32 +535,62 @@ export const GlobalModals = () => {
             </div>
 
             <div>
-              <label className="font-bold text-slate-800 block mb-1">جهة الاستلام</label>
+              <label className="font-bold text-slate-800 block mb-1">جهة التحويل / الاستلام المعتمدة بالمكلا</label>
               <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setWithdrawProvider('omgy')}
+                  className={`p-3 rounded-xl border text-center transition-all ${
+                    withdrawProvider === 'omgy'
+                      ? 'border-teal-500 bg-teal-50 text-teal-900 font-bold shadow-sm'
+                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <Building className="w-4 h-4 mx-auto mb-1 text-teal-700" />
+                  <span className="block font-bold">شركة العمقي للصرافة</span>
+                  <span className="text-[10px] text-slate-500 font-normal">حساب / حوالة فورية</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => setWithdrawProvider('kuraimi')}
                   className={`p-3 rounded-xl border text-center transition-all ${
                     withdrawProvider === 'kuraimi'
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-900 font-bold'
-                      : 'border-slate-200 bg-slate-50 text-slate-600'
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-900 font-bold shadow-sm'
+                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
                   }`}
                 >
-                  <Building className="w-4 h-4 mx-auto mb-1 text-teal-700" />
-                  <span>بنك الكريمي</span>
+                  <Building className="w-4 h-4 mx-auto mb-1 text-emerald-700" />
+                  <span className="block font-bold">بنك الكريمي</span>
+                  <span className="text-[10px] text-slate-500 font-normal">إكسبرس / مميز / M-Floos</span>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setWithdrawProvider('najm')}
+                  onClick={() => setWithdrawProvider('bindowla')}
                   className={`p-3 rounded-xl border text-center transition-all ${
-                    withdrawProvider === 'najm'
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-900 font-bold'
-                      : 'border-slate-200 bg-slate-50 text-slate-600'
+                    withdrawProvider === 'bindowla'
+                      ? 'border-blue-500 bg-blue-50 text-blue-900 font-bold shadow-sm'
+                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
                   }`}
                 >
-                  <PhoneCall className="w-4 h-4 mx-auto mb-1 text-blue-700" />
-                  <span>شبكة النجم كاش</span>
+                  <Building className="w-4 h-4 mx-auto mb-1 text-blue-700" />
+                  <span className="block font-bold">بنك بن دول</span>
+                  <span className="text-[10px] text-slate-500 font-normal">تمويل أصغر إسلامي</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setWithdrawProvider('buseiri')}
+                  className={`p-3 rounded-xl border text-center transition-all ${
+                    withdrawProvider === 'buseiri'
+                      ? 'border-amber-500 bg-amber-50 text-amber-900 font-bold shadow-sm'
+                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <Building className="w-4 h-4 mx-auto mb-1 text-amber-700" />
+                  <span className="block font-bold">شركة البسيري للصرافة</span>
+                  <span className="text-[10px] text-slate-500 font-normal">حوالة كاش فورية</span>
                 </button>
               </div>
             </div>
@@ -676,7 +707,7 @@ export const GlobalModals = () => {
             </h3>
           </div>
           <p className="text-xs text-slate-500 font-normal mb-6 leading-relaxed">
-            ارفع سند الإيداع الصادر عن الكريمي أو النجم لحجز المبلغ كضمان مؤمن قبل بدء الطالب في العمل.
+            ارفع سند الإيداع الصادر عن شبكات الصرافة والبنوك المحلية المعتمدة بالمكلا (العمقي، الكريمي، بن دول، أو البسيري) لحجز المبلغ كضمان مؤمن قبل بدء المستقل في العمل.
           </p>
 
           <form
@@ -703,21 +734,27 @@ export const GlobalModals = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="font-bold text-slate-800 block mb-1">شبكة الصرافة / البنك</label>
+                <label className="font-bold text-slate-800 block mb-1">شبكة الصرافة / البنك المعتمد</label>
                 <select
                   value={remittanceProof.provider}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    let type = 'omgy';
+                    if (val.includes('كريمي')) type = 'kuraimi';
+                    else if (val.includes('دول')) type = 'bindowla';
+                    else if (val.includes('بسيري')) type = 'buseiri';
                     setRemittanceProof({
                       ...remittanceProof,
-                      provider: e.target.value,
-                      providerType: e.target.value.includes('كريمي') ? 'kuraimi' : 'najm',
-                    })
-                  }
+                      provider: val,
+                      providerType: type,
+                    });
+                  }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-teal-500 font-medium"
                 >
-                  <option value="الكريمي إكسبرس">الكريمي إكسبرس</option>
-                  <option value="الكريمي (M Floos)">الكريمي (M Floos)</option>
-                  <option value="النجم للحوالات">النجم للحوالات</option>
+                  <option value="شركة العمقي للصرافة">شركة العمقي للصرافة</option>
+                  <option value="بنك الكريمي (الكريمي إكسبرس / إم فلوس)">بنك الكريمي (الكريمي إكسبرس / إم فلوس)</option>
+                  <option value="بنك بن دول للتمويل الأصغر الإسلامي">بنك بن دول للتمويل الأصغر الإسلامي</option>
+                  <option value="شركة البسيري للصرافة">شركة البسيري للصرافة</option>
                 </select>
               </div>
 
