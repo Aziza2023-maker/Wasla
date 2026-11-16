@@ -6,6 +6,8 @@ import FreelancerOverview from './FreelancerOverview';
 import JobMarketplace from './JobMarketplace';
 import PortfolioManager from './PortfolioManager';
 import DirectContactHub from './DirectContactHub';
+import FinancialRecordsView from '../common/FinancialRecordsView';
+import DisputesHub from '../common/DisputesHub';
 
 export const FreelancerLayout = () => {
   const { activeScreen } = useWasla();
@@ -19,8 +21,11 @@ export const FreelancerLayout = () => {
       case 'freelancer-portfolio':
         return <PortfolioManager />;
       case 'freelancer-contact':
-      case 'freelancer-financial':
         return <DirectContactHub />;
+      case 'freelancer-financial':
+        return <FinancialRecordsView title="الحساب المالي وكشوفات الصرف والوساطة" customRole="freelancer" />;
+      case 'freelancer-disputes':
+        return <DisputesHub title="مركز النزاعات والتحكيم للمستقل" />;
       default:
         return <FreelancerOverview />;
     }

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useWasla } from '../../context/WaslaContext';
 import WaslaLogo from '../common/WaslaLogo';
+import DisputesHub from '../common/DisputesHub';
+import FinancialRecordsView from '../common/FinancialRecordsView';
 import {
   ShieldCheck,
   Building,
@@ -20,7 +22,8 @@ import {
   Download,
   Search,
   Filter,
-  Lock
+  Lock,
+  Scale
 } from 'lucide-react';
 
 export const AdminDashboard = () => {
@@ -696,6 +699,11 @@ export const AdminDashboard = () => {
             <p className="text-xs text-rose-600">هذه الخاصية تتطلب صلاحيات المسؤول المالي (Admin) فقط ولا تظهر لبقية الأدوار.</p>
           </div>
         )}
+
+        {/* Dedicated Admin Arbitration & Disputes Hub */}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
+          <DisputesHub title="هيئة التحكيم الإداري وفض النزاعات الأكاديمية (Arbitration Portal)" />
+        </div>
 
         {/* Bottom Section: Student Academic ID Verification Queue (طابور اعتماد بطاقات الطلاب والجامعات) */}
         <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">

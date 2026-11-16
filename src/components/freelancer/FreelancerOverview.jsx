@@ -415,7 +415,7 @@ export const FreelancerOverview = () => {
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 font-normal">
-                    الباحث: د. عادل الشميري (جامعة عدن) • الحوالة:{' '}
+                    الباحث: د. عادل بلبحيث (جامعة حضرموت) • الحوالة:{' '}
                     <span className="font-bold text-emerald-700">120,000 ر.ي</span>
                   </p>
                 </div>
@@ -540,16 +540,16 @@ export const FreelancerOverview = () => {
             </div>
 
             <p className="text-xs text-slate-500 font-normal leading-relaxed mb-4">
-              نظام حماية المستقل الأكاديمي تلقائياً عن تقييمات التأخير عند حدوث انقطاع عام للتيار الكهربائي أو خطوط الإنترنت باليمن.
+              ميزة حماية المستقل بالاتفاق مع العميل على هامش زمني إضافي للطوارئ (+24 إلى +48 ساعة) للتعامل مع ظروف الكهرباء أو الإنترنت بالمكلا وحضرموت دون الإضرار بتقييم الأداء.
             </p>
 
             <div className="bg-amber-50/60 rounded-xl p-3 border border-amber-200/60 mb-3 space-y-1.5 text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-slate-600 font-medium">سجل الاستقرار الحالي بصنعاء:</span>
-                <span className="font-bold text-emerald-700">طبيعي (94%)</span>
+                <span className="text-slate-600 font-medium">مؤشر استقرار الاتصال بالمكلا:</span>
+                <span className="font-bold text-emerald-700">مستقر (95%)</span>
               </div>
               <p className="text-[11px] text-amber-800 font-normal leading-relaxed">
-                عند تفعيل الهامش يتم تمديد العقد 24-48 ساعة دون أي تأثير على تقييم فصل نجاحك.
+                عند تفعيل الهامش الزمني المتفق عليه مسبقاً، يُمنح المستقل مهلة إضافية محددة لإتمام التسليم وحماية جودة المخرجات.
               </p>
             </div>
 

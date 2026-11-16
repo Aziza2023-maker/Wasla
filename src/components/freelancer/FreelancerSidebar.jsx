@@ -7,6 +7,7 @@ import {
   Layers,
   PhoneCall,
   CreditCard,
+  Scale,
   Settings,
   ShieldCheck,
   Zap,
@@ -22,7 +23,8 @@ export const FreelancerSidebar = () => {
     { id: 'freelancer-jobs', label: 'سوق العمل', icon: Briefcase },
     { id: 'freelancer-portfolio', label: 'معرض أعمالي', icon: Layers },
     { id: 'freelancer-contact', label: 'بيانات التواصل', icon: PhoneCall },
-    { id: 'freelancer-financial', label: 'الحساب المالي', icon: CreditCard },
+    { id: 'freelancer-financial', label: 'الحساب المالي والوثائق', icon: CreditCard },
+    { id: 'freelancer-disputes', label: 'النزاعات والتحكيم', icon: Scale },
   ];
 
   return (

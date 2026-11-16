@@ -18,11 +18,16 @@ import {
   CheckCircle,
   Laptop,
   ClipboardList,
-  Sparkles
+  Sparkles,
+  Briefcase,
+  Scale,
+  Building,
+  CheckCircle2,
+  ArrowRight
 } from 'lucide-react';
 
 export const LandingPage = () => {
-  const { navigateTo, serviceCategories } = useWasla();
+  const { navigateTo, serviceCategories, setSelectedRoleSignup } = useWasla();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e) => {
@@ -84,7 +89,7 @@ export const LandingPage = () => {
           </p>
 
           {/* Localized Feature Highlights Pills */}
-          <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap text-[11px] sm:text-xs text-slate-300 mb-8 font-medium">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap text-[11px] sm:text-xs text-slate-300 mb-6 font-medium">
             <span className="bg-slate-800/80 border border-slate-700/80 px-3 py-1 rounded-full flex items-center gap-1.5">
               <span>🏛️ كليات جامعة حضرموت (فلك، فوه، ومجمع الكليات)</span>
             </span>
@@ -95,6 +100,31 @@ export const LandingPage = () => {
               <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
               <span>وساطة مالية عبر العمقي، الكريمي، بن دول، والبسيري</span>
             </span>
+          </div>
+
+          {/* Prominent Dual CTAs: Post a Project vs Start as Freelancer */}
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-8 flex-wrap">
+            <button
+              onClick={() => {
+                setSelectedRoleSignup('client');
+                navigateTo('register');
+              }}
+              className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-7 py-3.5 rounded-xl font-black text-sm shadow-lg hover:shadow-teal-500/20 transition-all flex items-center gap-2 transform hover:-translate-y-0.5"
+            >
+              <Briefcase className="w-5 h-5" />
+              <span>انشر مشروعًا (أصحاب الأعمال)</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setSelectedRoleSignup('freelancer');
+                navigateTo('register');
+              }}
+              className="bg-slate-800/90 hover:bg-slate-800 text-teal-300 hover:text-white border border-teal-500/40 px-7 py-3.5 rounded-xl font-black text-sm transition-all flex items-center gap-2 transform hover:-translate-y-0.5"
+            >
+              <GraduationCap className="w-5 h-5 text-teal-400" />
+              <span>ابدأ كمستقل (طلاب وخريجون)</span>
+            </button>
           </div>
 
           {/* Integrated Search Bar */}
@@ -235,7 +265,116 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* 4. Exclusive Guarantees Section (الضمانات والمميزات الحصرية) */}
+      {/* 4. How Escrow Works Section (كيف تعمل الوساطة المالية؟) */}
+      <section className="py-16 bg-white border-t border-slate-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-xs font-bold mb-3">
+              <ShieldCheck className="w-4 h-4 text-teal-600" />
+              <span>إطار عمل الوساطة وحماية المعاملات (Escrow Mediation Framework)</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-[#0B192C] mb-3">
+              كيف تعمل الوساطة المالية لحماية الطرفين في وصلة؟
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
+              دورة تعاقدية ومالية محكمة وموثوقة محلياً تضمن ألا تضيع أموال العميل ولا يضيع جهد الطالب المستقل، عبر 5 خطوات واضحة ومسجلة بسندات رسمية.
+            </p>
+            <div className="w-12 h-1 bg-teal-500 mx-auto rounded-full mt-4" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {/* Step 1: Deposit */}
+            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 text-right flex flex-col justify-between">
+              <div>
+                <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-sm mb-3">
+                  1
+                </div>
+                <h3 className="font-bold text-sm text-[#0B192C] mb-1.5">الاتفاق والإيداع</h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                  يتم الاتفاق على المخرجات والميزانية عبر عقد ثنائي موحد. يودع العميل المبلغ في حساب الوساطة ويرفع السند.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] font-bold text-teal-700">
+                شبكات صرافة المكلا
+              </div>
+            </div>
+
+            {/* Step 2: Lock */}
+            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 text-right flex flex-col justify-between">
+              <div>
+                <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-sm mb-3">
+                  2
+                </div>
+                <h3 className="font-bold text-sm text-[#0B192C] mb-1.5">التحقق وقفل الضمان</h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                  يتحقق المشرف المالي من السند البنكي ويقفل الضمان في حساب Escrow، مع إشعار المستقل ببدء العمل بأمان.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] font-bold text-teal-700">
+                حماية مالية مؤكدة
+              </div>
+            </div>
+
+            {/* Step 3: Buffer & Execution */}
+            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 text-right flex flex-col justify-between">
+              <div>
+                <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-sm mb-3">
+                  3
+                </div>
+                <h3 className="font-bold text-sm text-[#0B192C] mb-1.5">التنفيذ وهامش الطوارئ</h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                  يعمل المستقل وفق المراحل المتفق عليها مع حماية تقييمه عبر هامش طوارئ معتمد (+24 إلى +48 ساعة) لانقطاعات الشبكة.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] font-bold text-teal-700">
+                مراعاة الواقع المحلي
+              </div>
+            </div>
+
+            {/* Step 4: Review & Release */}
+            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 text-right flex flex-col justify-between">
+              <div>
+                <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-sm mb-3">
+                  4
+                </div>
+                <h3 className="font-bold text-sm text-[#0B192C] mb-1.5">المراجعة والتحرير</h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                  يراجع العميل المخرجات المسلمة ويؤكد استلامها، وتصدر الإدارة أمر تحرير الأرباح لحساب المستقل فوراً.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] font-bold text-teal-700">
+                صرف فوري موثق
+              </div>
+            </div>
+
+            {/* Step 5: Disputes */}
+            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 text-right flex flex-col justify-between">
+              <div>
+                <div className="w-9 h-9 rounded-xl bg-purple-700 text-white flex items-center justify-center font-bold text-sm mb-3">
+                  5
+                </div>
+                <h3 className="font-bold text-sm text-[#0B192C] mb-1.5">فض النزاعات والتسوية</h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                  في حال أي خلاف، يتجمد الصرف ويتاح التفاوض الودي أو التحكيم الإداري الملزم لمطابقة المخرجات واسترداد الحقوق.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] font-bold text-purple-700">
+                تحكيم إداري عادل
+              </div>
+            </div>
+          </div>
+
+          {/* Full Transparency Notice */}
+          <div className="mt-8 p-4 rounded-2xl bg-teal-50 border border-teal-200 flex items-start sm:items-center gap-3 text-xs text-teal-900">
+            <ShieldCheck className="w-5 h-5 text-teal-700 shrink-0 mt-0.5 sm:mt-0" />
+            <p className="font-medium leading-relaxed">
+              <strong>إشعار الشفافية والمسؤولية:</strong> منصة «وصلة» تعمل كوسيط تقني وإداري لضمان الالتزامات التعاقدية. يتم إيداع وسحب الأموال عبر الحسابات الرسمية لدى شبكات الصرافة والبنوك المعتمدة بمحافظة حضرموت (شركة العمقي للصرافة، بنك الكريمي إكسبرس، بنك بن دول للتمويل الأصغر الإسلامي، وشركة البسيري للصرافة)، مع سجلات مالية متكاملة وسندات تدقيق لكل عملية.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Exclusive Guarantees Section (الضمانات والمميزات الحصرية) */}
       <section className="py-12 bg-[#F1F5F9]/60 border-t border-slate-200">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-xs font-bold mb-3">
@@ -277,7 +416,7 @@ export const LandingPage = () => {
                   وساطة نقدية محلية موثوقة (العمقي، الكريمي، بن دول، والبسيري)
                 </h4>
                 <p className="text-xs text-slate-500 font-normal leading-relaxed">
-                  حجز أموال المشروع وصرفها عبر شبكات الصرافة الرائدة بحضرموت واليمن بضمان 100%
+                  حجز أموال المشروع وصرفها عبر شبكات الصرافة الرائدة بحضرموت واليمن بضمان وساطة Escrow محمي بإشراف إداري ورقابي
                 </p>
               </div>
             </div>
@@ -285,7 +424,7 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* 5. Unified Footer */}
+      {/* 6. Unified Footer */}
       <Footer />
     </div>
   );

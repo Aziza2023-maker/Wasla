@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useWasla } from '../../context/WaslaContext';
 import WaslaLogo from '../common/WaslaLogo';
 import ReadinessGuide from '../common/ReadinessGuide';
+import FinancialRecordsView from '../common/FinancialRecordsView';
+import DisputesHub from '../common/DisputesHub';
+import ContractModal from '../common/ContractModal';
 import {
   Briefcase,
   Plus,
@@ -25,7 +28,8 @@ import {
   PlusCircle,
   Sparkles,
   Eye,
-  AlertCircle
+  AlertCircle,
+  Scale
 } from 'lucide-react';
 
 export const ClientDashboard = () => {
@@ -37,6 +41,8 @@ export const ClientDashboard = () => {
     addToast
   } = useWasla();
 
+  const [activeClientView, setActiveClientView] = useState('overview'); // 'overview' | 'financial' | 'disputes'
+  const [activeContractModal, setActiveContractModal] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'review' | 'progress' | 'completed'
 
@@ -204,8 +210,68 @@ export const ClientDashboard = () => {
           </div>
         </div>
 
-        {/* 3. Main Split Layout: Active Contracts Table vs Right Control Panel */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* View Switcher Tabs Bar */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3">
+          <button
+            onClick={() => setActiveClientView('overview')}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              activeClientView === 'overview'
+                ? 'bg-[#0B192C] text-white shadow-xs'
+                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            <Briefcase className="w-4 h-4 text-teal-400" />
+            <span>لوحة المشاريع والعقود</span>
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300">
+              {clientContracts.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveClientView('financial')}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              activeClientView === 'financial'
+                ? 'bg-[#0B192C] text-white shadow-xs'
+                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            <CreditCard className="w-4 h-4 text-sky-400" />
+            <span>السجلات والمعاملات المالية</span>
+          </button>
+
+          <button
+            onClick={() => setActiveClientView('disputes')}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              activeClientView === 'disputes'
+                ? 'bg-[#0B192C] text-white shadow-xs'
+                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            <Scale className="w-4 h-4 text-amber-400" />
+            <span>النزاعات والتحكيم الأكاديمي</span>
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-700 border border-amber-300">
+              تسوية ثنائية
+            </span>
+          </button>
+        </div>
+
+        {/* Conditional Rendering based on activeClientView */}
+        {activeClientView === 'financial' && (
+          <div className="space-y-4">
+            <FinancialRecordsView title="كشف الحساب والسجلات المالية للعميل" customRole="client" />
+          </div>
+        )}
+
+        {activeClientView === 'disputes' && (
+          <div className="space-y-4">
+            <DisputesHub title="مركز تسوية النزاعات والتحكيم للعميل" />
+          </div>
+        )}
+
+        {activeClientView === 'overview' && (
+          <>
+            {/* 3. Main Split Layout: Active Contracts Table vs Right Control Panel */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Main Table Column (9 cols on lg) */}
           <div className="lg:col-span-9 space-y-4">
             {/* Interactive Readiness Guide for Clients */}
@@ -350,29 +416,40 @@ export const ClientDashboard = () => {
 
                         {/* Client Actions (Strictly Read-Only / Review - NO Escrow Release) */}
                         <td className="py-4 pl-2 text-center">
-                          {contract.status.includes('مكتمل') ? (
+                          <div className="flex items-center justify-center gap-1.5 flex-wrap">
                             <button
-                              onClick={() => addToast('تقييم أداء الطالب', 'تم فتح نموذج التقييم ومنح الطالب 5 نجوم.')}
-                              className="border border-slate-200 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
+                              onClick={() => setActiveContractModal(contract)}
+                              className="border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 px-2 py-1 rounded-lg font-bold text-xs transition-colors whitespace-nowrap flex items-center gap-1"
+                              title="معاينة وثيقة العقد الثنائي"
                             >
-                              تقييم الطالب
+                              <FileText className="w-3.5 h-3.5 text-teal-600" />
+                              <span>معاينة العقد</span>
                             </button>
-                          ) : contract.status.includes('للمراجعة') ? (
-                            <button
-                              onClick={() => addToast('معاينة المخرجات', 'المخرجات المسلمة قيد التدقيق الإداري من قبل المشرف المالي لتحرير الضمان.')}
-                              className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors whitespace-nowrap flex items-center justify-center gap-1 mx-auto"
-                            >
-                              <Eye className="w-3.5 h-3.5 text-slate-500" />
-                              <span>معاينة التسليم</span>
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => addToast('عرض التقدم', 'العمل جاري من قبل الطالب وفق الجدول الزمني وهامش الطوارئ المعتمد.')}
-                              className="border border-slate-200 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
-                            >
-                              عرض التقدم
-                            </button>
-                          )}
+
+                            {contract.status.includes('مكتمل') ? (
+                              <button
+                                onClick={() => addToast('تقييم أداء الطالب', 'تم فتح نموذج التقييم ومنح الطالب 5 نجوم.')}
+                                className="border border-slate-200 hover:bg-slate-50 text-slate-700 px-2 py-1 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
+                              >
+                                تقييم الطالب
+                              </button>
+                            ) : contract.status.includes('للمراجعة') ? (
+                              <button
+                                onClick={() => addToast('معاينة المخرجات', 'المخرجات المسلمة قيد التدقيق الإداري من قبل المشرف المالي لتحرير الضمان.')}
+                                className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-lg font-bold text-xs transition-colors whitespace-nowrap flex items-center gap-1"
+                              >
+                                <Eye className="w-3.5 h-3.5 text-slate-500" />
+                                <span>التسليم</span>
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => addToast('عرض التقدم', 'العمل جاري من قبل الطالب وفق الجدول الزمني وهامش الطوارئ المعتمد.')}
+                                className="border border-slate-200 hover:bg-slate-50 text-slate-700 px-2 py-1 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
+                              >
+                                التقدم
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -536,33 +613,50 @@ export const ClientDashboard = () => {
               <span className="text-xs font-bold text-slate-400 block mb-3">شاشات تحكم العميل</span>
               <div className="space-y-1">
                 <button
-                  onClick={() => navigateTo('client-dashboard')}
-                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-teal-50 text-teal-800 font-bold text-xs border border-teal-200"
+                  onClick={() => setActiveClientView('overview')}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    activeClientView === 'overview'
+                      ? 'bg-teal-50 text-teal-800 border border-teal-200'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  }`}
                 >
                   <span className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-teal-600" />
-                    لوحة التحكم الرئيسية
+                    المشاريع والعقود الجارية
+                  </span>
+                  <span className="text-[10px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded font-mono">
+                    {clientContracts.length}
                   </span>
                 </button>
 
                 <button
-                  onClick={() => addToast('المشاريع والعقود', 'تم تصفية القائمة لعرض العقود الجارية (6).')}
-                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 text-xs font-bold"
-                >
-                  <span className="flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-slate-400" />
-                    المشاريع والعقود
-                  </span>
-                  <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded">6 جار</span>
-                </button>
-
-                <button
-                  onClick={() => addToast('المعاملات المالية', 'تم عرض كشف حساب التحويلات البنكية المحررة.')}
-                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 text-xs font-bold"
+                  onClick={() => setActiveClientView('financial')}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    activeClientView === 'financial'
+                      ? 'bg-teal-50 text-teal-800 border border-teal-200'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  }`}
                 >
                   <span className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-slate-400" />
-                    المعاملات المالية
+                    المعاملات المالية والوثائق
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setActiveClientView('disputes')}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    activeClientView === 'disputes'
+                      ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Scale className="w-4 h-4 text-amber-600" />
+                    النزاعات والتحكيم
+                  </span>
+                  <span className="text-[10px] text-amber-800 bg-amber-100 px-2 py-0.5 rounded font-bold">
+                    مركز التسوية
                   </span>
                 </button>
 
@@ -608,7 +702,20 @@ export const ClientDashboard = () => {
             </div>
           </div>
         </div>
+          </>
+        )}
       </main>
+
+      {/* Bilateral Contract Modal */}
+      <ContractModal
+        contract={activeContractModal}
+        isOpen={Boolean(activeContractModal)}
+        onClose={() => setActiveContractModal(null)}
+        onOpenDispute={(cnt) => {
+          setActiveContractModal(null);
+          setActiveClientView('disputes');
+        }}
+      />
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-4 text-xs text-slate-400">

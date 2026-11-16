@@ -21,6 +21,8 @@ export const LoginView = () => {
     addToast,
     setCurrentRole,
     login,
+    authenticateUser,
+    accounts,
     isAuthenticated,
     currentRole
   } = useWasla();
@@ -28,7 +30,7 @@ export const LoginView = () => {
   // Role Login Mode: 'freelancer' | 'client' | 'admin'
   const [loginRole, setLoginRole] = useState('freelancer');
 
-  const [email, setEmail] = useState('arwa.alhamadi@su.edu.ye');
+  const [email, setEmail] = useState('arwa@wasla.ye');
   const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
@@ -39,14 +41,14 @@ export const LoginView = () => {
     setLoginRole(role);
     setErrorMsg('');
     if (role === 'freelancer') {
-      setEmail('arwa.alhamadi@su.edu.ye');
+      setEmail('arwa@wasla.ye');
       setPassword('password123');
     } else if (role === 'client') {
-      setEmail('shehab.saleh@madar.ye');
+      setEmail('shehab@madar.ye');
       setPassword('password123');
     } else if (role === 'admin') {
       setEmail('admin@wasla.ye');
-      setPassword('admin2025');
+      setPassword('adminpassword123');
     }
   };
 
@@ -64,9 +66,16 @@ export const LoginView = () => {
       return;
     }
 
-    // Role-based redirect logic with immediate synchronized authentication
-    if (loginRole === 'admin' || email.includes('admin')) {
-      login('admin');
+    // Role-enforced authentication lookup from registered accounts
+    const authResult = authenticateUser(email, password, loginRole);
+
+    if (!authResult.success) {
+      setErrorMsg(authResult.error);
+      return;
+    }
+
+    // Direct routing based on confirmed fixed role
+    if (authResult.role === 'admin') {
       addToast(
         'تم تسجيل الدخول كمسؤول نظام',
         'مرحباً بك في بوابة الإدارة والرقابة المالية المركزية للتحقق من حوالات العمقي، الكريمي، بن دول، والبسيري.',
@@ -74,20 +83,18 @@ export const LoginView = () => {
         4000
       );
       navigateTo('admin-panel', 'admin');
-    } else if (loginRole === 'client' || email.includes('client') || email.includes('shehab') || email.includes('madar')) {
-      login('client');
+    } else if (authResult.role === 'client') {
       addToast(
         'تم تسجيل الدخول بنجاح!',
-        'مرحباً بك يا شهاب صالح. تم توجيهك إلى لوحة العميل لإدارة طلبات الخدمات وعقود Escrow.',
+        `مرحباً بك يا ${authResult.user?.name || 'شهاب صالح'}. تم توجيهك إلى لوحة العميل لإدارة طلبات الخدمات وعقود Escrow.`,
         'success',
         4000
       );
       navigateTo('client-dashboard', 'client');
     } else {
-      login('freelancer');
       addToast(
         'تم تسجيل الدخول بنجاح!',
-        'مرحباً م. أروى الحمادي. تم توجيهك إلى لوحة المستقل الأكاديمي وسوق الخدمات.',
+        `مرحباً ${authResult.user?.name || 'م. أروى الحمادي'}. تم توجيهك إلى لوحة المستقل وسوق الخدمات.`,
         'success',
         4000
       );

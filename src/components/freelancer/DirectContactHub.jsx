@@ -370,33 +370,33 @@ export const DirectContactHub = () => {
             </div>
           </div>
 
-          {/* Card 2: Najm Network */}
+          {/* Card 2: Al-Omgy Exchange */}
           <div className="rounded-xl border border-slate-200 p-4 bg-slate-50/50 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <PhoneCall className="w-5 h-5 text-blue-700" />
-                  <h4 className="font-bold text-xs text-[#0B192C]">شبكة النجم للحوالات الفورية</h4>
+                  <Building className="w-5 h-5 text-teal-700" />
+                  <h4 className="font-bold text-xs text-[#0B192C]">شركة العمقي للصرافة</h4>
                 </div>
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               </div>
 
-              <span className="text-[10px] text-slate-400 block mb-1">استلام كاش برقم الهوية</span>
+              <span className="text-[10px] text-slate-400 block mb-1">حساب معتمد / فرع المكلا</span>
               <div className="bg-white rounded-lg p-2.5 border border-slate-200 font-mono font-black text-sm text-[#0B192C] mb-2" dir="ltr">
-                {freelancerUser.bankAccounts.najm.phone}
+                {freelancerUser.bankAccounts.omgy?.accountNumber || '254 019 3301'}
               </div>
               <span className="text-[11px] text-slate-600 font-medium block">
-                الفرع المفضل: {freelancerUser.bankAccounts.najm.branch}
+                الفرع المفضل: {freelancerUser.bankAccounts.omgy?.branch || 'المكلا - حي الشرج'}
               </span>
             </div>
 
             <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between text-xs mt-3">
-              <span className="text-[10px] text-slate-500 font-medium">رسوم التحويل: مجانية عبر وصلة</span>
+              <span className="text-[10px] text-slate-500 font-medium">رسوم التحويل: بحسب تعرفة الصرافة</span>
               <button
-                onClick={() => addToast('تعديل الوكيل', 'تم فتح خيارات فروع شبكة النجم بمحافظتك.')}
+                onClick={() => addToast('تعديل الفرع', 'يمكنك تعديل بيانات استلام حوالات العمقي من إعدادات الحساب.')}
                 className="text-slate-500 hover:text-slate-800 text-[11px] font-bold"
               >
-                تعديل الوكيل
+                تعديل الفرع
               </button>
             </div>
           </div>
@@ -406,10 +406,10 @@ export const DirectContactHub = () => {
             <div>
               <div className="flex items-center gap-2 mb-2 text-teal-400">
                 <ShieldCheck className="w-5 h-5" />
-                <h4 className="font-bold text-xs text-white">ضمان حماية المستحقات</h4>
+                <h4 className="font-bold text-xs text-white">وساطة حماية المستحقات</h4>
               </div>
               <p className="text-[11px] text-slate-300 font-normal leading-relaxed mb-4">
-                عند قبول أي مشروع، يودع العميل قيمة المرحلة في حساب وساطة «وصلة». يمكنك البدء بالعمل والتواصل بحرية تامة وأنت مطمئن 100% أن مستحقاتك محفوظة قانونياً ومادياً.
+                عند قبول أي مشروع، يودع العميل قيمة المرحلة في حساب وساطة «وصلة». لا تبدأ العمل إلا بعد تأكيد حجز المبلغ من المشرف المالي، وتتحرر مستحقاتك فور اعتماد التسليم.
               </p>
             </div>
 

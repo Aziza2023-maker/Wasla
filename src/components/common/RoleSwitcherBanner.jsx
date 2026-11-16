@@ -80,6 +80,10 @@ export const RoleSwitcherBanner = () => {
               ? 'الإدارة والوساطة (Admin Escrow)'
               : 'زائر (Guest)'}
           </span>
+
+          <span className="text-[10px] text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700 hidden md:inline">
+            معاينة الحسابات التجريبية (Demo Accounts)
+          </span>
         </div>
 
         {/* Quick Horizontal Role Links */}
