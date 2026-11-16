@@ -3,6 +3,7 @@ import { useWasla } from '../../context/WaslaContext';
 import FreelancerSidebar from './FreelancerSidebar';
 import FreelancerHeader from './FreelancerHeader';
 import FreelancerOverview from './FreelancerOverview';
+import FreelancerServicesManager from './FreelancerServicesManager';
 import JobMarketplace from './JobMarketplace';
 import PortfolioManager from './PortfolioManager';
 import DirectContactHub from './DirectContactHub';
@@ -16,6 +17,8 @@ export const FreelancerLayout = () => {
     switch (activeScreen) {
       case 'freelancer-overview':
         return <FreelancerOverview />;
+      case 'freelancer-services':
+        return <FreelancerServicesManager />;
       case 'freelancer-jobs':
         return <JobMarketplace />;
       case 'freelancer-portfolio':

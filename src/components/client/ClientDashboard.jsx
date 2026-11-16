@@ -5,6 +5,7 @@ import ReadinessGuide from '../common/ReadinessGuide';
 import FinancialRecordsView from '../common/FinancialRecordsView';
 import DisputesHub from '../common/DisputesHub';
 import ContractModal from '../common/ContractModal';
+import OrderLifecycleView from '../common/OrderLifecycleView';
 import {
   Briefcase,
   Plus,
@@ -29,20 +30,24 @@ import {
   Sparkles,
   Eye,
   AlertCircle,
-  Scale
+  Scale,
+  X
 } from 'lucide-react';
 
 export const ClientDashboard = () => {
   const {
     clientUser,
     clientContracts,
+    serviceOrders,
     navigateTo,
     openModal,
     addToast
   } = useWasla();
 
   const [activeClientView, setActiveClientView] = useState('overview'); // 'overview' | 'financial' | 'disputes'
+  const [activeOrderTab, setActiveOrderTab] = useState('services'); // 'services' | 'contracts'
   const [activeContractModal, setActiveContractModal] = useState(null);
+  const [activeOrderForLifecycle, setActiveOrderForLifecycle] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'review' | 'progress' | 'completed'
 
@@ -59,6 +64,22 @@ export const ClientDashboard = () => {
       (filterStatus === 'completed' && c.status.includes('مكتمل'));
 
     return matchesSearch && matchesStatus;
+  });
+
+  const myServiceOrders = (serviceOrders || []).filter((o) => {
+    const matchesUser = o.clientId === clientUser.id || o.clientName?.includes(clientUser.name);
+    const matchesSearch =
+      o.orderTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      o.freelancerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      o.orderCode.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesStatus =
+      filterStatus === 'all' ||
+      (filterStatus === 'review' && ['delivered_pending_review', 'revision_requested'].includes(o.status)) ||
+      (filterStatus === 'progress' && ['in_progress', 'awaiting_deposit', 'awaiting_admin_verification', 'contract_pending_approval'].includes(o.status)) ||
+      (filterStatus === 'completed' && ['completed', 'approved_pending_payout'].includes(o.status));
+
+    return matchesUser && matchesSearch && matchesStatus;
   });
 
   return (
@@ -332,130 +353,246 @@ export const ClientDashboard = () => {
                 </div>
               </div>
 
-              {/* Simplified Orders Status Table (No Escrow Release Buttons) */}
-              <div className="overflow-x-auto">
-                <table className="w-full text-right text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-slate-400 font-bold text-[11px]">
-                      <th className="pb-3 pr-2">الطلب / الخدمة</th>
-                      <th className="pb-3">الطالب المستقل</th>
-                      <th className="pb-3">الكلية والجامعة</th>
-                      <th className="pb-3">المبلغ المتفق</th>
-                      <th className="pb-3">حالة الطلب</th>
-                      <th className="pb-3">الضمان المالي (Escrow)</th>
-                      <th className="pb-3 pl-2 text-center">الإجراءات المتاحة</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {filteredContracts.map((contract) => (
-                      <tr key={contract.id} className="hover:bg-slate-50/60 transition-colors">
-                        {/* Order & Role */}
-                        <td className="py-4 pr-2">
-                          <span className="font-bold text-[#0B192C] block">
-                            {contract.studentRole}
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-mono">
-                            عقد #{contract.id}
-                          </span>
-                        </td>
+              {/* Sub-Tabs: Khamsat Microservices Orders vs Custom Contracts */}
+              <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
+                <button
+                  onClick={() => setActiveOrderTab('services')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    activeOrderTab === 'services'
+                      ? 'bg-[#0D9488] text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>طلبات الخدمات المصغرة (Khamsat Orders)</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20">
+                    {myServiceOrders.length}
+                  </span>
+                </button>
 
-                        {/* Student */}
-                        <td className="py-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs shrink-0">
-                              {contract.studentInitials}
-                            </div>
-                            <span className="font-semibold text-slate-800">
-                              {contract.studentName}
-                            </span>
-                          </div>
-                        </td>
-
-                        {/* College & University */}
-                        <td className="py-4 text-slate-600">
-                          <span className="font-medium block">{contract.college}</span>
-                          <span className="text-[10px] text-slate-400">{contract.university}</span>
-                        </td>
-
-                        {/* Agreed Budget */}
-                        <td className="py-4 font-black text-slate-800">
-                          {contract.agreedBudget}
-                        </td>
-
-                        {/* Simplified Order Status */}
-                        <td className="py-4">
-                          {contract.status.includes('للمراجعة') ? (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                              <Clock className="w-3.5 h-3.5 text-amber-600" />
-                              <span>في انتظار تأكيد المسؤول</span>
-                            </span>
-                          ) : contract.status.includes('قيد التنفيذ') ? (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
-                              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                              <span>قيد التنفيذ ({contract.status.replace('قيد التنفيذ', '').trim() || 'جارٍ العمل'})</span>
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                              <span>مكتمل بنجاح</span>
-                            </span>
-                          )}
-                        </td>
-
-                        {/* Escrow Status (Protected/Read-Only) */}
-                        <td className="py-4">
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
-                            <ShieldCheck className="w-3 h-3 text-teal-600" />
-                            <span>
-                              {contract.status.includes('مكتمل')
-                                ? 'تم صرف الضمان للطالب'
-                                : 'محجوز بأمان لدى الإدارة'}
-                            </span>
-                          </span>
-                        </td>
-
-                        {/* Client Actions (Strictly Read-Only / Review - NO Escrow Release) */}
-                        <td className="py-4 pl-2 text-center">
-                          <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                            <button
-                              onClick={() => setActiveContractModal(contract)}
-                              className="border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 px-2 py-1 rounded-lg font-bold text-xs transition-colors whitespace-nowrap flex items-center gap-1"
-                              title="معاينة وثيقة العقد الثنائي"
-                            >
-                              <FileText className="w-3.5 h-3.5 text-teal-600" />
-                              <span>معاينة العقد</span>
-                            </button>
-
-                            {contract.status.includes('مكتمل') ? (
-                              <button
-                                onClick={() => addToast('تقييم أداء الطالب', 'تم فتح نموذج التقييم ومنح الطالب 5 نجوم.')}
-                                className="border border-slate-200 hover:bg-slate-50 text-slate-700 px-2 py-1 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
-                              >
-                                تقييم الطالب
-                              </button>
-                            ) : contract.status.includes('للمراجعة') ? (
-                              <button
-                                onClick={() => addToast('معاينة المخرجات', 'المخرجات المسلمة قيد التدقيق الإداري من قبل المشرف المالي لتحرير الضمان.')}
-                                className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-lg font-bold text-xs transition-colors whitespace-nowrap flex items-center gap-1"
-                              >
-                                <Eye className="w-3.5 h-3.5 text-slate-500" />
-                                <span>التسليم</span>
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => addToast('عرض التقدم', 'العمل جاري من قبل الطالب وفق الجدول الزمني وهامش الطوارئ المعتمد.')}
-                                className="border border-slate-200 hover:bg-slate-50 text-slate-700 px-2 py-1 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
-                              >
-                                التقدم
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <button
+                  onClick={() => setActiveOrderTab('contracts')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    activeOrderTab === 'contracts'
+                      ? 'bg-[#0D9488] text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>عقود المشاريع المخصصة (Custom Contracts)</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20">
+                    {filteredContracts.length}
+                  </span>
+                </button>
               </div>
+
+              {/* TABLE 1: Khamsat Microservice Orders (14 Lifecycle States) */}
+              {activeOrderTab === 'services' && (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-right text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-slate-400 font-bold text-[11px]">
+                        <th className="pb-3 pr-2">رمز وعنوان الطلب</th>
+                        <th className="pb-3">المستقل الأكاديمي</th>
+                        <th className="pb-3">قيمة العقد والضمان</th>
+                        <th className="pb-3">حالة الطلب الحالية</th>
+                        <th className="pb-3">شبكة الضمان المحلي</th>
+                        <th className="pb-3 pl-2 text-center">إجراءات المتابعة</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {myServiceOrders.map((ord) => (
+                        <tr key={ord.id} className="hover:bg-slate-50/60 transition-colors">
+                          {/* Order Code & Title */}
+                          <td className="py-4 pr-2">
+                            <span className="font-bold text-[#0B192C] block">
+                              {ord.orderTitle}
+                            </span>
+                            <span className="text-[10px] text-teal-700 font-mono font-bold">
+                              {ord.orderCode} • {ord.deliveryDays} أيام (+{ord.bufferDays} هامش)
+                            </span>
+                          </td>
+
+                          {/* Freelancer */}
+                          <td className="py-4">
+                            <div className="flex items-center gap-2">
+                              <img
+                                src={ord.freelancerAvatar}
+                                alt={ord.freelancerName}
+                                className="w-7 h-7 rounded-full object-cover border border-teal-500 shrink-0"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">
+                                  {ord.freelancerName}
+                                </span>
+                                <span className="text-[10px] text-slate-400">
+                                  {ord.freelancerUniversity}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Price */}
+                          <td className="py-4 font-mono">
+                            <span className="font-black text-slate-800 block">
+                              {ord.priceYER?.toLocaleString()} ر.ي
+                            </span>
+                            <span className="text-[10px] text-slate-400">
+                              (${ord.priceUSD})
+                            </span>
+                          </td>
+
+                          {/* Status Badge */}
+                          <td className="py-4">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+                                ord.status === 'delivered_pending_review'
+                                  ? 'bg-amber-50 text-amber-800 border-amber-300 ring-1 ring-amber-400'
+                                  : ord.status === 'in_progress'
+                                  ? 'bg-blue-50 text-blue-800 border-blue-200'
+                                  : ord.status === 'awaiting_deposit' || ord.status === 'awaiting_admin_verification'
+                                  ? 'bg-purple-50 text-purple-800 border-purple-200'
+                                  : ord.status === 'completed'
+                                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                  : ord.status === 'disputed'
+                                  ? 'bg-rose-50 text-rose-800 border-rose-200'
+                                  : 'bg-slate-100 text-slate-800 border-slate-200'
+                              }`}
+                            >
+                              {ord.status === 'in_progress' && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                              )}
+                              <span>{ord.statusLabel}</span>
+                            </span>
+                          </td>
+
+                          {/* Escrow Provider */}
+                          <td className="py-4">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
+                              <ShieldCheck className="w-3 h-3 text-teal-600" />
+                              <span>{ord.escrowProvider || 'وساطة معتمدة'}</span>
+                            </span>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="py-4 pl-2 text-center">
+                            <button
+                              onClick={() => setActiveOrderForLifecycle(ord)}
+                              className="border border-teal-300 bg-teal-50 hover:bg-teal-100 text-teal-900 px-3 py-1.5 rounded-xl font-bold text-xs transition-colors whitespace-nowrap flex items-center gap-1.5 mx-auto shadow-2xs"
+                            >
+                              <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+                              <span>إدارة وتتبع الطلب</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* TABLE 2: Custom Project Contracts */}
+              {activeOrderTab === 'contracts' && (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-right text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-slate-400 font-bold text-[11px]">
+                        <th className="pb-3 pr-2">الطلب / الخدمة</th>
+                        <th className="pb-3">الطالب المستقل</th>
+                        <th className="pb-3">الكلية والجامعة</th>
+                        <th className="pb-3">المبلغ المتفق</th>
+                        <th className="pb-3">حالة الطلب</th>
+                        <th className="pb-3">الضمان المالي (Escrow)</th>
+                        <th className="pb-3 pl-2 text-center">الإجراءات المتاحة</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredContracts.map((contract) => (
+                        <tr key={contract.id} className="hover:bg-slate-50/60 transition-colors">
+                          {/* Order & Role */}
+                          <td className="py-4 pr-2">
+                            <span className="font-bold text-[#0B192C] block">
+                              {contract.studentRole}
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-mono">
+                              عقد #{contract.id}
+                            </span>
+                          </td>
+
+                          {/* Student */}
+                          <td className="py-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-7 h-7 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs shrink-0">
+                                {contract.studentInitials}
+                              </div>
+                              <span className="font-semibold text-slate-800">
+                                {contract.studentName}
+                              </span>
+                            </div>
+                          </td>
+
+                          {/* College & University */}
+                          <td className="py-4 text-slate-600">
+                            <span className="font-medium block">{contract.college}</span>
+                            <span className="text-[10px] text-slate-400">{contract.university}</span>
+                          </td>
+
+                          {/* Agreed Budget */}
+                          <td className="py-4 font-black text-slate-800">
+                            {contract.agreedBudget}
+                          </td>
+
+                          {/* Simplified Order Status */}
+                          <td className="py-4">
+                            {contract.status.includes('للمراجعة') ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                <Clock className="w-3.5 h-3.5 text-amber-600" />
+                                <span>في انتظار تأكيد المسؤول</span>
+                              </span>
+                            ) : contract.status.includes('قيد التنفيذ') ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                                <span>قيد التنفيذ ({contract.status.replace('قيد التنفيذ', '').trim() || 'جارٍ العمل'})</span>
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>مكتمل بنجاح</span>
+                              </span>
+                            )}
+                          </td>
+
+                          {/* Escrow Status (Protected/Read-Only) */}
+                          <td className="py-4">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">
+                              <ShieldCheck className="w-3 h-3 text-teal-600" />
+                              <span>
+                                {contract.status.includes('مكتمل')
+                                  ? 'تم صرف الضمان للطالب'
+                                  : 'محجوز بأمان لدى الإدارة'}
+                              </span>
+                            </span>
+                          </td>
+
+                          {/* Client Actions */}
+                          <td className="py-4 pl-2 text-center">
+                            <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                              <button
+                                onClick={() => setActiveContractModal(contract)}
+                                className="border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 px-2 py-1 rounded-lg font-bold text-xs transition-colors whitespace-nowrap flex items-center gap-1"
+                                title="معاينة وثيقة العقد الثنائي"
+                              >
+                                <FileText className="w-3.5 h-3.5 text-teal-600" />
+                                <span>معاينة العقد</span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
 
               {/* Safety & Escrow Notice */}
               <div className="mt-4 p-3.5 rounded-xl bg-teal-50/70 border border-teal-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-teal-900">
@@ -716,6 +853,38 @@ export const ClientDashboard = () => {
           setActiveClientView('disputes');
         }}
       />
+
+      {/* Interactive Order Lifecycle Modal */}
+      {activeOrderForLifecycle && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-900/70 backdrop-blur-xs overflow-y-auto"
+          dir="rtl"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setActiveOrderForLifecycle(null);
+          }}
+        >
+          <div className="bg-white rounded-3xl max-w-5xl w-full border border-slate-200 shadow-2xl overflow-hidden my-6 max-h-[94vh] flex flex-col">
+            <div className="p-4 bg-[#0B192C] text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-teal-400" />
+                <span className="font-bold text-xs">إدارة ومتابعة دورة حياة الطلب (14 مرحلة)</span>
+              </div>
+              <button
+                onClick={() => setActiveOrderForLifecycle(null)}
+                className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              <OrderLifecycleView
+                orderId={activeOrderForLifecycle.id}
+                onClose={() => setActiveOrderForLifecycle(null)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-4 text-xs text-slate-400">

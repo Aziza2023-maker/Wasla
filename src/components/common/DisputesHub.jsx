@@ -38,6 +38,8 @@ export const DisputesHub = ({ title = 'مركز النزاعات والتحكي�
     respondToDisputeProposal,
     escalateDisputeToAdmin,
     resolveDisputeByAdmin,
+    submitDisputeAppeal,
+    resolveDisputeAppeal,
     openModal
   } = useWasla();
 
@@ -51,13 +53,13 @@ export const DisputesHub = ({ title = 'مركز النزاعات والتحكي�
     if (isAdmin) return true; // admin sees all
     if (isClient) {
       // client sees tickets they opened or linked to them
-      return d.clientId === clientUser.id || d.clientName?.includes(clientUser.name) || true;
+      return d.clientId === clientUser.id || d.clientName?.includes(clientUser.name);
     }
     if (isFreelancer) {
       // freelancer sees tickets involving them
-      return d.freelancerId === freelancerUser.id || d.freelancerName?.includes(freelancerUser.name) || true;
+      return d.freelancerId === freelancerUser.id || d.freelancerName?.includes(freelancerUser.name);
     }
-    return true;
+    return false;
   });
 
   const [activeDisputeId, setActiveDisputeId] = useState(userDisputes[0]?.id || null);
@@ -81,6 +83,15 @@ export const DisputesHub = ({ title = 'مركز النزاعات والتحكي�
   const [adminRefundClient, setAdminRefundClient] = useState('');
   const [adminPayoutFreelancer, setAdminPayoutFreelancer] = useState('');
   const [adminRulingNotes, setAdminRulingNotes] = useState('');
+
+  // Appeal states (طلب إعادة نظر)
+  const [showAppealForm, setShowAppealForm] = useState(false);
+  const [appealReason, setAppealReason] = useState('');
+  const [showAppealReviewForm, setShowAppealReviewForm] = useState(false);
+  const [appealDecision, setAppealDecision] = useState('confirmed'); // 'confirmed' | 'amended'
+  const [appealAdminNotes, setAppealAdminNotes] = useState('');
+  const [amendedRefundClient, setAmendedRefundClient] = useState('');
+  const [amendedPayoutFreelancer, setAmendedPayoutFreelancer] = useState('');
 
   const handleCreateProposal = (e) => {
     e.preventDefault();
@@ -138,6 +149,34 @@ export const DisputesHub = ({ title = 'مركز النزاعات والتحكي�
     setAdminRulingNotes('');
   };
 
+  const handleAppealSubmit = (e) => {
+    e.preventDefault();
+    if (!activeDispute || !appealReason.trim()) return;
+    submitDisputeAppeal(activeDispute.id, {
+      appellantRole: currentRole,
+      appellantName: currentRole === 'client' ? clientUser.name : freelancerUser.name,
+      appealReason: appealReason.trim()
+    });
+    setShowAppealForm(false);
+    setAppealReason('');
+  };
+
+  const handleAppealReviewSubmit = (e) => {
+    e.preventDefault();
+    if (!activeDispute) return;
+    resolveDisputeAppeal(activeDispute.id, {
+      decision: appealDecision,
+      adminNotes: appealAdminNotes.trim() || (appealDecision === 'amended' ? 'تم تعديل الحكم بعد دراسة الاستئناف.' : 'تم تأكيد سلامة الحكم التحكيمي السابق ورفض طلب إعادة النظر.'),
+      amendedRuling: appealDecision === 'amended' ? {
+        refundClientYER: Number(amendedRefundClient) || 0,
+        payoutFreelancerYER: Number(amendedPayoutFreelancer) || 0,
+        adminNotes: appealAdminNotes.trim(),
+        decidedAt: 'الآن'
+      } : null
+    });
+    setShowAppealReviewForm(false);
+  };
+
   const getStatusBadge = (status) => {
     switch (status) {
       case 'open':
@@ -150,6 +189,8 @@ export const DisputesHub = ({ title = 'مركز النزاعات والتحكي�
         return { label: 'تم الحل باتفاق متبادل ✓', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' };
       case 'closed_by_admin':
         return { label: 'مغلق بقرار تحكيمي ملزم ✓', color: 'bg-teal-50 text-teal-800 border-teal-200' };
+      case 'appeal_pending':
+        return { label: 'طلب إعادة نظر قيد المراجعة الإدارية ⚖️', color: 'bg-rose-50 text-rose-800 border-rose-200' };
       default:
         return { label: status, color: 'bg-slate-100 text-slate-700 border-slate-200' };
     }
@@ -609,10 +650,15 @@ export const DisputesHub = ({ title = 'مركز النزاعات والتحكي�
 
                 {/* Admin Final Ruling Details if closed */}
                 {activeDispute.status === 'closed_by_admin' && activeDispute.ruling && (
-                  <div className="p-5 bg-teal-50/80 border-t border-teal-200 space-y-2">
-                    <div className="flex items-center gap-2 text-teal-900 font-bold text-xs">
-                      <Gavel className="w-4 h-4 text-teal-700" />
-                      <span>الحكم والقرار التحكيمي الإداري النهائي (ملزم ومطبق):</span>
+                  <div className="p-5 bg-teal-50/80 border-t border-teal-200 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-teal-900 font-bold text-xs">
+                        <Gavel className="w-4 h-4 text-teal-700" />
+                        <span>الحكم والقرار التحكيمي الإداري النهائي:</span>
+                      </div>
+                      <span className="text-[10px] text-teal-700 font-mono">
+                        {activeDispute.ruling.decidedAt || 'قرار ملزم'}
+                      </span>
                     </div>
                     <p className="text-xs text-teal-800 leading-relaxed font-normal">
                       {activeDispute.ruling.adminNotes}
@@ -630,10 +676,45 @@ export const DisputesHub = ({ title = 'مركز النزاعات والتحكي�
                   </div>
                 )}
 
-                {/* Bottom Actions (Escalate or Admin Ruling) */}
+                {/* Appeal Card if Appeal exists */}
+                {activeDispute.appeal && (
+                  <div className="p-5 bg-rose-50/80 border-t border-rose-200 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-rose-900 font-bold text-xs">
+                        <AlertCircle className="w-4 h-4 text-rose-600" />
+                        <span>طلب إعادة النظر والاستئناف التحكيمي:</span>
+                      </div>
+                      <span className="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full font-bold border border-rose-200">
+                        {activeDispute.appealDecision ? 'تم البت في الاستئناف' : 'قيد التدقيق الإداري'}
+                      </span>
+                    </div>
+                    <div className="bg-white p-3 rounded-xl border border-rose-200 text-xs">
+                      <div className="flex items-center justify-between text-slate-500 text-[10px] mb-1 font-mono">
+                        <span>مقدم من: {activeDispute.appeal.appellantName}</span>
+                        <span>{activeDispute.appeal.submittedAt}</span>
+                      </div>
+                      <p className="text-slate-800 font-medium leading-relaxed">
+                        {activeDispute.appeal.appealReason}
+                      </p>
+                    </div>
+
+                    {activeDispute.appealDecision && (
+                      <div className="bg-teal-50 p-3 rounded-xl border border-teal-200 text-xs">
+                        <span className="text-teal-900 font-bold block mb-1">
+                          قرار المشرف الإداري على الاستئناف: {activeDispute.appealDecision.decision === 'amended' ? 'قبول وتعديل القسمة ✓' : 'تثبيت القرار السابق ✓'}
+                        </span>
+                        <p className="text-teal-800 text-[11px] leading-relaxed">
+                          {activeDispute.appealDecision.adminNotes}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Bottom Actions (Escalate, Admin Ruling, or Submit Appeal) */}
                 <div className="p-5 bg-slate-50 flex flex-wrap items-center justify-between gap-3">
                   {/* Escalate button for client/freelancer */}
-                  {!['escalated_to_admin', 'resolved_by_agreement', 'closed_by_admin'].includes(activeDispute.status) && (
+                  {!['escalated_to_admin', 'resolved_by_agreement', 'closed_by_admin', 'appeal_pending'].includes(activeDispute.status) && (
                     <div>
                       {!showEscalateForm ? (
                         <button
@@ -664,6 +745,53 @@ export const DisputesHub = ({ title = 'مركز النزاعات والتحكي�
                               type="button"
                               onClick={() => setShowEscalateForm(false)}
                               className="bg-slate-200 text-slate-700 text-xs py-1.5 px-2.5 rounded-lg"
+                            >
+                              إلغاء
+                            </button>
+                          </div>
+                        </form>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Submit Appeal for Client/Freelancer after Admin Ruling */}
+                  {activeDispute.status === 'closed_by_admin' && !activeDispute.appeal && !isAdmin && (
+                    <div className="w-full">
+                      {!showAppealForm ? (
+                        <button
+                          onClick={() => setShowAppealForm(true)}
+                          className="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-900 border border-rose-200 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                        >
+                          <Scale className="w-4 h-4 text-rose-600" />
+                          <span>تقديم طلب إعادة نظر (استئناف تحكيمي على القرار)</span>
+                        </button>
+                      ) : (
+                        <form onSubmit={handleAppealSubmit} className="space-y-3 p-4 bg-white rounded-2xl border border-rose-200">
+                          <h4 className="text-xs font-bold text-rose-900">
+                            طلب إعادة نظر في القرار التحكيمي الصادر:
+                          </h4>
+                          <p className="text-[11px] text-slate-500">
+                            يحق لأي من الطرفين تقديم استئناف مع ذكر الأسباب الموضوعية أو إرفاق أدلة جديدة للنظر فيها من قبل الإدارة.
+                          </p>
+                          <textarea
+                            rows={3}
+                            required
+                            value={appealReason}
+                            onChange={(e) => setAppealReason(e.target.value)}
+                            placeholder="اكتب أسباب طلب إعادة النظر والأدلة الداعمة..."
+                            className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                          />
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="submit"
+                              className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-2 px-4 rounded-xl transition-colors"
+                            >
+                              إرسال طلب الاستئناف للإدارة
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setShowAppealForm(false)}
+                              className="bg-slate-200 text-slate-700 text-xs py-2 px-3 rounded-xl"
                             >
                               إلغاء
                             </button>
@@ -736,6 +864,109 @@ export const DisputesHub = ({ title = 'مركز النزاعات والتحكي�
                             <button
                               type="button"
                               onClick={() => setShowAdminRulingForm(false)}
+                              className="bg-slate-700 text-slate-300 text-xs py-2 px-3 rounded-xl"
+                            >
+                              إلغاء
+                            </button>
+                          </div>
+                        </form>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Admin Appeal Review Panel */}
+                  {isAdmin && activeDispute.status === 'appeal_pending' && (
+                    <div className="w-full">
+                      {!showAppealReviewForm ? (
+                        <button
+                          onClick={() => {
+                            setShowAppealReviewForm(true);
+                            setAppealDecision('confirmed');
+                            setAmendedRefundClient(activeDispute.ruling?.refundClientYER || 0);
+                            setAmendedPayoutFreelancer(activeDispute.ruling?.payoutFreelancerYER || 0);
+                          }}
+                          className="w-full bg-[#0B192C] hover:bg-slate-800 text-white font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md"
+                        >
+                          <Gavel className="w-4 h-4 text-rose-400" />
+                          <span>البت في طلب إعادة النظر (مراجعة الاستئناف)</span>
+                        </button>
+                      ) : (
+                        <form onSubmit={handleAppealReviewSubmit} className="p-4 rounded-2xl bg-slate-900 text-white space-y-3">
+                          <h4 className="text-xs font-bold text-rose-300">
+                            مراجعة طلب إعادة النظر والاستئناف التحكيمي:
+                          </h4>
+                          <div className="flex items-center gap-3">
+                            <label className="flex items-center gap-1.5 text-xs font-bold cursor-pointer">
+                              <input
+                                type="radio"
+                                name="appealDecision"
+                                value="confirmed"
+                                checked={appealDecision === 'confirmed'}
+                                onChange={() => setAppealDecision('confirmed')}
+                                className="text-teal-600"
+                              />
+                              <span>تثبيت الحكم السابق ورفض الاستئناف</span>
+                            </label>
+                            <label className="flex items-center gap-1.5 text-xs font-bold cursor-pointer">
+                              <input
+                                type="radio"
+                                name="appealDecision"
+                                value="amended"
+                                checked={appealDecision === 'amended'}
+                                onChange={() => setAppealDecision('amended')}
+                                className="text-rose-500"
+                              />
+                              <span>قبول الاستئناف وتعديل القسمة</span>
+                            </label>
+                          </div>
+
+                          {appealDecision === 'amended' && (
+                            <div className="grid grid-cols-2 gap-3 pt-1">
+                              <div>
+                                <label className="text-[10px] text-slate-300 block mb-1">الاسترداد المعدل للعميل (ر.ي):</label>
+                                <input
+                                  type="number"
+                                  required
+                                  value={amendedRefundClient}
+                                  onChange={(e) => setAmendedRefundClient(e.target.value)}
+                                  className="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] text-slate-300 block mb-1">الصرف المعدل للمستقل (ر.ي):</label>
+                                <input
+                                  type="number"
+                                  required
+                                  value={amendedPayoutFreelancer}
+                                  onChange={(e) => setAmendedPayoutFreelancer(e.target.value)}
+                                  className="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white"
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          <div>
+                            <label className="text-[10px] text-slate-300 block mb-1">ملاحظات وقرار لجنة التحكيم حول الاستئناف:</label>
+                            <textarea
+                              rows={2}
+                              required
+                              value={appealAdminNotes}
+                              onChange={(e) => setAppealAdminNotes(e.target.value)}
+                              placeholder="بيان أسباب تثبيت أو تعديل القرار التحكيمي..."
+                              className="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500"
+                            />
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="submit"
+                              className="bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs py-2 px-4 rounded-xl"
+                            >
+                              اعتماد القرار النهائي للاستئناف
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setShowAppealReviewForm(false)}
                               className="bg-slate-700 text-slate-300 text-xs py-2 px-3 rounded-xl"
                             >
                               إلغاء

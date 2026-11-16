@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWasla } from '../../context/WaslaContext';
 import Navbar from '../common/Navbar';
 import Footer from '../common/Footer';
+import ServiceDetailsModal from '../common/ServiceDetailsModal';
 import {
   Search,
   Filter,
@@ -18,14 +19,31 @@ import {
 } from 'lucide-react';
 
 export const ServicesPage = () => {
-  const { servicesCatalog, serviceCategories, universitiesList, navigateTo, openModal, addToast } = useWasla();
+  const {
+    servicesCatalog,
+    serviceCategories,
+    universitiesList,
+    navigateTo,
+    openModal,
+    addToast,
+    servicesSearchQuery,
+    setServicesSearchQuery
+  } = useWasla();
 
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedUniversity, setSelectedUniversity] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(servicesSearchQuery || '');
   const [currency, setCurrency] = useState('YER'); // 'YER' | 'USD'
+  const [selectedServiceForDetails, setSelectedServiceForDetails] = useState(null);
+
+  useEffect(() => {
+    if (servicesSearchQuery) {
+      setSearchQuery(servicesSearchQuery);
+    }
+  }, [servicesSearchQuery]);
 
   const filteredServices = servicesCatalog.filter((item) => {
+    if (item.isVisible === false) return false;
     const matchesCategory = selectedCategory === 'all' || item.categoryId === selectedCategory;
     const matchesUniversity =
       selectedUniversity === 'all' || item.provider.university.includes(selectedUniversity);
@@ -33,20 +51,13 @@ export const ServicesPage = () => {
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+      (item.tags && item.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase())));
 
     return matchesCategory && matchesUniversity && matchesSearch;
   });
 
-  const handleOrderService = (service) => {
-    addToast(
-      'بدء طلب الخدمة',
-      `جاري تجهيز عقد الوساطة للخدمة "${service.title}". سيتم إيداع المبلغ في الضمان المالي Escrow لحين استلام العمل.`,
-      'info',
-      5000
-    );
-    // If not logged in, prompt or redirect to client
-    navigateTo('client-dashboard');
+  const handleOpenDetails = (service) => {
+    setSelectedServiceForDetails(service);
   };
 
   return (
@@ -301,7 +312,9 @@ export const ServicesPage = () => {
                 {/* Footer Price & Action */}
                 <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] text-slate-400 block font-bold">يبدأ من</span>
+                    <span className="text-[10px] text-slate-400 block font-bold">
+                      {service.priceType === 'starting_at' ? 'يبدأ من' : 'السعر المحدد'}
+                    </span>
                     <span className="text-base font-black text-[#0B192C]">
                       {currency === 'YER'
                         ? `${service.priceYER.toLocaleString()} ر.ي`
@@ -310,10 +323,10 @@ export const ServicesPage = () => {
                   </div>
 
                   <button
-                    onClick={() => handleOrderService(service)}
+                    onClick={() => handleOpenDetails(service)}
                     className="bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-xs flex items-center gap-1.5"
                   >
-                    <span>طلب الخدمة</span>
+                    <span>تفاصيل وطلب الخدمة</span>
                     <ShieldCheck className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -322,6 +335,14 @@ export const ServicesPage = () => {
           </div>
         )}
       </main>
+
+      {/* Service Details & Order Modal */}
+      {selectedServiceForDetails && (
+        <ServiceDetailsModal
+          service={selectedServiceForDetails}
+          onClose={() => setSelectedServiceForDetails(null)}
+        />
+      )}
 
       {/* 5. Footer */}
       <Footer />

@@ -27,11 +27,14 @@ import {
 } from 'lucide-react';
 
 export const LandingPage = () => {
-  const { navigateTo, serviceCategories, setSelectedRoleSignup } = useWasla();
+  const { navigateTo, serviceCategories, setSelectedRoleSignup, setServicesSearchQuery } = useWasla();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e) => {
     e.preventDefault();
+    if (setServicesSearchQuery) {
+      setServicesSearchQuery(searchQuery);
+    }
     navigateTo('services');
   };
 

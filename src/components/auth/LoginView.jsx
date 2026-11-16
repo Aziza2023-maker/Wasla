@@ -52,6 +52,30 @@ export const LoginView = () => {
     }
   };
 
+  // Instant 1-Click Login for committee presentation
+  const handleQuickLogin = (role) => {
+    handleRoleTabChange(role);
+    if (role === 'freelancer') {
+      const authResult = authenticateUser('arwa@wasla.ye', 'password123', 'freelancer');
+      if (authResult.success) {
+        addToast('تم تسجيل الدخول بنجاح!', 'مرحباً م. أروى الحمادي. تم توجيهك إلى لوحة المستقل الأكاديمي وسوق الخدمات.', 'success');
+        navigateTo('freelancer-overview', 'freelancer');
+      }
+    } else if (role === 'client') {
+      const authResult = authenticateUser('shehab@madar.ye', 'password123', 'client');
+      if (authResult.success) {
+        addToast('تم تسجيل الدخول بنجاح!', 'مرحباً بك يا شهاب صالح. تم توجيهك إلى لوحة العميل لإدارة طلبات الخدمات وعقود Escrow.', 'success');
+        navigateTo('client-dashboard', 'client');
+      }
+    } else if (role === 'admin') {
+      const authResult = authenticateUser('admin@wasla.ye', 'adminpassword123', 'admin');
+      if (authResult.success) {
+        addToast('تم تسجيل الدخول كمسؤول نظام', 'مرحباً بك في بوابة الإدارة والرقابة المالية المركزية للتحقق من حوالات حضرموت.', 'success');
+        navigateTo('admin-panel', 'admin');
+      }
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -372,24 +396,24 @@ export const LoginView = () => {
               <div className="flex items-center justify-center gap-2 flex-wrap">
                 <button
                   type="button"
-                  onClick={() => handleRoleTabChange('freelancer')}
-                  className="text-[10px] bg-teal-950 text-teal-300 border border-teal-800/80 px-2.5 py-1 rounded-lg font-bold hover:bg-teal-900 transition-colors"
+                  onClick={() => handleQuickLogin('freelancer')}
+                  className="text-[10px] bg-teal-950 text-teal-300 border border-teal-800/80 px-2.5 py-1.5 rounded-lg font-bold hover:bg-teal-900 transition-colors flex items-center gap-1 shadow-xs"
                 >
-                  طالب: أروى الحمادي
+                  <span>دخول فوري كطالب: م. أروى الحمادي</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleRoleTabChange('client')}
-                  className="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800/80 px-2.5 py-1 rounded-lg font-bold hover:bg-emerald-900 transition-colors"
+                  onClick={() => handleQuickLogin('client')}
+                  className="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800/80 px-2.5 py-1.5 rounded-lg font-bold hover:bg-emerald-900 transition-colors flex items-center gap-1 shadow-xs"
                 >
-                  عميل: شهاب صالح
+                  <span>دخول فوري كعميل: شهاب صالح</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleRoleTabChange('admin')}
-                  className="text-[10px] bg-purple-950 text-purple-300 border border-purple-800/80 px-2.5 py-1 rounded-lg font-bold hover:bg-purple-900 transition-colors"
+                  onClick={() => handleQuickLogin('admin')}
+                  className="text-[10px] bg-purple-950 text-purple-300 border border-purple-800/80 px-2.5 py-1.5 rounded-lg font-bold hover:bg-purple-900 transition-colors flex items-center gap-1 shadow-xs"
                 >
-                  المدير: مسؤول Escrow
+                  <span>دخول فوري كمسؤول: إدارة وصلة</span>
                 </button>
               </div>
             </div>

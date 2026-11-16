@@ -457,6 +457,7 @@ export const INITIAL_DISPUTES = [
   {
     id: 'dsp_01',
     ticketCode: '#DSP-8821',
+    disputeCode: '#DSP-8821',
     contractId: 'cnt_01',
     projectId: 'prj_01',
     projectTitle: 'تطوير متجر إلكتروني ونظام فواتير لمحلات تجارية بسوق المكلا',
@@ -468,30 +469,33 @@ export const INITIAL_DISPUTES = [
     freelancerUniversity: 'جامعة حضرموت',
     initiatorRole: 'client',
     initiatorName: 'شهاب صالح (صاحب العمل)',
+    reason: 'طلب تعديل إضافي على تقارير الفواتير قبل تحرير الضمان',
     title: 'طلب تعديل إضافي على تقارير الفواتير قبل تحرير الضمان',
     description: 'تم تسليم المتجر بنجاح، لكن تقرير الفواتير المجمعة يظهر تكراراً في خانة الإجمالي بحسب ملاحظات المحاسب، ونطلب معالجة ذلك قبل تحرير الدفعة.',
     amountInDisputeYER: 60000,
     amountInDisputeUSD: 112,
     escrowProvider: 'شركة العمقي للصرافة',
-    status: 'in_discussion', // 'open' | 'in_discussion' | 'escalated_to_admin' | 'resolved_by_agreement' | 'closed_by_admin'
-    statusLabel: 'قيد النقاش بين الطرفين',
+    status: 'in_discussion', // 'open' | 'in_discussion' | 'escalated_to_admin' | 'resolved_by_agreement' | 'closed_by_admin' | 'appeal_pending'
+    statusLabel: 'قيد النقاش والتسوية الودية',
     createdAt: 'منذ يومين',
     updatedAt: 'منذ 3 ساعات',
     evidence: [
       {
         id: 'ev_01',
+        title: 'ملاحظات المحاسب على تقرير الفواتير المجمعة',
         name: 'ملاحظات_المحاسب_تقرير_الفواتير.pdf',
         size: '1.2 ميجابايت',
-        uploadedBy: 'شهاب صالح (صاحب العمل)',
-        uploadedAt: 'منذ يومين',
+        uploaderName: 'شهاب صالح (صاحب العمل)',
+        submittedAt: 'منذ يومين',
         url: '#'
       },
       {
         id: 'ev_02',
+        title: 'لقطة شاشة من كود معالجة وتصحيح المجاميع',
         name: 'لقطة_شاشة_معالجة_الكود_المحدث.png',
         size: '850 كيلوبايت',
-        uploadedBy: 'م. أروى الحمادي (المستقل)',
-        uploadedAt: 'منذ 5 ساعات',
+        uploaderName: 'م. أروى الحمادي (المستقل)',
+        submittedAt: 'منذ 5 ساعات',
         url: '#'
       }
     ],
@@ -510,22 +514,111 @@ export const INITIAL_DISPUTES = [
     timeline: [
       {
         id: 'evt_01',
-        actorRole: 'client',
-        actorName: 'شهاب صالح',
-        action: 'فتح طلب مراجعة ونزاع ودي',
-        timestamp: 'منذ يومين 11:30 ص',
+        event: 'فتح طلب مراجعة ونزاع ودي من العميل',
+        by: 'شهاب صالح (العميل)',
+        at: 'منذ يومين 11:30 ص',
         notes: 'تم تسجيل الملاحظات وإيقاف تحرير الضمان مؤقتاً للتنسيق والمراجعة.'
       },
       {
         id: 'evt_02',
-        actorRole: 'freelancer',
-        actorName: 'م. أروى الحمادي',
-        action: 'إرفاق إثبات المعالجة وتقديم مقترح تسوية',
-        timestamp: 'منذ 5 ساعات 03:15 م',
+        event: 'إرفاق إثبات المعالجة البرمجية وتقديم مقترح تسوية',
+        by: 'م. أروى الحمادي (المستقل)',
+        at: 'منذ 5 ساعات 03:15 م',
         notes: 'تم رفع الكود المحدث واقتراح مهلة 24 ساعة للاختبار المشترك.'
       }
     ],
     adminDecision: null,
+    ruling: null,
+    appeal: null,
+    isDemo: true
+  },
+  {
+    id: 'dsp_02',
+    ticketCode: '#DSP-8822',
+    disputeCode: '#DSP-8822',
+    contractId: 'cnt_04',
+    projectId: 'prj_04',
+    projectTitle: 'تصميم هوية بصرية ومتجر إلكتروني لمؤسسة تجارية بالمكلا',
+    clientId: 'usr_shehab_01',
+    clientName: 'شهاب صالح',
+    clientCompany: 'مؤسسة مدار للحلول التقنية والريادة - المكلا',
+    freelancerId: 'usr_arwa_01',
+    freelancerName: 'م. أروى الحمادي',
+    freelancerUniversity: 'جامعة حضرموت',
+    initiatorRole: 'client',
+    initiatorName: 'شهاب صالح (صاحب العمل)',
+    reason: 'تأخر في تسليم نماذج الطباعة والتغليف بعد الموعد المحدد',
+    title: 'خلاف حول موعد تسليم ملفات الطباعة النهائية وتجهيز التغليف',
+    description: 'تم تسليم التصاميم الرقمية كاملة بنجاح، لكن ملفات الطباعة للأكياس والكرتون تأخرت 48 ساعة بعد انتهاء المهلة، ونطلب خصم تعويضي لصالح العميل.',
+    amountInDisputeYER: 35000,
+    amountInDisputeUSD: 65,
+    escrowProvider: 'بنك بن دول للتمويل الأصغر الإسلامي',
+    status: 'closed_by_admin', // closed by admin arbitration - ready for testing appeal!
+    statusLabel: 'صدر قرار التحكيم الإداري',
+    createdAt: 'منذ 4 أيام',
+    updatedAt: 'منذ يوم',
+    evidence: [
+      {
+        id: 'ev_03',
+        title: 'عقد الاتفاق وجدول مواعيد التسليم المعتمد',
+        name: 'عقد_التسليم_الموقع_رقم_04.pdf',
+        size: '980 كيلوبايت',
+        uploaderName: 'شهاب صالح (صاحب العمل)',
+        submittedAt: 'منذ 4 أيام',
+        url: '#'
+      },
+      {
+        id: 'ev_04',
+        title: 'إشعار تفعيل هامش الطوارئ المعتمد لمدينة المكلا',
+        name: 'إشعار_الهامش_الزمني_المكلا.pdf',
+        size: '420 كيلوبايت',
+        uploaderName: 'م. أروى الحمادي (المستقل)',
+        submittedAt: 'منذ 3 أيام',
+        url: '#'
+      }
+    ],
+    proposals: [
+      {
+        id: 'prp_02',
+        proposedBy: 'client',
+        proposedByName: 'شهاب صالح',
+        proposalText: 'نطلب خصم 10,000 ر.ي من مبلغ الضمان كتعويض عن تأخر المطبعة وتحرير الباقي (25,000 ر.ي).',
+        proposedDiscountYER: 10000,
+        status: 'rejected',
+        timestamp: 'منذ 3 أيام'
+      }
+    ],
+    timeline: [
+      {
+        id: 'evt_03',
+        event: 'فتح تذكرة نزاع وتجميد الضمان لدى بنك بن دول',
+        by: 'شهاب صالح (العميل)',
+        at: 'منذ 4 أيام',
+        notes: 'بسبب تأخر ملفات الطباعة النهائية.'
+      },
+      {
+        id: 'evt_04',
+        event: 'تصعيد النزاع رسميًا للتحكيم الإداري بمنصة وصلة',
+        by: 'شهاب صالح (العميل)',
+        at: 'منذ يومين',
+        notes: 'تعذر التوصل إلى اتفاق ودي مباشر بين الطرفين.'
+      },
+      {
+        id: 'evt_05',
+        event: 'صدور قرار لجنة التحكيم المالي والإداري وإغلاق النزاع',
+        by: 'المشرف المالي والرقابي (إدارة وصلة)',
+        at: 'منذ يوم',
+        notes: 'خصم 5,000 ر.ي لصالح العميل وصرف 30,000 ر.ي لصالح المستقل.'
+      }
+    ],
+    adminDecision: 'تم إصدار الحكم بمراعاة ظروف الهامش الزمني الموثق وإقرار قسمة عادلة.',
+    ruling: {
+      decidedAt: 'منذ يوم',
+      adminNotes: 'بناءً على فحص سجلات تفعيل الهامش الزمني المعتمد لمدينة المكلا وسلامة مخرجات التصميم الرقمي، رأت لجنة التحكيم استحقاق العميل خصماً قدره 5,000 ر.ي، مع تحرير مبلغ 30,000 ر.ي للمستقل م. أروى الحمادي.',
+      refundClientYER: 5000,
+      payoutFreelancerYER: 30000
+    },
+    appeal: null, // Ready for testing appeal submission!
     isDemo: true
   }
 ];
@@ -931,9 +1024,38 @@ export const PEER_STUDENTS = [
 export const SERVICES_CATALOG = [
   {
     id: 'srv_01',
+    freelancerId: 'usr_arwa_01',
     title: 'تطوير تطبيقات الويب الكاملة والتجارة الإلكترونية لمحلات المكلا (Next.js / Supabase)',
     categoryId: 'programming',
     categoryName: 'برمجة وتطوير',
+    priceType: 'fixed',
+    priceYER: 180000,
+    priceUSD: 350,
+    deliveryDays: 7,
+    bufferDays: 2,
+    revisionsAllowed: 3,
+    rating: 4.95,
+    salesCount: 18,
+    isVisible: true,
+    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=600',
+    description: 'بناء موقع متكامل فائق السرعة متوافق مع كافة الشاشات، وربط بوابات الدفع والتحويل المحلية (العمقي، الكريمي، بن دول، والبسيري) ومتابعة الطلبات مع ضمان برمجي لمدة 3 أشهر.',
+    deliverablesIncluded: [
+      'متجر إلكتروني كامل متجاوب مع جميع أحجام الشاشات والجوالات',
+      'لوحة تحكم إدارية سريعة لإدارة المنتجات، الطلبات، والعملاء',
+      'ربط التحويلات وحسابات البنوك وشبكات الصرافة المحلية المعتمدة بالمكلا',
+      'نشر الموقع على نطاق العميل (Domain) مع شهادة أمان SSL مجانية',
+      'دعم فني وصيانة مجانية لمدة 30 يوماً بعد التسليم النهائي'
+    ],
+    deliverablesExcluded: [
+      'تكلفة استضافة الخادم السحابي بعد الشهر الأول (يدفعها العميل)',
+      'تصوير ومعالجة صور المنتجات الفعلية ميدانياً',
+      'إدخال أكثر من 50 منتج في قاعدة البيانات'
+    ],
+    buyerRequirements: 'يرجى تزويدي بشعار المتجر، ألوان الهوية، قائمة أولية بالمنتجات مع الأسعار، وأرقام حسابات الصرافة المحلية التي ترغب في إظهارها للعملاء.',
+    portfolioSamples: [
+      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600'
+    ],
     provider: {
       name: 'م. أروى الحمادي',
       university: 'جامعة حضرموت',
@@ -945,21 +1067,39 @@ export const SERVICES_CATALOG = [
       solarBackup: true,
       netBackup: 'ألياف ضوئية + 4G',
     },
-    priceYER: 180000,
-    priceUSD: 350,
-    deliveryDays: 7,
-    bufferDays: 2,
-    rating: 4.95,
-    salesCount: 18,
-    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=600',
-    description: 'بناء موقع متكامل فائق السرعة متوافق مع كافة الشاشات، وربط بوابات الدفع والتحويل المحلية (العمقي، الكريمي، بن دول، والبسيري) ومتابعة الطلبات مع ضمان برمجي لمدة 3 أشهر.',
     tags: ['React', 'Next.js', 'Tailwind CSS', 'Supabase', 'دفع محلي'],
   },
   {
     id: 'srv_02',
+    freelancerId: 'usr_sara_01',
     title: 'تصميم واجهات وتجربة المستخدم للتطبيقات والمتاجر (Figma to Flutter)',
     categoryId: 'design',
     categoryName: 'تصميم وإبداع',
+    priceType: 'starting_at',
+    priceYER: 130000,
+    priceUSD: 250,
+    deliveryDays: 5,
+    bufferDays: 2,
+    revisionsAllowed: 3,
+    rating: 4.9,
+    salesCount: 31,
+    isVisible: true,
+    image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&q=80&w=600',
+    description: 'تصميم نظام واجهات UI/UX عصري وعالي الدقة على فيجما وفق معايير جوجل وآبل مع تجهيز ملفات التصدير الجاهزة للمطورين والبروتوتايب التفاعلي.',
+    deliverablesIncluded: [
+      'ملف Figma كامل منظم بالطبقات ومكونات التصميم (Design System)',
+      'تصميم 10 إلى 15 شاشة تطبيق عالية الدقة لنظامي Android و iOS',
+      'بروتوتايب تفاعلي حي لاختبار تجربة المستخدم قبل البرمجة',
+      'تصدير الأيقونات والرسوميات بصيغ SVG و PNG للمطورين'
+    ],
+    deliverablesExcluded: [
+      'البرمجة وكتابة الكود البرمجي (خدمة تصميم فقط)',
+      'تصميم الشعارات والهويات الإعلانية غير المتعلقة بالتطبيق'
+    ],
+    buyerRequirements: 'وصف فكرة التطبيق، الشاشات المطلوبة، الفئة المستهدفة، وأي تطبيقات مشابهة تعجبك تصميمياً.',
+    portfolioSamples: [
+      'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&q=80&w=600'
+    ],
     provider: {
       name: 'سارة بامخرمة',
       university: 'جامعة حضرموت',
@@ -971,21 +1111,39 @@ export const SERVICES_CATALOG = [
       solarBackup: true,
       netBackup: '4G بديل',
     },
-    priceYER: 130000,
-    priceUSD: 250,
-    deliveryDays: 5,
-    bufferDays: 2,
-    rating: 4.9,
-    salesCount: 31,
-    image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&q=80&w=600',
-    description: 'تصميم نظام واجهات UI/UX عصري وعالي الدقة على فيجما وفق معايير جوجل وآبل مع تجهيز ملفات التصدير الجاهزة للمطورين والبروتوتايب التفاعلي.',
     tags: ['Figma', 'UI/UX', 'Mobile Design', 'Design System'],
   },
   {
     id: 'srv_03',
+    freelancerId: 'usr_osama_01',
     title: 'برمجة وتصميم لوحات التحكم وقواعد البيانات السحابية لمؤسسات المكلا (Laravel / FastAPI)',
     categoryId: 'programming',
     categoryName: 'برمجة وتطوير',
+    priceType: 'fixed',
+    priceYER: 220000,
+    priceUSD: 420,
+    deliveryDays: 10,
+    bufferDays: 3,
+    revisionsAllowed: 3,
+    rating: 4.92,
+    salesCount: 22,
+    isVisible: true,
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600',
+    description: 'تطوير لوحة تحكم إدارية سريعة وآمنة لإدارة المستخدمين والمبيعات والمخزون، مع حماية فائقة وصلاحيات دقيقة وتصدير تقارير Excel و PDF.',
+    deliverablesIncluded: [
+      'لوحة تحكم إدارية مهيكلة بصلاحيات أدوار متعددة (RBAC)',
+      'قاعدة بيانات PostgreSQL / MySQL مهيأة مع النسخ الاحتياطي',
+      'واجهات برمجة REST APIs موثقة بتوثيق Swagger',
+      'تصدير تقارير محاسبية تفصيلية بصيغ Excel و PDF'
+    ],
+    deliverablesExcluded: [
+      'شراء استضافة السيرفر السحابي (VPS)',
+      'الربط مع أجهزة بصمة أو أجهزة كاشير قديمة غير متوافقة'
+    ],
+    buyerRequirements: 'مخطط البيانات المطلوب إدارتها، أنواع التقارير والصلاحيات المطلوبة لكل مستخدم.',
+    portfolioSamples: [
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600'
+    ],
     provider: {
       name: 'أسامة باحشوان',
       university: 'جامعة حضرموت',
@@ -997,21 +1155,38 @@ export const SERVICES_CATALOG = [
       solarBackup: true,
       netBackup: 'ألياف ضوئية',
     },
-    priceYER: 220000,
-    priceUSD: 420,
-    deliveryDays: 10,
-    bufferDays: 3,
-    rating: 4.92,
-    salesCount: 22,
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600',
-    description: 'تطوير لوحة تحكم إدارية سريعة وآمنة لإدارة المستخدمين والمبيعات والمخزون، مع حماية فائقة وصلاحيات دقيقة وتصدير تقارير Excel و PDF.',
     tags: ['Laravel', 'PostgreSQL', 'FastAPI', 'REST APIs', 'RBAC'],
   },
   {
     id: 'srv_04',
+    freelancerId: 'usr_ammar_01',
     title: 'كتابة وترجمة وتدقيق الأبحاث العلمية والأكاديمية (عربي / إنجليزي)',
     categoryId: 'translation',
     categoryName: 'كتابة وترجمة',
+    priceType: 'fixed',
+    priceYER: 60000,
+    priceUSD: 110,
+    deliveryDays: 4,
+    bufferDays: 1,
+    revisionsAllowed: 2,
+    rating: 4.88,
+    salesCount: 46,
+    isVisible: true,
+    image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=600',
+    description: 'ترجمة احترافية خالية من الترجمة الآلية للأوراق والبحوث المحكمة مع التدقيق اللغوي والمراجع وفق أسلوب APA أو Harvard مع نسبة استلال منخفضة.',
+    deliverablesIncluded: [
+      'ترجمة دقيقة 3,000 كلمة خالية من الركاكة والترجمة الآلية',
+      'تدقيق لغوي ونحوي شامل للمصطلحات التخصصية',
+      'تنسيق المراجع وفق دليل النشر الأكاديمي APA 7th Edition'
+    ],
+    deliverablesExcluded: [
+      'إجراء التجارب المعملية أو جمع البيانات الميدانية',
+      'ضمان قبول النشر في المجلات دون تعديلات المحكمين'
+    ],
+    buyerRequirements: 'الملف الأصلي بصيغة Word، ونوع التوثيق الأكاديمي المطلوب.',
+    portfolioSamples: [
+      'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=600'
+    ],
     provider: {
       name: 'عمار بافضل',
       university: 'جامعة الأحقاف (المكلا)',
@@ -1023,21 +1198,39 @@ export const SERVICES_CATALOG = [
       solarBackup: false,
       netBackup: '4G',
     },
-    priceYER: 60000,
-    priceUSD: 110,
-    deliveryDays: 4,
-    bufferDays: 1,
-    rating: 4.88,
-    salesCount: 46,
-    image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=600',
-    description: 'ترجمة احترافية خالية من الترجمة الآلية للأوراق والبحوث المحكمة مع التدقيق اللغوي والمراجع وفق أسلوب APA أو Harvard مع نسبة استلال منخفضة.',
     tags: ['ترجمة أكاديمية', 'تدقيق لغوي', 'أبحاث علمية', 'APA'],
   },
   {
     id: 'srv_05',
+    freelancerId: 'usr_razan_01',
     title: 'إدارة وتخطيط الحملات الإعلانية على منصات التواصل واستهداف سوق المكلا وحضرموت',
     categoryId: 'marketing',
     categoryName: 'تسويق رقمي',
+    priceType: 'fixed',
+    priceYER: 110000,
+    priceUSD: 200,
+    deliveryDays: 6,
+    bufferDays: 2,
+    revisionsAllowed: 3,
+    rating: 4.85,
+    salesCount: 25,
+    isVisible: true,
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600',
+    description: 'وضع خطة محتوى إعلاني وإدارة الحملات الممولة على ميتا وجوجل لزيادة المبيعات المحلية مع تقارير أداء دورية ونماذج نصوص إعلانية جذابة.',
+    deliverablesIncluded: [
+      'إعداد خطة استهداف جغرافية وديموغرافية لسكان ومحلات المكلا وحضرموت',
+      'كتابة نصوص إعلانية تفاعلية لـ 6 منشورات إعلانية',
+      'إطلاق حملتين ممولتين على منصتي Instagram و Facebook',
+      'تقرير نهائي بنتائج الحملة ومعدل التحويل (CTR & ROI)'
+    ],
+    deliverablesExcluded: [
+      'الميزانية الإعلانية المدفوعة لمنصة فيسبوك وإنستغرام (يدفعها العميل)',
+      'الرد على استفسارات الزبائن في الرسائل الخاصة'
+    ],
+    buyerRequirements: 'صلاحية معلن على الحساب الإعلاني، صور المنتجات، والهدف التسويقي الأساسي.',
+    portfolioSamples: [
+      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600'
+    ],
     provider: {
       name: 'رزان باوزير',
       university: 'جامعة الريان (المكلا)',
@@ -1049,21 +1242,37 @@ export const SERVICES_CATALOG = [
       solarBackup: true,
       netBackup: '4G نشط',
     },
-    priceYER: 110000,
-    priceUSD: 200,
-    deliveryDays: 6,
-    bufferDays: 2,
-    rating: 4.85,
-    salesCount: 25,
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600',
-    description: 'وضع خطة محتوى إعلاني وإدارة الحملات الممولة على ميتا وجوجل لزيادة المبيعات المحلية مع تقارير أداء دورية ونماذج نصوص إعلانية جذابة.',
     tags: ['تسويق رقمي', 'Meta Ads', 'تحليل حملات', 'صناعة محتوى'],
   },
   {
     id: 'srv_06',
+    freelancerId: 'usr_yaseen_01',
     title: 'تحليل البيانات واستخراج النماذج التنبؤية بالبايثون و PowerBI',
     categoryId: 'data',
     categoryName: 'تحليل بيانات',
+    priceType: 'fixed',
+    priceYER: 145000,
+    priceUSD: 275,
+    deliveryDays: 6,
+    bufferDays: 2,
+    revisionsAllowed: 2,
+    rating: 4.96,
+    salesCount: 19,
+    isVisible: true,
+    image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=600',
+    description: 'تنظيف البيانات، إعداد لوحات معلومات تفاعلية على PowerBI، وبناء خوارزميات ذكاء اصطناعي وتصنيف للشركات والبحوث الأكاديمية.',
+    deliverablesIncluded: [
+      'تنظيف وتنسيق جداول البيانات الضخمة وحل مشاكل القيم المفقودة',
+      'لوحة معلومات PowerBI تفاعلية مجهزة بـ 6 مخططات بصرية ديناميكية',
+      'تقرير تنبؤي موجز بالاتجاهات ومؤشرات الأداء الأساسية'
+    ],
+    deliverablesExcluded: [
+      'تجميع البيانات يدوياً من المصادر غير الرقمية'
+    ],
+    buyerRequirements: 'ملف البيانات بصيغة CSV أو Excel، وقائمة المؤشرات المطلوب التركيز عليها.',
+    portfolioSamples: [
+      'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=600'
+    ],
     provider: {
       name: 'م. ياسين بازهير',
       university: 'جامعة العلوم والتكنولوجيا (فرع المكلا)',
@@ -1075,21 +1284,39 @@ export const SERVICES_CATALOG = [
       solarBackup: true,
       netBackup: 'ألياف ضوئية',
     },
-    priceYER: 145000,
-    priceUSD: 275,
-    deliveryDays: 6,
-    bufferDays: 2,
-    rating: 4.96,
-    salesCount: 19,
-    image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=600',
-    description: 'تنظيف البيانات، إعداد لوحات معلومات تفاعلية على PowerBI، وبناء خوارزميات ذكاء اصطناعي وتصنيف للشركات والبحوث الأكاديمية.',
     tags: ['Python', 'PowerBI', 'Data Analysis', 'Machine Learning'],
   },
   {
     id: 'srv_07',
+    freelancerId: 'usr_nasser_01',
     title: 'تطوير تطبيقات الموبايل الهجينة (Flutter / React Native) لنظامي iOS و Android',
     categoryId: 'programming',
     categoryName: 'برمجة وتطوير',
+    priceType: 'fixed',
+    priceYER: 260000,
+    priceUSD: 500,
+    deliveryDays: 14,
+    bufferDays: 4,
+    revisionsAllowed: 3,
+    rating: 4.91,
+    salesCount: 14,
+    isVisible: true,
+    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=600',
+    description: 'تطبيق موبايل هجين سريع وعالي الأداء يدعم العمل دون اتصال (Offline-first)، مع ربط واجهات برمجة التطبيقات ونظام الإشعارات.',
+    deliverablesIncluded: [
+      'تطبيق موبايل هجين مبرمج بإطار عمل Flutter يعمل على Android و iOS',
+      'دعم التخزين المحلي والعمل دون اتصال في حالة انقطاع النت',
+      'ملف تثبيت تجريبي APK للاختبار المباشر على الهاتف',
+      'الكود المصدري كاملاً ومرتباً مع توثيق التثبيت'
+    ],
+    deliverablesExcluded: [
+      'رسوم حساب مطور Google Play أو Apple App Store',
+      'كتابة الباك إند أو برمجة السيرفر من الصفر (يتطلب واجهات API جاهزة)'
+    ],
+    buyerRequirements: 'تصاميم الواجهات (Figma) وروابط الـ APIs وخطة العمل.',
+    portfolioSamples: [
+      'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=600'
+    ],
     provider: {
       name: 'ناصر باحيدرة',
       university: 'الكلية التقنية بالمكلا (MTC)',
@@ -1101,21 +1328,39 @@ export const SERVICES_CATALOG = [
       solarBackup: true,
       netBackup: 'ألياف ضوئية + 4G',
     },
-    priceYER: 260000,
-    priceUSD: 500,
-    deliveryDays: 14,
-    bufferDays: 4,
-    rating: 4.91,
-    salesCount: 14,
-    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=600',
-    description: 'تطبيق موبايل هجين سريع وعالي الأداء يدعم العمل دون اتصال (Offline-first)، مع ربط واجهات برمجة التطبيقات ونظام الإشعارات.',
     tags: ['Flutter', 'Dart', 'React Native', 'Firebase', 'Mobile App'],
   },
   {
     id: 'srv_08',
+    freelancerId: 'usr_suhail_01',
     title: 'المساعدة الأكاديمية وإعداد مشاريع التخرج التقنية والهندسية',
     categoryId: 'academic',
     categoryName: 'مهام طلابية وأكاديمية',
+    priceType: 'fixed',
+    priceYER: 175000,
+    priceUSD: 330,
+    deliveryDays: 12,
+    bufferDays: 3,
+    revisionsAllowed: 3,
+    rating: 4.97,
+    salesCount: 39,
+    isVisible: true,
+    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=600',
+    description: 'إشراف وتوجيه عملي على بناء النموذج الأولي لمشروع التخرج، توثيق الكود البرمجي، كتابة التقرير النهائي، والتدريب على المناقشة.',
+    deliverablesIncluded: [
+      'هيكلة وتوجيه بناء النموذج الأولي لمشروع التخرج (MVP)',
+      'توثيق ومراجعة الأكواد البرمجية والتأكد من خلوها من الأخطاء',
+      'مراجعة التقرير الفني للبحث وتنسيق فصول المناقشة',
+      'جلسة تدريب واختبار تجريبي (Mock Defense) عبر الفيديو'
+    ],
+    deliverablesExcluded: [
+      'كتابة المشروع بالكامل نيابة عن الطالب (إشراف ومساعدة أكاديمية فقط)',
+      'شراء الحساسات والأجهزة والمكونات المادية للدوائر'
+    ],
+    buyerRequirements: 'عنوان مشروع التخرج، خطة القسم المعتمدة، ومتطلبات المشرف الأكاديمي.',
+    portfolioSamples: [
+      'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=600'
+    ],
     provider: {
       name: 'م. سهيل بارحيم',
       university: 'جامعة حضرموت',
@@ -1127,16 +1372,51 @@ export const SERVICES_CATALOG = [
       solarBackup: true,
       netBackup: '4G نشط',
     },
-    priceYER: 175000,
-    priceUSD: 330,
-    deliveryDays: 12,
-    bufferDays: 3,
-    rating: 4.97,
-    salesCount: 39,
-    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=600',
-    description: 'إشراف وتوجيه عملي على بناء النموذج الأولي لمشروع التخرج، توثيق الكود البرمجي، كتابة التقرير النهائي، والتدريب على المناقشة.',
     tags: ['مشاريع تخرج', 'استشارات برمجية', 'توثيق أكاديمي', 'IoT'],
   },
+  {
+    id: 'srv_09',
+    freelancerId: 'usr_arwa_01',
+    title: 'تطوير وتحديث واجهات الويب التفاعلية بـ React و Tailwind CSS للشركات الناشئة',
+    categoryId: 'programming',
+    categoryName: 'برمجة وتطوير',
+    priceType: 'fixed',
+    priceYER: 120000,
+    priceUSD: 230,
+    deliveryDays: 5,
+    bufferDays: 2,
+    revisionsAllowed: 3,
+    rating: 4.98,
+    salesCount: 12,
+    isVisible: true,
+    image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&q=80&w=600',
+    description: 'تحويل تصاميم فيجما إلى كود React عالي الجودة وسريع الاستجابة ومتوافق مع اللغة العربية واتجاه RTL، مع حركات تفاعلية سلسة وتوثيق للأزرار والمكونات.',
+    deliverablesIncluded: [
+      'تكويد 5 صفحات رئيسية نظيفة باستخدام React + Tailwind CSS',
+      'دعم كامل للغة العربية واتجاه RTL ووضع القراءة الليلي (Dark Mode)',
+      'تجهيز ملفات الكود للمطورين في مستودع GitHub',
+      'فحص التوافقية مع متصفحات Chrome و Safari و Edge'
+    ],
+    deliverablesExcluded: [
+      'برمجة قواعد البيانات أو الربط السحابي المعقد (واجهات فقط)'
+    ],
+    buyerRequirements: 'رابط ملف التصميم على Figma، وأي مكتبات إضافية ترغب في استخدامها.',
+    portfolioSamples: [
+      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=600'
+    ],
+    provider: {
+      name: 'م. أروى الحمادي',
+      university: 'جامعة حضرموت',
+      faculty: 'كلية الحاسوب وتكنولوجيا المعلومات (المكلا)',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300',
+      rating: 4.98,
+      completedCount: 15,
+      isVerified: true,
+      solarBackup: true,
+      netBackup: 'ألياف ضوئية + 4G',
+    },
+    tags: ['React', 'Tailwind CSS', 'RTL', 'UI Components'],
+  }
 ];
 
 export const COMMUNITY_TOPICS = [
@@ -1177,4 +1457,379 @@ export const COMMUNITY_TOPICS = [
     excerpt: 'مساحة مفتوحة لطلاب وخريجي كليات ومعاهد المكلا لتشكيل فرق عمل نوعية وإنجاز مشاريع تخرج تطبيقية تخدم أسواق المكلا وحضرموت.',
   },
 ];
+
+// Default Platform Financial & Mediation Settings
+export const DEFAULT_PLATFORM_SETTINGS = {
+  platformFeePercent: 7, // 7% عمولة وساطة المنصة المقتطعة
+  currency: 'YER',
+  emergencyBufferDays: 3,
+  clientReviewDays: 3,
+  supportedEscrowProviders: [
+    'شركة العمقي للصرافة',
+    'بنك الكريمي (الكريمي إكسبرس)',
+    'بنك بن دول للتمويل الأصغر الإسلامي',
+    'شركة البسيري للصرافة'
+  ]
+};
+
+// Initial Khamsat-like Microservice Orders with Full 14-State Lifecycle Representation
+export const INITIAL_SERVICE_ORDERS = [
+  {
+    id: 'ord_01',
+    orderCode: '#ORD-2026-001',
+    serviceId: 'srv_01',
+    serviceTitle: 'تطوير تطبيقات الويب الكاملة والتجارة الإلكترونية لمحلات المكلا (Next.js / Supabase)',
+    orderTitle: 'تطوير متجر إلكتروني لمؤسسة مدار مع بوابات الدفع المحلية',
+    clientId: 'usr_shehab_01',
+    clientName: 'شهاب صالح',
+    clientCompany: 'مؤسسة مدار للحلول التقنية والريادة - المكلا',
+    clientAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300',
+    freelancerId: 'usr_arwa_01',
+    freelancerName: 'م. أروى الحمادي',
+    freelancerUniversity: 'جامعة حضرموت',
+    freelancerAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300',
+    priceYER: 180000,
+    priceUSD: 350,
+    platformFeePercent: 7,
+    platformFeeYER: 12600,
+    netFreelancerYER: 167400,
+    deliveryDays: 7,
+    bufferDays: 2,
+    revisionsTotal: 3,
+    revisionsUsed: 0,
+    status: 'delivered_pending_review', // Ready for Client to Accept or Request Revision!
+    statusLabel: 'تم التسليم - بانتظار مراجعة العميل',
+    escrowProvider: 'شركة العمقي للصرافة',
+    escrowReference: '#OM-8839210',
+    escrowStatus: 'locked_in_custody',
+    createdAt: '2026-11-09T10:00:00Z',
+    contractApprovedAt: '2026-11-09T12:30:00Z',
+    depositVerifiedAt: '2026-11-10T09:00:00Z',
+    startedAt: '2026-11-10T09:00:00Z',
+    deliveryData: {
+      deliveredAt: '2026-11-15T18:00:00Z',
+      notes: 'تم إنجاز المتجر بنجاح وربط بوابات الدفع والتحويل المحلية المعتمدة بالمكلا (العمقي، الكريمي، بن دول، والبسيري) وتفعيل لوحة التحكم. يمكنكم معاينة الرابط المباشر وفحص كافة الأقسام.',
+      liveUrl: 'https://madar-store.wasla.demo',
+      files: [
+        { name: 'دليل_الاستخدام_والربط_المحلي.pdf', size: '2.4 ميجابايت', url: '#' },
+        { name: 'الكود_المصدري_v1.0.zip', size: '18.5 ميجابايت', url: '#' },
+        { name: 'مخطط_قاعدة_البيانات_Supabase.sql', size: '420 كيلوبايت', url: '#' }
+      ]
+    },
+    buyerInstructions: 'المطلوب متجر يدعم عرض المنتجات بالريال اليمني، مع إظهار أرقام الحسابات البنكية المعتمدة للتحويل في المكلا.',
+    deliverablesList: [
+      'متجر إلكتروني كامل متجاوب مع جميع أحجام الشاشات والجوالات',
+      'لوحة تحكم إدارية سريعة لإدارة المنتجات، الطلبات، والعملاء',
+      'ربط التحويلات وحسابات البنوك وشبكات الصرافة المحلية المعتمدة بالمكلا'
+    ],
+    timeline: [
+      { step: 'contract_pending_approval', label: 'الموافقة على العقد', date: '2026-11-09 12:30', done: true, by: 'الطرفين' },
+      { step: 'awaiting_deposit', label: 'إيداع الضمان', date: '2026-11-09 15:45', done: true, by: 'العميل شهاب صالح' },
+      { step: 'awaiting_admin_verification', label: 'تأكيد الإدارة وقفل الضمان', date: '2026-11-10 09:00', done: true, by: 'إدارة وصلة' },
+      { step: 'in_progress', label: 'بدء التنفيذ', date: '2026-11-10 09:00', done: true, by: 'م. أروى الحمادي' },
+      { step: 'delivered_pending_review', label: 'تسليم المخرجات', date: '2026-11-15 18:00', done: true, by: 'م. أروى الحمادي' }
+    ]
+  },
+  {
+    id: 'ord_02',
+    orderCode: '#ORD-2026-002',
+    serviceId: 'srv_09',
+    serviceTitle: 'تطوير وتحديث واجهات الويب التفاعلية بـ React و Tailwind CSS للشركات الناشئة',
+    orderTitle: 'تطوير واجهات نظام حجوزات الشاليهات البحرية بخور المكلا',
+    clientId: 'usr_shehab_01',
+    clientName: 'شهاب صالح',
+    clientCompany: 'مؤسسة مدار للحلول التقنية والريادة - المكلا',
+    clientAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300',
+    freelancerId: 'usr_arwa_01',
+    freelancerName: 'م. أروى الحمادي',
+    freelancerUniversity: 'جامعة حضرموت',
+    freelancerAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300',
+    priceYER: 120000,
+    priceUSD: 230,
+    platformFeePercent: 7,
+    platformFeeYER: 8400,
+    netFreelancerYER: 111600,
+    deliveryDays: 5,
+    bufferDays: 2,
+    revisionsTotal: 3,
+    revisionsUsed: 0,
+    status: 'in_progress', // Active in progress!
+    statusLabel: 'الضمان مؤكد - جاري التنفيذ',
+    escrowProvider: 'بنك الكريمي (الكريمي إكسبرس)',
+    escrowReference: '#KR-552109',
+    escrowStatus: 'locked_in_custody',
+    createdAt: '2026-11-13T09:00:00Z',
+    contractApprovedAt: '2026-11-13T10:15:00Z',
+    depositVerifiedAt: '2026-11-13T12:00:00Z',
+    startedAt: '2026-11-13T12:00:00Z',
+    deliveryData: null,
+    buyerInstructions: 'تطبيق الواجهات بنفس تصميم فيجما المتفق عليه مع دعم التجاوب مع الجوال وتفعيل الهامش الزمني للطوارئ.',
+    deliverablesList: [
+      '5 شاشات تفاعلية React + Tailwind CSS',
+      'دعم كامل للغة العربية واتجاه RTL'
+    ],
+    timeline: [
+      { step: 'contract_pending_approval', label: 'الموافقة على العقد', date: '2026-11-13 10:15', done: true, by: 'الطرفين' },
+      { step: 'awaiting_deposit', label: 'إيداع الضمان', date: '2026-11-13 11:30', done: true, by: 'العميل شهاب صالح' },
+      { step: 'awaiting_admin_verification', label: 'تأكيد الإدارة وقفل الضمان', date: '2026-11-13 12:00', done: true, by: 'إدارة وصلة' },
+      { step: 'in_progress', label: 'جاري التنفيذ', date: '2026-11-13 12:00', done: true, by: 'م. أروى الحمادي' }
+    ]
+  },
+  {
+    id: 'ord_03',
+    orderCode: '#ORD-2026-003',
+    serviceId: 'srv_01',
+    serviceTitle: 'تطوير تطبيقات الويب الكاملة والتجارة الإلكترونية لمحلات المكلا (Next.js / Supabase)',
+    orderTitle: 'بناء نظام فواتير متصل بمستودع بضائع بحي الشرج',
+    clientId: 'usr_shehab_01',
+    clientName: 'شهاب صالح',
+    clientCompany: 'مؤسسة مدار للحلول التقنية والريادة - المكلا',
+    clientAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300',
+    freelancerId: 'usr_arwa_01',
+    freelancerName: 'م. أروى الحمادي',
+    freelancerUniversity: 'جامعة حضرموت',
+    freelancerAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300',
+    priceYER: 195000,
+    priceUSD: 375,
+    platformFeePercent: 7,
+    platformFeeYER: 13650,
+    netFreelancerYER: 181350,
+    deliveryDays: 8,
+    bufferDays: 2,
+    revisionsTotal: 3,
+    revisionsUsed: 0,
+    status: 'awaiting_admin_verification', // Client deposited, Admin needs to verify & lock!
+    statusLabel: 'تم رفع سند التحويل - بانتظار تأكيد الإدارة',
+    escrowProvider: 'بنك بن دول للتمويل الأصغر الإسلامي',
+    escrowReference: '#BD-8841029',
+    escrowStatus: 'pending_verification',
+    createdAt: '2026-11-15T08:00:00Z',
+    contractApprovedAt: '2026-11-15T09:15:00Z',
+    remittanceReceipt: {
+      provider: 'بنك بن دول للتمويل الأصغر الإسلامي',
+      referenceNumber: '#BD-8841029',
+      senderName: 'شهاب صالح (مؤسسة مدار)',
+      amountYER: 195000,
+      depositedAt: '2026-11-15 14:30',
+      fileName: 'سند_إيداع_بن_دول_8841029.pdf'
+    },
+    buyerInstructions: 'تم إيداع كامل المبلغ بحساب وساطة وصلة لدى بنك بن دول بالخور، نرجو تدقيق السند والبدء في التنفيذ.',
+    deliverablesList: [
+      'نظام جرد وفواتير متوافق مع نظام الضرائب المحلي',
+      'تصدير فواتير بصيغة PDF وطباعة حرارية'
+    ],
+    timeline: [
+      { step: 'contract_pending_approval', label: 'الموافقة على العقد', date: '2026-11-15 09:15', done: true, by: 'الطرفين' },
+      { step: 'awaiting_deposit', label: 'رفع سند الإيداع', date: '2026-11-15 14:30', done: true, by: 'العميل شهاب صالح' }
+    ]
+  },
+  {
+    id: 'ord_04',
+    orderCode: '#ORD-2026-004',
+    serviceId: 'srv_01',
+    serviceTitle: 'تطوير تطبيقات الويب الكاملة والتجارة الإلكترونية لمحلات المكلا (Next.js / Supabase)',
+    orderTitle: 'تطوير محرك بحث داخلي وتصنيف ذكي لكتالوج المنتجات',
+    clientId: 'usr_shehab_01',
+    clientName: 'شهاب صالح',
+    clientCompany: 'مؤسسة مدار للحلول التقنية والريادة - المكلا',
+    clientAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300',
+    freelancerId: 'usr_arwa_01',
+    freelancerName: 'م. أروى الحمادي',
+    freelancerUniversity: 'جامعة حضرموت',
+    freelancerAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300',
+    priceYER: 140000,
+    priceUSD: 270,
+    platformFeePercent: 7,
+    platformFeeYER: 9800,
+    netFreelancerYER: 130200,
+    deliveryDays: 6,
+    bufferDays: 2,
+    revisionsTotal: 3,
+    revisionsUsed: 0,
+    status: 'approved_pending_payout', // Client approved delivery, Admin needs to record payout!
+    statusLabel: 'وافق العميل - بانتظار قيام الإدارة بتسجيل صرف المستحقات',
+    escrowProvider: 'شركة العمقي للصرافة',
+    escrowReference: '#OM-771920',
+    escrowStatus: 'locked_in_custody',
+    createdAt: '2026-11-06T10:00:00Z',
+    contractApprovedAt: '2026-11-06T11:00:00Z',
+    depositVerifiedAt: '2026-11-06T14:00:00Z',
+    clientApprovedAt: '2026-11-15T11:00:00Z',
+    deliveryData: {
+      deliveredAt: '2026-11-14T17:00:00Z',
+      notes: 'تم بناء محرك البحث بنظام الفهرسة السريعة وتجربته بنجاح على 5,000 صنف.',
+      files: [
+        { name: 'كود_البحث_السريع.zip', size: '5.2 ميجابايت', url: '#' }
+      ]
+    },
+    buyerInstructions: 'محرك بحث فوري يدعم التلميحات والأخطاء الإملائية الشائعة.',
+    deliverablesList: [
+      'محرك بحث فوري خفيف وسريع',
+      'فلترة حسب الصنف والسعر والموقع'
+    ],
+    timeline: [
+      { step: 'contract_pending_approval', label: 'الموافقة على العقد', date: '2026-11-06 11:00', done: true, by: 'الطرفين' },
+      { step: 'awaiting_deposit', label: 'إيداع الضمان', date: '2026-11-06 12:30', done: true, by: 'العميل شهاب صالح' },
+      { step: 'awaiting_admin_verification', label: 'تأكيد الضمان', date: '2026-11-06 14:00', done: true, by: 'إدارة وصلة' },
+      { step: 'delivered_pending_review', label: 'تسليم المخرجات', date: '2026-11-14 17:00', done: true, by: 'م. أروى الحمادي' },
+      { step: 'approved_pending_payout', label: 'موافقة العميل واعتماد الاستلام', date: '2026-11-15 11:00', done: true, by: 'العميل شهاب صالح' }
+    ]
+  },
+  {
+    id: 'ord_05',
+    orderCode: '#ORD-2026-005',
+    serviceId: 'srv_09',
+    serviceTitle: 'تطوير وتحديث واجهات الويب التفاعلية بـ React و Tailwind CSS للشركات الناشئة',
+    orderTitle: 'برمجة واجهة مستخدم تفاعلية لمشروع تخرج تقني بجامعة حضرموت',
+    clientId: 'usr_shehab_01',
+    clientName: 'شهاب صالح',
+    clientCompany: 'مؤسسة مدار للحلول التقنية والريادة - المكلا',
+    clientAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300',
+    freelancerId: 'usr_arwa_01',
+    freelancerName: 'م. أروى الحمادي',
+    freelancerUniversity: 'جامعة حضرموت',
+    freelancerAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300',
+    priceYER: 160000,
+    priceUSD: 300,
+    platformFeePercent: 7,
+    platformFeeYER: 11200,
+    netFreelancerYER: 148800,
+    deliveryDays: 6,
+    bufferDays: 2,
+    revisionsTotal: 3,
+    revisionsUsed: 1,
+    status: 'completed', // Fully completed, payout recorded!
+    statusLabel: 'مكتمل ومسجل الصرف',
+    escrowProvider: 'بنك الكريمي (الكريمي إكسبرس)',
+    escrowReference: '#KR-4102',
+    escrowStatus: 'released_to_freelancer',
+    createdAt: '2026-11-01T09:00:00Z',
+    completedAt: '2026-11-08T15:00:00Z',
+    payoutTransactionId: 'txn_02',
+    rating: 5,
+    clientReview: 'عمل ممتاز ودقة عالية في التسليم قبل الموعد المحدد مع التزام تام بالهامش الزمني وحرفية في التكويد.',
+    deliveryData: {
+      deliveredAt: '2026-11-07T14:00:00Z',
+      notes: 'تم إنهاء كافة متطلبات المشروع والتسليم النهائي بنجاح.',
+      files: [{ name: 'الملفات_النهائية.zip', size: '12.4 ميجابايت', url: '#' }]
+    },
+    deliverablesList: [
+      'واجهة مستخدم React كاملة',
+      'دليل تشغيل الكود'
+    ],
+    timeline: [
+      { step: 'completed', label: 'اكتمال الطلب وصرف الأرباح', date: '2026-11-08 15:00', done: true, by: 'إدارة وصلة' }
+    ]
+  },
+  {
+    id: 'ord_06',
+    orderCode: '#ORD-2026-006',
+    serviceId: 'srv_01',
+    serviceTitle: 'تطوير تطبيقات الويب الكاملة والتجارة الإلكترونية لمحلات المكلا (Next.js / Supabase)',
+    orderTitle: 'تطوير نظام فواتير وضريبة لمحلات تجارية بسوق المكلا',
+    clientId: 'usr_shehab_01',
+    clientName: 'شهاب صالح',
+    clientCompany: 'مؤسسة مدار للحلول التقنية والريادة - المكلا',
+    clientAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300',
+    freelancerId: 'usr_arwa_01',
+    freelancerName: 'م. أروى الحمادي',
+    freelancerUniversity: 'جامعة حضرموت',
+    freelancerAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300',
+    priceYER: 60000,
+    priceUSD: 112,
+    platformFeePercent: 7,
+    platformFeeYER: 4200,
+    netFreelancerYER: 55800,
+    deliveryDays: 5,
+    bufferDays: 2,
+    revisionsTotal: 3,
+    revisionsUsed: 1,
+    status: 'disputed', // Tied to dispute dsp_01!
+    statusLabel: 'نزاع مفتوح وقيد النظر',
+    escrowProvider: 'شركة العمقي للصرافة',
+    escrowReference: '#OM-8839210',
+    escrowStatus: 'locked_in_custody',
+    disputeId: 'dsp_01',
+    disputeTicketCode: '#DSP-8821',
+    createdAt: '2026-11-10T10:00:00Z',
+    deliverablesList: [
+      'تحديث كود تقارير الفواتير والمجاميع'
+    ],
+    timeline: [
+      { step: 'disputed', label: 'فتح تذكرة نزاع ودي', date: '2026-11-14 11:30', done: true, by: 'شهاب صالح' }
+    ]
+  },
+  {
+    id: 'ord_07',
+    orderCode: '#ORD-2026-007',
+    serviceId: 'srv_09',
+    serviceTitle: 'تطوير وتحديث واجهات الويب التفاعلية بـ React و Tailwind CSS للشركات الناشئة',
+    orderTitle: 'تطوير واجهات لوحة تحكم سحابية لشركة خدمات لوجستية بالمكلا',
+    clientId: 'usr_shehab_01',
+    clientName: 'شهاب صالح',
+    clientCompany: 'مؤسسة مدار للحلول التقنية والريادة - المكلا',
+    clientAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300',
+    freelancerId: 'usr_arwa_01',
+    freelancerName: 'م. أروى الحمادي',
+    freelancerUniversity: 'جامعة حضرموت',
+    freelancerAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300',
+    priceYER: 95000,
+    priceUSD: 180,
+    platformFeePercent: 7,
+    platformFeeYER: 6650,
+    netFreelancerYER: 88350,
+    deliveryDays: 4,
+    bufferDays: 2,
+    revisionsTotal: 3,
+    revisionsUsed: 0,
+    status: 'contract_pending_approval', // Pending bilateral approval!
+    statusLabel: 'بانتظار الموافقة المتبادلة على العقد',
+    escrowProvider: 'شركة العمقي للصرافة',
+    escrowReference: null,
+    escrowStatus: 'awaiting_contract',
+    clientApproved: true,
+    freelancerApproved: false,
+    createdAt: '2026-11-16T08:30:00Z',
+    buyerInstructions: 'تطبيق مكونات الواجهة بنفس الخطوط والرموز الخاصة بالهوية.',
+    deliverablesList: [
+      '4 صفحات لوحة تحكم باللغة العربية',
+      'مكونات رسوم بيانية وتتبع فوري'
+    ],
+    timeline: [
+      { step: 'contract_pending_approval', label: 'تمت موافقة العميل وبانتظار موافقة المستقل', date: '2026-11-16 08:30', done: true, by: 'العميل شهاب صالح' }
+    ]
+  }
+];
+
+// Initial In-App Notifications
+export const INITIAL_NOTIFICATIONS = [
+  {
+    id: 'notif_01',
+    userId: 'usr_arwa_01',
+    title: 'تسليم بانتظار المراجعة',
+    message: 'تم تسليم مشروع متجر مدار بنجاح للعميل شهاب صالح، لديك مهلة مراجعة 72 ساعة.',
+    date: 'منذ ساعتين',
+    read: false,
+    link: '#/freelancer/dashboard'
+  },
+  {
+    id: 'notif_02',
+    userId: 'usr_shehab_01',
+    title: 'إشعار تسليم مخرجات',
+    message: 'قامت م. أروى الحمادي برفع النسخة النهائية للطلب #ORD-2026-001، يرجى مراجعة العمل والاعتماد.',
+    date: 'منذ ساعتين',
+    read: false,
+    link: '#/client/dashboard'
+  },
+  {
+    id: 'notif_03',
+    userId: 'usr_admin_01',
+    title: 'إشعار إيداع بانتظار التأكيد',
+    message: 'قام العميل شهاب صالح برفع سند تحويل بن دول برقم #BD-8841029 للطلب #ORD-2026-003.',
+    date: 'منذ 3 ساعات',
+    read: false,
+    link: '#/admin/secure-portal'
+  }
+];
+
 

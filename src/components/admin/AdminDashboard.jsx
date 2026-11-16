@@ -23,8 +23,12 @@ import {
   Search,
   Filter,
   Lock,
-  Scale
+  Scale,
+  Sparkles,
+  Settings,
+  RotateCcw
 } from 'lucide-react';
+import OrderLifecycleView from '../common/OrderLifecycleView';
 
 export const AdminDashboard = () => {
   const {
@@ -32,6 +36,12 @@ export const AdminDashboard = () => {
     remittances,
     verificationQueue,
     clientContracts,
+    serviceOrders,
+    platformSettings,
+    updatePlatformSettings,
+    verifyOrderDeposit,
+    recordOrderPayout,
+    resetDemoData,
     releaseEscrow,
     confirmAndLockEscrow,
     rejectRemittance,
@@ -44,6 +54,8 @@ export const AdminDashboard = () => {
   const [activeAccordion, setActiveAccordion] = useState(1);
   const [remittanceFilter, setRemittanceFilter] = useState('all'); // 'all' | 'omgy' | 'kuraimi' | 'bindowla' | 'buseiri'
   const [contractFilter, setContractFilter] = useState('all'); // 'all' | 'pending_release' | 'completed' | 'in_progress'
+  const [activeOrderForLifecycle, setActiveOrderForLifecycle] = useState(null);
+  const [feeInput, setFeeInput] = useState(String(platformSettings?.platformFeePercent || 7));
 
   const isAdmin = currentRole === 'admin';
 
@@ -281,6 +293,223 @@ export const AdminDashboard = () => {
                 حول كطالب
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* --- Khamsat Microservices Orders & Escrow Mediation Portal --- */}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-6">
+          {/* Header & Platform Controls */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="p-2 rounded-xl bg-teal-50 text-teal-700 border border-teal-100">
+                  <Sparkles className="w-5 h-5" />
+                </span>
+                <h3 className="font-black text-base text-[#0B192C]">
+                  إدارة وتدقيق طلبات الخدمات المصغرة والوساطة المالية (Microservices Escrow)
+                </h3>
+              </div>
+              <p className="text-xs text-slate-400 font-normal">
+                متابعة دورة حياة الطلبات (14 مرحلة)، تدقيق سندات الإيداع، وتسجيل صرف مستحقات المستقلين مع اقتطاع عمولة المنصة
+              </p>
+            </div>
+
+            {/* Fee Adjuster & Reset Demo Tools */}
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {/* Fee Adjuster */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs">
+                <span className="text-slate-500 font-medium">عمولة المنصة:</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="30"
+                  value={feeInput}
+                  onChange={(e) => setFeeInput(e.target.value)}
+                  className="w-12 p-1 bg-white border border-slate-300 rounded text-center font-bold text-teal-800"
+                />
+                <span className="text-slate-500 font-bold">%</span>
+                <button
+                  onClick={() => {
+                    const fee = Number(feeInput);
+                    if (fee >= 0 && fee <= 30) {
+                      updatePlatformSettings({ platformFeePercent: fee });
+                    }
+                  }}
+                  className="bg-teal-600 hover:bg-teal-700 text-white font-bold text-[11px] px-2 py-1 rounded transition-colors"
+                >
+                  حفظ
+                </button>
+              </div>
+
+              {/* Reset Demo Data Button */}
+              <button
+                onClick={resetDemoData}
+                className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-3 py-2 rounded-xl border border-slate-200 transition-colors"
+                title="إعادة ضبط بيانات العرض التجريبي إلى حالتها الأولية"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                <span>إعادة ضبط العرض التجريبي</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Action Alerts for Admin */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Box 1: Pending Deposits */}
+            {(() => {
+              const pendingDeposits = (serviceOrders || []).filter(
+                (o) => o.status === 'awaiting_admin_verification'
+              );
+              return (
+                <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2 text-xs">
+                  <div className="flex items-center justify-between font-bold text-amber-900">
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-amber-600" />
+                      <span>إيداعات بانتظار التحقق وقفل الضمان ({pendingDeposits.length})</span>
+                    </span>
+                    <span className="text-[10px] bg-amber-200/60 text-amber-900 px-2 py-0.5 rounded-full">
+                      تتطلب إجراء
+                    </span>
+                  </div>
+
+                  {pendingDeposits.length === 0 ? (
+                    <p className="text-[11px] text-slate-400">لا توجد إيداعات معلقة حالياً.</p>
+                  ) : (
+                    pendingDeposits.map((ord) => (
+                      <div
+                        key={ord.id}
+                        className="p-3 bg-white rounded-xl border border-amber-200 flex items-center justify-between gap-2"
+                      >
+                        <div className="overflow-hidden">
+                          <span className="font-bold text-slate-800 block truncate">{ord.orderTitle}</span>
+                          <span className="text-[10px] text-slate-500">
+                            {ord.clientName} • {ord.remittanceReceipt?.provider} ({ord.remittanceReceipt?.referenceNumber})
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => verifyOrderDeposit(ord.id)}
+                          className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shrink-0 transition-colors shadow-2xs"
+                        >
+                          تأكيد وقفل الضمان
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* Box 2: Pending Payouts */}
+            {(() => {
+              const pendingPayouts = (serviceOrders || []).filter(
+                (o) => o.status === 'approved_pending_payout'
+              );
+              return (
+                <div className="p-4 rounded-2xl bg-teal-50/70 border border-teal-200 space-y-2 text-xs">
+                  <div className="flex items-center justify-between font-bold text-teal-900">
+                    <span className="flex items-center gap-1.5">
+                      <CreditCard className="w-4 h-4 text-teal-600" />
+                      <span>عمليات بانتظار تسجيل صرف المستحقات ({pendingPayouts.length})</span>
+                    </span>
+                    <span className="text-[10px] bg-teal-200/60 text-teal-900 px-2 py-0.5 rounded-full">
+                      اعتماد نهائي
+                    </span>
+                  </div>
+
+                  {pendingPayouts.length === 0 ? (
+                    <p className="text-[11px] text-slate-400">لا توجد عمليات بانتظار الصرف حالياً.</p>
+                  ) : (
+                    pendingPayouts.map((ord) => (
+                      <div
+                        key={ord.id}
+                        className="p-3 bg-white rounded-xl border border-teal-200 flex items-center justify-between gap-2"
+                      >
+                        <div className="overflow-hidden">
+                          <span className="font-bold text-slate-800 block truncate">{ord.orderTitle}</span>
+                          <span className="text-[10px] text-slate-500 font-mono">
+                            الصافي للمستقل: {ord.netFreelancerYER?.toLocaleString()} ر.ي (بعد خصم {ord.platformFeePercent}% عمولة)
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => recordOrderPayout(ord.id)}
+                          className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold text-[11px] shrink-0 transition-colors shadow-2xs"
+                        >
+                          تسجيل الصرف
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Service Orders Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-right text-xs">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-400 font-bold text-[11px]">
+                  <th className="pb-3 pr-2">رقم الطلب</th>
+                  <th className="pb-3">عنوان الطلب / الخدمة</th>
+                  <th className="pb-3">العميل والمستقل</th>
+                  <th className="pb-3">قيمة العقد والعمولة</th>
+                  <th className="pb-3">حالة الطلب والوساطة</th>
+                  <th className="pb-3">المزود المحلي</th>
+                  <th className="pb-3 pl-2 text-center">إدارة دورة حياة الطلب</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {(serviceOrders || []).map((ord) => (
+                  <tr key={ord.id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="py-3 pr-2 font-mono font-bold text-teal-800">
+                      {ord.orderCode}
+                    </td>
+                    <td className="py-3">
+                      <span className="font-bold text-slate-800 block line-clamp-1">{ord.orderTitle}</span>
+                      <span className="text-[10px] text-slate-400">{ord.serviceTitle}</span>
+                    </td>
+                    <td className="py-3 text-[11px]">
+                      <div>العميل: <strong className="text-slate-800">{ord.clientName}</strong></div>
+                      <div>المستقل: <strong className="text-teal-800">{ord.freelancerName}</strong></div>
+                    </td>
+                    <td className="py-3 font-mono">
+                      <span className="font-bold text-slate-900 block">{ord.priceYER?.toLocaleString()} ر.ي</span>
+                      <span className="text-[10px] text-slate-400">عمولة: {ord.platformFeeYER?.toLocaleString()} ر.ي</span>
+                    </td>
+                    <td className="py-3">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                          ord.status === 'delivered_pending_review'
+                            ? 'bg-amber-50 text-amber-800 border-amber-300'
+                            : ord.status === 'in_progress'
+                            ? 'bg-blue-50 text-blue-800 border-blue-200'
+                            : ord.status === 'approved_pending_payout'
+                            ? 'bg-teal-50 text-teal-800 border-teal-300'
+                            : ord.status === 'completed'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : ord.status === 'disputed'
+                            ? 'bg-rose-50 text-rose-800 border-rose-200'
+                            : 'bg-slate-100 text-slate-700 border-slate-200'
+                        }`}
+                      >
+                        {ord.statusLabel}
+                      </span>
+                    </td>
+                    <td className="py-3 text-[11px] font-medium text-slate-600">
+                      {ord.escrowProvider || 'وساطة معتمدة'}
+                    </td>
+                    <td className="py-3 pl-2 text-center">
+                      <button
+                        onClick={() => setActiveOrderForLifecycle(ord)}
+                        className="px-3 py-1.5 rounded-xl border border-teal-300 bg-teal-50 hover:bg-teal-100 text-teal-800 font-bold text-xs transition-colors shadow-2xs"
+                      >
+                        تتبع وإدارة الطلب
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -809,6 +1038,38 @@ export const AdminDashboard = () => {
           )}
         </div>
       </main>
+
+      {/* Interactive Order Lifecycle Modal for Admin */}
+      {activeOrderForLifecycle && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-900/70 backdrop-blur-xs overflow-y-auto"
+          dir="rtl"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setActiveOrderForLifecycle(null);
+          }}
+        >
+          <div className="bg-white rounded-3xl max-w-5xl w-full border border-slate-200 shadow-2xl overflow-hidden my-6 max-h-[94vh] flex flex-col">
+            <div className="p-4 bg-[#0B192C] text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-teal-400" />
+                <span className="font-bold text-xs">بوابة الإدارة المركزية: تتبع ومراقبة دورة حياة الطلب</span>
+              </div>
+              <button
+                onClick={() => setActiveOrderForLifecycle(null)}
+                className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              <OrderLifecycleView
+                orderId={activeOrderForLifecycle.id}
+                onClose={() => setActiveOrderForLifecycle(null)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-4 text-xs text-slate-400 text-center">

@@ -82,11 +82,11 @@ export const FreelancerOverview = () => {
           </button>
 
           <button
-            onClick={() => openModal('add-portfolio-item')}
+            onClick={() => navigateTo('freelancer-services')}
             className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
-            <span>نشر خدمة مصغرة جديدة (Gig)</span>
+            <span>إدارة ونشر الخدمات المصغرة (Gigs)</span>
           </button>
         </div>
       </div>

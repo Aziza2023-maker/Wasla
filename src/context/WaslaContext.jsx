@@ -14,7 +14,10 @@ import {
   UNIVERSITIES_LIST,
   PEER_STUDENTS,
   SERVICES_CATALOG,
-  COMMUNITY_TOPICS
+  COMMUNITY_TOPICS,
+  DEFAULT_PLATFORM_SETTINGS,
+  INITIAL_SERVICE_ORDERS,
+  INITIAL_NOTIFICATIONS
 } from '../data/initialData';
 
 // Helper utilities for clean, robust session persistence
@@ -104,11 +107,16 @@ export const WaslaProvider = ({ children }) => {
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
   });
 
-  // Persistent Stores: Accounts, Contracts, Disputes, Financial Records
+  // Persistent Stores: Accounts, Contracts, Disputes, Financial Records, Services, Orders, Settings
   const [accounts, setAccounts] = useState(() => loadStoredItem('wasla_accounts_db', INITIAL_ACCOUNTS));
   const [clientContracts, setClientContracts] = useState(() => loadStoredItem('wasla_contracts_db', CLIENT_CONTRACTS));
   const [disputes, setDisputes] = useState(() => loadStoredItem('wasla_disputes_db', INITIAL_DISPUTES));
   const [financialRecords, setFinancialRecords] = useState(() => loadStoredItem('wasla_financial_db', INITIAL_FINANCIAL_RECORDS));
+  const [servicesCatalog, setServicesCatalog] = useState(() => loadStoredItem('wasla_services_db', SERVICES_CATALOG));
+  const [serviceOrders, setServiceOrders] = useState(() => loadStoredItem('wasla_service_orders_db', INITIAL_SERVICE_ORDERS));
+  const [platformSettings, setPlatformSettings] = useState(() => loadStoredItem('wasla_platform_settings', DEFAULT_PLATFORM_SETTINGS));
+  const [notifications, setNotifications] = useState(() => loadStoredItem('wasla_notifications_db', INITIAL_NOTIFICATIONS));
+  const [servicesSearchQuery, setServicesSearchQuery] = useState('');
 
   // Sync to localStorage whenever stores update
   useEffect(() => {
@@ -127,13 +135,28 @@ export const WaslaProvider = ({ children }) => {
     persistItem('wasla_financial_db', financialRecords);
   }, [financialRecords]);
 
+  useEffect(() => {
+    persistItem('wasla_services_db', servicesCatalog);
+  }, [servicesCatalog]);
+
+  useEffect(() => {
+    persistItem('wasla_service_orders_db', serviceOrders);
+  }, [serviceOrders]);
+
+  useEffect(() => {
+    persistItem('wasla_platform_settings', platformSettings);
+  }, [platformSettings]);
+
+  useEffect(() => {
+    persistItem('wasla_notifications_db', notifications);
+  }, [notifications]);
+
   // Entities State
   const [projects, setProjects] = useState(INITIAL_PROJECTS);
   const [remittances, setRemittances] = useState(INITIAL_REMITTANCES);
   const [verificationQueue, setVerificationQueue] = useState(STUDENT_VERIFICATION_QUEUE);
   const [portfolioProjects, setPortfolioProjects] = useState(PORTFOLIO_PROJECTS);
   const [selectedProjectDetails, setSelectedProjectDetails] = useState(INITIAL_PROJECTS[0]);
-  const [servicesCatalog, setServicesCatalog] = useState(SERVICES_CATALOG);
   const [communityTopics, setCommunityTopics] = useState(COMMUNITY_TOPICS);
 
   // Toasts
@@ -171,6 +194,7 @@ export const WaslaProvider = ({ children }) => {
     'forgot-password': '#/auth/forgot-password',
     'client-dashboard': '#/client/dashboard',
     'freelancer-overview': '#/freelancer/dashboard',
+    'freelancer-services': '#/freelancer/services',
     'freelancer-jobs': '#/freelancer/jobs',
     'freelancer-portfolio': '#/freelancer/portfolio',
     'freelancer-contact': '#/freelancer/contact',
@@ -193,6 +217,7 @@ export const WaslaProvider = ({ children }) => {
     '#/auth/forgot-password': 'forgot-password',
     '#/client/dashboard': 'client-dashboard',
     '#/freelancer/dashboard': 'freelancer-overview',
+    '#/freelancer/services': 'freelancer-services',
     '#/freelancer/jobs': 'freelancer-jobs',
     '#/freelancer/portfolio': 'freelancer-portfolio',
     '#/freelancer/contact': 'freelancer-contact',
@@ -1177,6 +1202,589 @@ export const WaslaProvider = ({ children }) => {
     addToast('تم إصدار القرار التحكيمي وإغلاق النزاع', 'تم تنفيذ القسمة المالية وإشعار الطرفين بقرار الإدارة الملزم.', 'success');
   };
 
+  // --- 1. Dispute Appeal Actions ---
+  const submitDisputeAppeal = (disputeId, { appellantRole, appellantName, appealReason, additionalEvidence = [] }) => {
+    setDisputes((prev) =>
+      prev.map((d) => {
+        if (d.id === disputeId) {
+          const appealData = {
+            id: `apl_${Date.now()}`,
+            appellantRole,
+            appellantName,
+            appealReason,
+            submittedAt: new Date().toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit' }),
+            additionalEvidence
+          };
+          const updatedTimeline = [
+            ...(d.timeline || []),
+            {
+              id: `evt_${Date.now()}`,
+              event: `تقديم طلب إعادة نظر واستئناف رسمي من ${appellantName}`,
+              by: appellantName,
+              at: 'الآن',
+              notes: appealReason
+            }
+          ];
+          return {
+            ...d,
+            status: 'appeal_pending',
+            statusLabel: 'طلب إعادة نظر قيد المراجعة الإدارية',
+            appeal: appealData,
+            timeline: updatedTimeline
+          };
+        }
+        return d;
+      })
+    );
+    addToast('تم تقديم طلب إعادة النظر بنجاح', 'تم إحالة الاستئناف والأدلة الإضافية إلى المشرف الإداري للمراجعة.', 'info');
+  };
+
+  const resolveDisputeAppeal = (disputeId, { decision, adminNotes, amendedRuling = null }) => {
+    const targetDispute = disputes.find((d) => d.id === disputeId);
+    setDisputes((prev) =>
+      prev.map((d) => {
+        if (d.id === disputeId) {
+          const effectiveRuling = decision === 'amended' && amendedRuling ? amendedRuling : d.ruling;
+          const updatedTimeline = [
+            ...(d.timeline || []),
+            {
+              id: `evt_${Date.now()}`,
+              event: decision === 'amended' ? 'قبول الاستئناف وتعديل القسمة التحكيمية' : 'تثبيت القرار التحكيمي السابق ورفض الاستئناف',
+              by: 'المشرف المالي والرقابي (إدارة وصلة)',
+              at: 'الآن',
+              notes: adminNotes
+            }
+          ];
+          return {
+            ...d,
+            status: 'closed_by_admin',
+            statusLabel: 'تم البت النهائي في طلب إعادة النظر',
+            adminDecision: adminNotes,
+            ruling: effectiveRuling,
+            appealDecision: {
+              decision,
+              adminNotes,
+              decidedAt: 'الآن'
+            },
+            timeline: updatedTimeline
+          };
+        }
+        return d;
+      })
+    );
+
+    // If ruling was amended, adjust ledger records
+    if (decision === 'amended' && amendedRuling) {
+      if (amendedRuling.refundClientYER > 0) {
+        recordFinancialTransaction({
+          type: 'refund',
+          title: 'استرداد مالي معدل بموجب قرار إعادة النظر الإداري',
+          projectTitle: targetDispute?.projectTitle || 'مشروع متنازع عليه',
+          amountYER: amendedRuling.refundClientYER,
+          status: 'completed',
+          description: `تسوية معدلة نهائية بعد قبول الاستئناف.`
+        });
+      }
+      if (amendedRuling.payoutFreelancerYER > 0) {
+        recordFinancialTransaction({
+          type: 'release',
+          title: 'صرف مستحقات معدل بموجب قرار إعادة النظر الإداري',
+          projectTitle: targetDispute?.projectTitle || 'مشروع متنازع عليه',
+          amountYER: amendedRuling.payoutFreelancerYER,
+          status: 'completed',
+          description: `تسوية معدلة نهائية بعد قبول الاستئناف.`
+        });
+      }
+    }
+
+    addToast('تم البت في طلب إعادة النظر', 'تم تسجيل القرار النهائي وإشعار الطرفين رسميًا.', 'success');
+  };
+
+  // --- 2. Khamsat Microservice Management Actions (For Freelancer) ---
+  const addService = (serviceData) => {
+    const newService = {
+      id: `srv_${Date.now()}`,
+      freelancerId: freelancerUser.id || 'usr_arwa_01',
+      title: serviceData.title,
+      categoryId: serviceData.categoryId || 'programming',
+      categoryName: serviceData.categoryName || 'برمجة وتطوير',
+      priceType: serviceData.priceType || 'fixed',
+      priceYER: Number(serviceData.priceYER) || 100000,
+      priceUSD: Number(serviceData.priceUSD) || 190,
+      deliveryDays: Number(serviceData.deliveryDays) || 5,
+      bufferDays: Number(serviceData.bufferDays) || 2,
+      revisionsAllowed: Number(serviceData.revisionsAllowed) || 3,
+      rating: 5.0,
+      salesCount: 0,
+      isVisible: true,
+      image: serviceData.image || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=600',
+      description: serviceData.description || '',
+      deliverablesIncluded: serviceData.deliverablesIncluded || [],
+      deliverablesExcluded: serviceData.deliverablesExcluded || [],
+      buyerRequirements: serviceData.buyerRequirements || '',
+      portfolioSamples: serviceData.portfolioSamples || [],
+      provider: {
+        name: freelancerUser.name || 'م. أروى الحمادي',
+        university: freelancerUser.university || 'جامعة حضرموت',
+        faculty: freelancerUser.faculty || 'كلية الحاسوب وتكنولوجيا المعلومات',
+        avatar: freelancerUser.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300',
+        rating: 5.0,
+        completedCount: freelancerUser.completedProjects || 15,
+        isVerified: true,
+        solarBackup: Boolean(freelancerUser.emergencyBufferStatus?.solarBackupReady),
+        netBackup: 'ألياف ضوئية + 4G'
+      },
+      tags: serviceData.tags || ['خدمة معتمدة', 'المكلا']
+    };
+
+    setServicesCatalog((prev) => [newService, ...prev]);
+    addToast('تم نشر الخدمة المصغرة بنجاح', `أصبحت الخدمة "${newService.title}" متاحة الآن في سوق خدمات وصلة.`, 'success');
+    return newService;
+  };
+
+  const updateService = (serviceId, updatedFields) => {
+    setServicesCatalog((prev) =>
+      prev.map((s) => (s.id === serviceId ? { ...s, ...updatedFields } : s))
+    );
+    addToast('تم تحديث الخدمة', 'تم حفظ التعديلات بنجاح وتحديث بيانات العرض للعملاء.', 'success');
+  };
+
+  const deleteService = (serviceId) => {
+    const hasActiveOrders = serviceOrders.some(
+      (o) => o.serviceId === serviceId && !['completed', 'cancelled'].includes(o.status)
+    );
+    if (hasActiveOrders) {
+      addToast('لا يمكن حذف الخدمة', 'توجد طلبات جارية قيد التنفيذ مرتبطة بهذه الخدمة حالياً.', 'warning');
+      return false;
+    }
+    setServicesCatalog((prev) => prev.filter((s) => s.id !== serviceId));
+    addToast('تم حذف الخدمة', 'تمت إزالة الخدمة من قائمة خدماتك بنجاح.', 'info');
+    return true;
+  };
+
+  const toggleServiceVisibility = (serviceId) => {
+    setServicesCatalog((prev) =>
+      prev.map((s) => {
+        if (s.id === serviceId) {
+          const nextState = !s.isVisible;
+          addToast(
+            nextState ? 'تم إظهار الخدمة' : 'تم إخفاء الخدمة',
+            nextState ? 'الخدمة ظاهرة الآن للعملاء في سوق الخدمات.' : 'تم إخفاء الخدمة مؤقتاً ولن تظهر في نتائج البحث العامة.',
+            'info'
+          );
+          return { ...s, isVisible: nextState };
+        }
+        return s;
+      })
+    );
+  };
+
+  // --- 3. Khamsat-like Service Orders & 14-State Lifecycle Actions ---
+  const createServiceOrder = ({
+    serviceId,
+    orderTitle,
+    buyerInstructions = '',
+    agreedPriceYER = null,
+    agreedPriceUSD = null,
+    deliveryDays = null,
+    bufferDays = null
+  }) => {
+    const service = servicesCatalog.find((s) => s.id === serviceId) || servicesCatalog[0];
+    const finalPriceYER = agreedPriceYER || service.priceYER || 150000;
+    const finalPriceUSD = agreedPriceUSD || service.priceUSD || 280;
+    const feePercent = platformSettings.platformFeePercent || 7;
+    const platformFeeYER = Math.round(finalPriceYER * (feePercent / 100));
+    const netFreelancerYER = finalPriceYER - platformFeeYER;
+
+    const newOrder = {
+      id: `ord_${Date.now()}`,
+      orderCode: `#ORD-2026-${String(serviceOrders.length + 1).padStart(3, '0')}`,
+      serviceId: service.id,
+      serviceTitle: service.title,
+      orderTitle: orderTitle || service.title,
+      clientId: clientUser.id || 'usr_shehab_01',
+      clientName: clientUser.name || 'شهاب صالح',
+      clientCompany: clientUser.company || 'مؤسسة مدار للحلول التقنية والريادة - المكلا',
+      clientAvatar: clientUser.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300',
+      freelancerId: service.freelancerId || 'usr_arwa_01',
+      freelancerName: service.provider?.name || 'م. أروى الحمادي',
+      freelancerUniversity: service.provider?.university || 'جامعة حضرموت',
+      freelancerAvatar: service.provider?.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300',
+      priceYER: finalPriceYER,
+      priceUSD: finalPriceUSD,
+      platformFeePercent: feePercent,
+      platformFeeYER,
+      netFreelancerYER,
+      deliveryDays: deliveryDays || service.deliveryDays || 5,
+      bufferDays: bufferDays || service.bufferDays || 2,
+      revisionsTotal: service.revisionsAllowed || 3,
+      revisionsUsed: 0,
+      status: 'contract_pending_approval',
+      statusLabel: 'بانتظار الموافقة المتبادلة على العقد',
+      escrowProvider: 'شركة العمقي للصرافة',
+      escrowReference: null,
+      escrowStatus: 'awaiting_contract',
+      clientApproved: true,
+      freelancerApproved: false,
+      createdAt: new Date().toISOString(),
+      buyerInstructions,
+      deliverablesList: service.deliverablesIncluded || ['تسليم العمل كاملاً وفق المتطلبات المحددة'],
+      deliveryData: null,
+      timeline: [
+        {
+          step: 'contract_pending_approval',
+          label: 'إنشاء الطلب وموافقة العميل على بنود العقد',
+          date: 'الآن',
+          done: true,
+          by: clientUser.name || 'شهاب صالح'
+        }
+      ]
+    };
+
+    setServiceOrders((prev) => [newOrder, ...prev]);
+    addToast(
+      'تم إنشاء طلب الخدمة بنجاح',
+      `تم إرسال الطلب ${newOrder.orderCode} إلى المستقل ${newOrder.freelancerName}. يرجى انتظار توقيعه على العقد للبدء في إيداع الضمان.`,
+      'success',
+      5000
+    );
+    return newOrder;
+  };
+
+  const approveOrderContract = (orderId, role) => {
+    setServiceOrders((prev) =>
+      prev.map((o) => {
+        if (o.id === orderId) {
+          const clientApproved = role === 'client' ? true : o.clientApproved;
+          const freelancerApproved = role === 'freelancer' ? true : o.freelancerApproved;
+          const bothApproved = clientApproved && freelancerApproved;
+
+          const updatedTimeline = [
+            ...(o.timeline || []),
+            {
+              step: bothApproved ? 'awaiting_deposit' : 'contract_pending_approval',
+              label: `اعتماد بنود العقد من ${role === 'client' ? 'العميل' : 'المستقل'}`,
+              date: 'الآن',
+              done: true,
+              by: role === 'client' ? o.clientName : o.freelancerName
+            }
+          ];
+
+          return {
+            ...o,
+            clientApproved,
+            freelancerApproved,
+            status: bothApproved ? 'awaiting_deposit' : 'contract_pending_approval',
+            statusLabel: bothApproved ? 'تم توقيع العقد - بانتظار إيداع الضمان من العميل' : 'بانتظار اكتمال الموافقة المتبادلة على العقد',
+            escrowStatus: bothApproved ? 'awaiting_deposit' : o.escrowStatus,
+            contractApprovedAt: bothApproved ? new Date().toISOString() : o.contractApprovedAt,
+            timeline: updatedTimeline
+          };
+        }
+        return o;
+      })
+    );
+    addToast('تم اعتماد بنود العقد', 'تم تسجيل موافقتك الرسمية على العقد الموحد للطلب.', 'success');
+  };
+
+  const submitOrderDeposit = (orderId, { provider, referenceNumber, senderName, amountYER, receiptFileName = 'سند_إيداع_رسمي.pdf' }) => {
+    setServiceOrders((prev) =>
+      prev.map((o) => {
+        if (o.id === orderId) {
+          const updatedTimeline = [
+            ...(o.timeline || []),
+            {
+              step: 'awaiting_admin_verification',
+              label: `إرسال إشعار وسند الإيداع عبر ${provider}`,
+              date: 'الآن',
+              done: true,
+              by: senderName || o.clientName
+            }
+          ];
+
+          return {
+            ...o,
+            status: 'awaiting_admin_verification',
+            statusLabel: 'تم رفع سند التحويل - بانتظار تدقيق الإدارة وقفل الضمان',
+            escrowProvider: provider,
+            escrowReference: referenceNumber,
+            escrowStatus: 'pending_verification',
+            remittanceReceipt: {
+              provider,
+              referenceNumber,
+              senderName: senderName || o.clientName,
+              amountYER: Number(amountYER) || o.priceYER,
+              depositedAt: new Date().toLocaleString('ar-YE'),
+              fileName: receiptFileName
+            },
+            timeline: updatedTimeline
+          };
+        }
+        return o;
+      })
+    );
+    addToast('تم إرسال إشعار الإيداع', 'تم رفع بيانات الحوالة إلى الإدارة للتحقق من وصول المبلغ وتأمين الضمان المالي Escrow.', 'info');
+  };
+
+  const verifyOrderDeposit = (orderId) => {
+    const targetOrder = serviceOrders.find((o) => o.id === orderId);
+    setServiceOrders((prev) =>
+      prev.map((o) => {
+        if (o.id === orderId) {
+          const updatedTimeline = [
+            ...(o.timeline || []),
+            {
+              step: 'in_progress',
+              label: `تأكيد الإيداع وقفل الضمان المالي في حساب الوساطة (${o.escrowProvider})`,
+              date: 'الآن',
+              done: true,
+              by: 'المشرف المالي والرقابي (إدارة وصلة)'
+            }
+          ];
+          return {
+            ...o,
+            status: 'in_progress',
+            statusLabel: 'الضمان مؤكد - جاري تنفيذ العمل',
+            escrowStatus: 'locked_in_custody',
+            depositVerifiedAt: new Date().toISOString(),
+            startedAt: new Date().toISOString(),
+            timeline: updatedTimeline
+          };
+        }
+        return o;
+      })
+    );
+
+    // Record in financial ledger
+    if (targetOrder) {
+      recordFinancialTransaction({
+        type: 'escrow_deposit',
+        title: `إيداع ضمان محلي للطلب ${targetOrder.orderCode}`,
+        projectTitle: targetOrder.orderTitle,
+        amountYER: targetOrder.priceYER,
+        status: 'locked_in_escrow',
+        provider: targetOrder.escrowProvider || 'شركة العمقي للصرافة',
+        referenceNumber: targetOrder.escrowReference || `#DEP-${Date.now().toString().slice(-6)}`,
+        clientId: targetOrder.clientId,
+        clientName: targetOrder.clientName,
+        freelancerId: targetOrder.freelancerId,
+        freelancerName: targetOrder.freelancerName,
+        description: `تم التحقق من السند وقفل الضمان بحساب الوساطة لصالح المستقل ${targetOrder.freelancerName}.`
+      });
+    }
+
+    addToast('تم تأكيد الإيداع وقفل الضمان', 'الضمان المالي محجوز الآن في حساب الوساطة، ويمكن للمستقل البدء فوراً بأمان.', 'success');
+  };
+
+  const submitOrderDelivery = (orderId, { notes, files = [], liveUrl = '' }) => {
+    setServiceOrders((prev) =>
+      prev.map((o) => {
+        if (o.id === orderId) {
+          const updatedTimeline = [
+            ...(o.timeline || []),
+            {
+              step: 'delivered_pending_review',
+              label: 'تسليم المخرجات والملفات النهائية للمراجعة',
+              date: 'الآن',
+              done: true,
+              by: o.freelancerName
+            }
+          ];
+
+          return {
+            ...o,
+            status: 'delivered_pending_review',
+            statusLabel: 'تم التسليم - بانتظار مراجعة العميل واعتماده',
+            deliveryData: {
+              deliveredAt: new Date().toISOString(),
+              notes: notes || 'تم إنجاز كافة المتطلبات المتفق عليها، يرجى الفحص والاعتماد.',
+              files: files.length > 0 ? files : [{ name: 'الملفات_المرفقة.zip', size: '14.2 ميجابايت', url: '#' }],
+              liveUrl: liveUrl || ''
+            },
+            timeline: updatedTimeline
+          };
+        }
+        return o;
+      })
+    );
+    addToast('تم تسليم مخرجات الطلب بنجاح', 'تم إشعار العميل لمعاينة العمل واعتماد الاستلام أو طلب تعديل خلال مهلة المراجعة.', 'success');
+  };
+
+  const respondToOrderDelivery = (orderId, { action, notes = '', rating = 5 }) => {
+    setServiceOrders((prev) =>
+      prev.map((o) => {
+        if (o.id === orderId) {
+          if (action === 'accept') {
+            const updatedTimeline = [
+              ...(o.timeline || []),
+              {
+                step: 'approved_pending_payout',
+                label: 'موافقة العميل على الاستلام واعتماد المخرجات',
+                date: 'الآن',
+                done: true,
+                by: o.clientName
+              }
+            ];
+            return {
+              ...o,
+              status: 'approved_pending_payout',
+              statusLabel: 'وافق العميل - بانتظار قيام الإدارة بتسجيل صرف المستحقات',
+              clientApprovedAt: new Date().toISOString(),
+              clientReview: notes || 'تم استلام العمل واعتماده بالكامل.',
+              rating: rating || 5,
+              timeline: updatedTimeline
+            };
+          } else {
+            // request revision
+            const nextUsed = (o.revisionsUsed || 0) + 1;
+            const updatedTimeline = [
+              ...(o.timeline || []),
+              {
+                step: 'revision_requested',
+                label: `طلب تعديل من العميل (تعديل رقم ${nextUsed} من ${o.revisionsTotal})`,
+                date: 'الآن',
+                done: true,
+                by: o.clientName
+              }
+            ];
+            return {
+              ...o,
+              status: 'revision_requested',
+              statusLabel: `طلب تعديل جارٍ (${nextUsed} من ${o.revisionsTotal})`,
+              revisionsUsed: nextUsed,
+              revisionNotes: notes,
+              timeline: updatedTimeline
+            };
+          }
+        }
+        return o;
+      })
+    );
+
+    if (action === 'accept') {
+      addToast('تم اعتماد الاستلام بنجاح', 'تم تأكيد رضاك عن المخرجات، وتم إحالة المعاملة للإدارة لتسجيل صرف مستحقات المستقل.', 'success');
+    } else {
+      addToast('تم إرسال طلب التعديل', 'تم إبلاغ المستقل بملاحظاتك لإجراء التعديلات المطلوبة وإعادة التسليم.', 'info');
+    }
+  };
+
+  const recordOrderPayout = (orderId, { payoutAccount = 'حساب الكريمي المعتمد' } = {}) => {
+    const targetOrder = serviceOrders.find((o) => o.id === orderId);
+    setServiceOrders((prev) =>
+      prev.map((o) => {
+        if (o.id === orderId) {
+          const updatedTimeline = [
+            ...(o.timeline || []),
+            {
+              step: 'completed',
+              label: `تسجيل صرف المستحقات للمستقل (${o.netFreelancerYER?.toLocaleString()} ر.ي بعد خصم عمولة المنصة ${o.platformFeePercent}%)`,
+              date: 'الآن',
+              done: true,
+              by: 'المشرف المالي والرقابي (إدارة وصلة)'
+            }
+          ];
+          return {
+            ...o,
+            status: 'completed',
+            statusLabel: 'مكتمل ومسجل الصرف',
+            escrowStatus: 'released_to_freelancer',
+            completedAt: new Date().toISOString(),
+            timeline: updatedTimeline
+          };
+        }
+        return o;
+      })
+    );
+
+    // Record release in financial ledger with platform fee deduction
+    if (targetOrder) {
+      recordFinancialTransaction({
+        type: 'escrow_release',
+        title: `تسجيل صرف مستحقات الطلب ${targetOrder.orderCode}`,
+        projectTitle: targetOrder.orderTitle,
+        amountYER: targetOrder.priceYER,
+        feeYER: targetOrder.platformFeeYER,
+        netAmountYER: targetOrder.netFreelancerYER,
+        status: 'released',
+        provider: targetOrder.escrowProvider || 'بنك الكريمي (الكريمي إكسبرس)',
+        referenceNumber: `#REL-${Date.now().toString().slice(-6)}`,
+        clientId: targetOrder.clientId,
+        clientName: targetOrder.clientName,
+        freelancerId: targetOrder.freelancerId,
+        freelancerName: targetOrder.freelancerName,
+        description: `تم تسجيل صرف المستحقات الصافية (${targetOrder.netFreelancerYER?.toLocaleString()} ر.ي) بحساب المستقل بعد اقتطاع عمولة المنصة (${targetOrder.platformFeeYER?.toLocaleString()} ر.ي - ${targetOrder.platformFeePercent}%).`
+      });
+
+      // Update freelancer available balance
+      setFreelancerUser((prev) => ({
+        ...prev,
+        balanceYER: (prev.balanceYER || 0) + (targetOrder.netFreelancerYER || 0),
+        completedProjects: (prev.completedProjects || 0) + 1
+      }));
+    }
+
+    addToast('تم تسجيل صرف المستحقات وإغلاق الطلب', 'تم قيد العملية بنجاح في السجل المالي وإيداع الصافي في رصيد المستقل المتاح للصرف.', 'success');
+  };
+
+  const cancelOrder = (orderId, reason = 'إلغاء باتفاق الطرفين') => {
+    setServiceOrders((prev) =>
+      prev.map((o) => {
+        if (o.id === orderId) {
+          const updatedTimeline = [
+            ...(o.timeline || []),
+            {
+              step: 'cancelled',
+              label: `إلغاء الطلب: ${reason}`,
+              date: 'الآن',
+              done: true,
+              by: currentRole === 'client' ? o.clientName : o.freelancerName
+            }
+          ];
+          return {
+            ...o,
+            status: 'cancelled',
+            statusLabel: 'ملغي',
+            cancellationReason: reason,
+            timeline: updatedTimeline
+          };
+        }
+        return o;
+      })
+    );
+    addToast('تم إلغاء الطلب', reason, 'info');
+  };
+
+  // --- 4. Platform Settings Actions ---
+  const updatePlatformSettings = (newSettings) => {
+    setPlatformSettings((prev) => ({ ...prev, ...newSettings }));
+    addToast('تم تحديث إعدادات المنصة', 'تم حفظ نسبة العمولة والشروط التشغيلية الجديدة بنجاح.', 'success');
+  };
+
+  // --- 5. Reset Demo Data to Pristine State ---
+  const resetDemoData = () => {
+    try {
+      localStorage.removeItem('wasla_accounts_db');
+      localStorage.removeItem('wasla_contracts_db');
+      localStorage.removeItem('wasla_disputes_db');
+      localStorage.removeItem('wasla_financial_db');
+      localStorage.removeItem('wasla_services_db');
+      localStorage.removeItem('wasla_service_orders_db');
+      localStorage.removeItem('wasla_platform_settings');
+      localStorage.removeItem('wasla_notifications_db');
+      setAccounts(INITIAL_ACCOUNTS);
+      setClientContracts(CLIENT_CONTRACTS);
+      setDisputes(INITIAL_DISPUTES);
+      setFinancialRecords(INITIAL_FINANCIAL_RECORDS);
+      setServicesCatalog(SERVICES_CATALOG);
+      setServiceOrders(INITIAL_SERVICE_ORDERS);
+      setPlatformSettings(DEFAULT_PLATFORM_SETTINGS);
+      setNotifications(INITIAL_NOTIFICATIONS);
+      addToast('تمت استعادة البيانات الافتراضية', 'تمت تهيئة بيانات العرض التجريبي بنجاح إلى حالتها الأولية.', 'success');
+    } catch (e) {
+      console.error('Reset error:', e);
+    }
+  };
+
   return (
     <WaslaContext.Provider
       value={{
@@ -1211,6 +1819,11 @@ export const WaslaProvider = ({ children }) => {
         accounts,
         disputes,
         financialRecords,
+        serviceOrders,
+        platformSettings,
+        notifications,
+        servicesSearchQuery,
+        setServicesSearchQuery,
 
         // Entities
         projects,
@@ -1225,21 +1838,41 @@ export const WaslaProvider = ({ children }) => {
         servicesCatalog,
         communityTopics,
 
+        // Khamsat Microservices Actions
+        addService,
+        updateService,
+        deleteService,
+        toggleServiceVisibility,
+
+        // Khamsat Service Orders & 14-State Lifecycle Actions
+        createServiceOrder,
+        approveOrderContract,
+        submitOrderDeposit,
+        verifyOrderDeposit,
+        submitOrderDelivery,
+        respondToOrderDelivery,
+        recordOrderPayout,
+        cancelOrder,
+
         // Bilateral Contract Actions
         createContract,
         approveContract,
         requestContractRevision,
 
-        // Dispute Actions
+        // Dispute & Appeal Actions
         openDispute,
         submitDisputeEvidence,
         proposeDisputeSettlement,
         respondToDisputeProposal,
         escalateDisputeToAdmin,
         resolveDisputeByAdmin,
+        submitDisputeAppeal,
+        resolveDisputeAppeal,
 
-        // Financial Ledger Actions
+        // Financial Ledger & Platform Settings Actions
         recordFinancialTransaction,
+        updatePlatformSettings,
+        resetDemoData,
 
         // Other Actions
         submitProposal,

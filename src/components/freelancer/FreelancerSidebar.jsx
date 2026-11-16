@@ -3,6 +3,7 @@ import { useWasla } from '../../context/WaslaContext';
 import { WaslaChainIcon } from '../common/WaslaLogo';
 import {
   LayoutDashboard,
+  Sparkles,
   Briefcase,
   Layers,
   PhoneCall,
@@ -20,6 +21,7 @@ export const FreelancerSidebar = () => {
 
   const navItems = [
     { id: 'freelancer-overview', label: 'لوحة التحكم', icon: LayoutDashboard },
+    { id: 'freelancer-services', label: 'خدماتي المصغرة (Gigs)', icon: Sparkles },
     { id: 'freelancer-jobs', label: 'سوق العمل', icon: Briefcase },
     { id: 'freelancer-portfolio', label: 'معرض أعمالي', icon: Layers },
     { id: 'freelancer-contact', label: 'بيانات التواصل', icon: PhoneCall },
