@@ -26,7 +26,8 @@ import {
   Scale,
   Sparkles,
   Settings,
-  RotateCcw
+  RotateCcw,
+  CreditCard
 } from 'lucide-react';
 import OrderLifecycleView from '../common/OrderLifecycleView';
 
